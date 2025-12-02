@@ -33,7 +33,7 @@ const projectsData = [
     report: null,
     demo: null,
     page: "projects/quixo-rl.html",
-    featured: false,
+    featured: true,
     preview: "projects/quixo-rl/gui2.png"
   },
   {
@@ -62,7 +62,7 @@ const projectsData = [
   },
   {
     title: "RobVC: A Robust End-to-End Self-Supervised Voice Conversion",
-    date: "March 2024",
+    date: "April 2025",
     description: "Master's thesis on voice conversion using novel cross-attention mechanism for implicit speaker-content disentanglement. Achieves state-of-the-art speaker similarity using HuBERT and EnCodec pretrained models.",
     tags: ["Python", "PyTorch", "Deep Learning", "Voice Conversion", "Self-Supervised Learning"],
     github: null,
