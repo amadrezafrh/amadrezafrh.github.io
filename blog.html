@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Blog - Amadreza Farahani</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Blog posts by Amadreza Farahani - AI/ML Engineer" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-content">
+        <div class="sidebar-photo">
+          <img src="me.JPG" alt="Amadreza Farahani" />
+        </div>
+        <h1>Amadreza Farahani</h1>
+        <p class="tagline">AI/ML Engineer</p>
+        <p class="intro">Building intelligent systems with LLMs, Computer Vision, and scalable ML infrastructure.</p>
+        <div class="sidebar-links">
+          <a href="mailto:amadreza.farahani@outlook.com">Email</a>
+          <a href="https://linkedin.com/in/amadrezafrh" target="_blank">LinkedIn</a>
+          <a href="https://github.com/amadrezafrh" target="_blank">GitHub</a>
+          <a href="resume/Amadreza.pdf" target="_blank">Resume</a>
+        </div>
+        <nav class="sidebar-nav">
+          <a href="index.html">Home</a>
+          <a href="index.html#experience">Experience</a>
+          <a href="index.html#education">Education</a>
+          <a href="projects.html">Projects</a>
+          <a href="blog.html" class="active" id="nav-blog">Blog</a>
+          <a href="index.html#contact">Contact</a>
+        </nav>
+      </div>
+    </aside>
+    <main class="main-content">
+      <section class="section">
+        <h1>Blog</h1>
+        <div class="blog-list" id="all-blog-container">
+          <!-- Blog posts loaded dynamically -->
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="js/blog.js"></script>
+  <script>
+    const container = document.getElementById('all-blog-container');
+    if (container && typeof blogData !== 'undefined' && blogData.length > 0) {
+      container.innerHTML = blogData.map(post => `
+        <article class="blog-card">
+          <h3>${post.title}</h3>
+          <p class="blog-date">${post.date}</p>
+          <p>${post.description}</p>
+          <p class="blog-keywords">${post.keywords.map(kw => `<span>${kw}</span>`).join('')}</p>
+          <p class="blog-links">
+            <a href="${post.page}">Read more</a>
+          </p>
+        </article>
+      `).join('');
+    }
+  </script>
+  <script src="js/config.js"></script>
+  <script>
+    if (typeof siteConfig !== 'undefined') {
+      if (siteConfig.hide_blog) {
+        window.location.href = 'index.html';
+      }
+      if (siteConfig.max_width) {
+        document.documentElement.style.setProperty('--content-max-width', siteConfig.max_width);
+      }
+    }
+  </script>
+</body>
+</html>

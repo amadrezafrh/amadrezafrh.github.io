@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Kuka-V1 Robot Anomaly Detection - Amadreza Farahani</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Time-series anomaly detection for robotic sensor data using Anomaly Transformer with a novel evaluation algorithm" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+  <link rel="stylesheet" href="../css/styles.css" />
+  <script src="../js/config.js"></script>
+  <style>
+    .project-content {
+      max-width: var(--project-max-width, 900px);
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-content">
+        <div class="sidebar-photo">
+          <img src="../me.JPG" alt="Amadreza Farahani" />
+        </div>
+        <h1>Amadreza Farahani</h1>
+        <p class="tagline">AI/ML Engineer</p>
+        <p class="intro">Building intelligent systems with LLMs, Computer Vision, and scalable ML infrastructure.</p>
+        <div class="sidebar-links">
+          <a href="mailto:amadreza.farahani@outlook.com">Email</a>
+          <a href="https://linkedin.com/in/amadrezafrh" target="_blank">LinkedIn</a>
+          <a href="https://github.com/amadrezafrh" target="_blank">GitHub</a>
+          <a href="../resume/Amadreza.pdf" target="_blank">Resume</a>
+        </div>
+        <nav class="sidebar-nav">
+          <a href="../index.html">Home</a>
+          <a href="../index.html#experience">Experience</a>
+          <a href="../index.html#education">Education</a>
+          <a href="../projects.html">Projects</a>
+          <a href="../blog.html" id="nav-blog">Blog</a>
+          <a href="../index.html#contact">Contact</a>
+        </nav>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <article class="project-detail">
+        <header class="project-header">
+          <h1>Kuka-V1 Robot Anomaly Detection Using Transformer and Graph Attention Models</h1>
+          <div class="project-meta">
+            <p class="project-date">October 2023</p>
+            <p class="project-tags">
+              <span>Python</span>
+              <span>PyTorch</span>
+              <span>Transformers</span>
+              <span>Anomaly Detection</span>
+              <span>Time Series</span>
+            </p>
+          </div>
+        </header>
+
+        <section class="project-content">
+          <nav class="toc">
+            <p class="toc-title">Contents</p>
+            <ul class="toc-list">
+              <li><a href="#overview">1. Overview</a></li>
+              <li><a href="#problem">2. Problem Statement</a></li>
+              <li><a href="#anomaly-transformer">3. Anomaly Transformer Architecture</a>
+                <ul class="toc-list toc-sub">
+                  <li><a href="#prior-association">3.1. Prior-Association</a></li>
+                  <li><a href="#series-association">3.2. Series-Association</a></li>
+                  <li><a href="#association-discrepancy">3.3. Association Discrepancy</a></li>
+                  <li><a href="#minimax">3.4. Minimax Learning</a></li>
+                </ul>
+              </li>
+              <li><a href="#contribution">4. Our Contribution: Novel Evaluation Algorithm</a>
+                <ul class="toc-list toc-sub">
+                  <li><a href="#window-scoring">4.1. Window-Based Scoring</a></li>
+                  <li><a href="#algorithm">4.2. Evaluation Algorithm</a></li>
+                </ul>
+              </li>
+              <li><a href="#results">5. Results</a></li>
+              <li><a href="#conclusion">6. Conclusion</a></li>
+            </ul>
+          </nav>
+
+          <h2 id="overview">1. Overview</h2>
+          <p>
+            This project addresses unsupervised time-series anomaly detection for robotic sensor data. Robots often produce anomalous behaviors that can lead to failures, and the ability to detect such behaviors is crucial for achieving high levels of autonomy. We implement and extend the Anomaly Transformer architecture for detecting anomalies in Kuka-V1 robot sensor readings.
+          </p>
+          <p>
+            The key challenge in unsupervised anomaly detection is that anomalies are rare and hidden among vast normal time points, making labeling expensive and impractical. Our approach learns informative representations from complex temporal dynamics and derives a criterion that distinguishes rare anomalies from normal behavior.
+          </p>
+
+          <div class="project-image">
+            <img src="ts-anomaly-detection/first.png" alt="Time-series data captured by robot sensors" />
+            <p class="image-caption">Time-series data captured by different robot sensors showing seasonal patterns and anomalous behavior.</p>
+          </div>
+
+          <h2 id="problem">2. Problem Statement</h2>
+          <p>
+            Given a time series $X$ denoted by a set of time points $\{x_1, x_2, \ldots, x_N\}$, where $x_t \in \mathbb{R}^d$ represents $d$ sensor measurements at time $t$, the unsupervised anomaly detection problem is to determine whether $x_t$ is anomalous without labels.
+          </p>
+          <p>
+            The general framework outputs an anomaly score for each time point. The criterion for predicting an anomaly is:
+          </p>
+          <p class="math-block">
+            $\text{score} > \text{threshold}$
+          </p>
+          <p>
+            The threshold can be tuned using a validation set or estimated automatically using methods such as Peak-Over-Threshold.
+          </p>
+
+          <h2 id="anomaly-transformer">3. Anomaly Transformer Architecture</h2>
+          <p>
+            The Anomaly Transformer renovates the vanilla Transformer architecture with an Anomaly-Attention mechanism. It consists of stacking Anomaly-Attention blocks and feed-forward layers alternately, which enables learning underlying associations from deep multi-level features.
+          </p>
+
+          <div class="project-image">
+            <img src="ts-anomaly-detection/structure.png" alt="Anomaly Transformer architecture" />
+            <p class="image-caption">Anomaly Transformer architecture with the two-branch Anomaly-Attention mechanism.</p>
+          </div>
+
+          <p>
+            For a model with $L$ layers and input time series $X \in \mathbb{R}^{N \times d}$, the $l$-th layer is formalized as:
+          </p>
+          <p class="math-block">
+            $$Z^l = \text{LayerNorm}(\text{Anomaly-Attention}(X^{l-1}) + X^{l-1})$$
+            $$X^l = \text{LayerNorm}(\text{Feed-Forward}(Z^l) + Z^l)$$
+          </p>
+          <p>
+            The Anomaly-Attention has a two-branch structure with initialization:
+          </p>
+          <p class="math-block">
+            $Q, K, V, \sigma = X^{l-1}W_Q^l, X^{l-1}W_K^l, X^{l-1}W_V^l, X^{l-1}W_\sigma^l$
+          </p>
+
+          <h3 id="prior-association">3.1. Prior-Association</h3>
+          <p>
+            The prior-association uses a learnable Gaussian kernel to calculate temporal associations with respect to relative temporal distance. The unimodal property of the Gaussian kernel pays more attention to the adjacent horizon:
+          </p>
+          <p class="math-block">
+            $$P^l = \text{Rescale}\left(\left[\frac{1}{\sqrt{2\pi}\sigma_i}\exp\left(-\frac{|j-i|^2}{2\sigma_i^2}\right)\right]_{i,j \in \{1,\ldots,N\}}\right)$$
+          </p>
+
+          <h3 id="series-association">3.2. Series-Association</h3>
+          <p>
+            The series-association branch learns associations directly from raw series to find the most effective associations adaptively:
+          </p>
+          <p class="math-block">
+            $S^l = \text{Softmax}\left(\frac{QK^T}{\sqrt{d_{\text{model}}}}\right)$
+          </p>
+          <p>
+            The reconstruction is computed as:
+          </p>
+          <p class="math-block">
+            $\hat{Z}^l = S^l V$
+          </p>
+
+          <div class="project-image">
+            <img src="ts-anomaly-detection/tempral.png" alt="Temporal discrepancy visualization" />
+            <p class="image-caption">Visualization of prior and series associations showing the temporal discrepancy between normal and anomalous points.</p>
+          </div>
+
+          <h3 id="association-discrepancy">3.3. Association Discrepancy</h3>
+          <p>
+            The Association Discrepancy is the symmetrized KL divergence between prior and series associations. Due to the rarity of anomalies, it is difficult to build non-trivial associations from abnormal points to the whole series, so anomalies' associations concentrate on adjacent time points. This makes the discrepancy inherently distinguishable:
+          </p>
+          <p class="math-block">
+            $$\text{AssDis}(P,S;X) = \left[\frac{1}{L}\sum_{l=1}^{L}\left(\text{KL}(P_{i,:}^l \| S_{i,:}^l) + \text{KL}(S_{i,:}^l \| P_{i,:}^l)\right)\right]_{i=1,\ldots,N}$$
+          </p>
+          <p>
+            Anomalies present smaller Association Discrepancy than normal time points, making it a powerful criterion for detection.
+          </p>
+
+          <h3 id="minimax">3.4. Minimax Learning</h3>
+          <p>
+            A minimax strategy amplifies the difference between normal and abnormal time points. The total loss function is:
+          </p>
+          <p class="math-block">
+            $L_{\text{Total}}(\hat{X}, P, S, \lambda; X) = \|X - \hat{X}\|_F^2 - \lambda \cdot \|\text{AssDis}(P, S; X)\|_1$
+          </p>
+
+          <div class="project-image">
+            <img src="ts-anomaly-detection/minimax.png" alt="Minimax optimization" />
+            <p class="image-caption">Minimax optimization strategy: minimize phase adapts prior to series association, maximize phase enlarges the discrepancy.</p>
+          </div>
+
+          <p>
+            In the <strong>minimize phase</strong>, the prior-association approximates the series-association:
+          </p>
+          <p class="math-block">
+            $L_{\text{Total}}(\hat{X}, P, S_{\text{detach}}, -\lambda; X)$
+          </p>
+          <p>
+            In the <strong>maximize phase</strong>, the series-association enlarges the discrepancy:
+          </p>
+          <p class="math-block">
+            $L_{\text{Total}}(\hat{X}, P_{\text{detach}}, S, \lambda; X)$
+          </p>
+
+          <p>
+            The final anomaly score combines the normalized association discrepancy with reconstruction error:
+          </p>
+          <p class="math-block">
+            $$\text{AnomalyScore}(X) = \text{Softmax}(-\text{AssDis}(P,S;X)) \odot \left[\|X_{i,:} - \hat{X}_{i,:}\|_2^2\right]_{i=1,\ldots,N}$$
+          </p>
+
+          <h2 id="contribution">4. Our Contribution: Novel Evaluation Algorithm</h2>
+          <p>
+            The original Anomaly Transformer paper uses point-wise anomaly detection with window sizes having stride equal to the window size. Since the anomalies of the Kuka robot are contextual (spanning multiple consecutive points), we developed a novel evaluation algorithm using sliding windows with stride of 1.
+          </p>
+
+          <h3 id="window-scoring">4.1. Window-Based Scoring</h3>
+          <p>
+            Given input data sequence $\{x_1, x_2, \ldots, x_N\}$ where $x_t \in \mathbb{R}^d$, we split the data with window size $W_s$ and stride $S$. The transformed data $\tilde{x}_t$ has length:
+          </p>
+          <p class="math-block">
+            $\acute{N} = \left\lfloor\frac{N - W_s}{S}\right\rfloor$
+          </p>
+          <p>
+            For each window, we calculate the total anomaly score as the sum of individual point scores:
+          </p>
+          <p class="math-block">
+            $$\tilde{A}(\tilde{x}_t) = \sum_{i=1}^{W_s} \text{AnomalyScore}(x_i) \quad \forall x_i \in \tilde{x}_t$$
+          </p>
+
+          <h3 id="algorithm">4.2. Evaluation Algorithm</h3>
+          <p>
+            Our algorithm handles contextual anomalies by treating contiguous anomaly segments as single detection units. If any point in an anomaly segment is detected, the full segment is considered correctly identified:
+          </p>
+
+          <pre><code>Algorithm: Evaluation Algorithm
+Input: Window anomaly scores A(x_t), threshold th, ground truth gt, window size W_s
+Output: Confusion matrix
+
+n = 0
+while A(x_t) is not None where t = n:
+    if 1 in gt[n : n + W_s]:
+        # Find end of contextual anomaly
+        c = 0
+        while gt[n + W_s + c] = 1:
+            c = c + 1
+        
+        # Check if anomaly detected in segment
+        if exists t in [n : n + W_s + c] where A(x_t) >= th:
+            detected = True
+        else:
+            detected = False
+        
+        # Assign predictions for segment
+        if detected:
+            for each point in segment where gt = 1:
+                prediction = True Positive
+        else:
+            for each point in segment:
+                if gt = 1: prediction = False Negative
+                else: prediction = True Negative
+        
+        n = n + segment_length
+    else:
+        # Normal region
+        if A(x_t) >= th:
+            prediction = False Positive
+        else:
+            prediction = True Negative
+        n = n + 1</code></pre>
+
+          <p>
+            This approach is justified by the observation that the exact time point causing an anomaly does not need to be detected precisely; detecting any point within the anomalous segment is sufficient for practical applications.
+          </p>
+
+          <h2 id="results">5. Results</h2>
+          <p>
+            We evaluated the Anomaly Transformer across different sampling frequencies (1 Hz, 10 Hz, 100 Hz) and window sizes. Since anomaly data is significantly rarer than normal data, we focus on recall and specificity as the primary metrics, with fBeta-score (recall weighted twice as precision) as the main comparison factor.
+          </p>
+
+          <div class="project-image">
+            <img src="ts-anomaly-detection/table1.png" alt="Anomaly Transformer results table" />
+            <p class="image-caption">Anomaly Transformer results with respect to window size and frequency.</p>
+          </div>
+
+          <p>
+            Key findings:
+          </p>
+          <ul>
+            <li>For frequency = 10 Hz, best performance achieved with window size = 50, yielding 93% recall and 0.86 fBeta-score</li>
+            <li>For frequency = 100 Hz, best performance with window size = 130, achieving 91% recall and 0.86 fBeta-score</li>
+            <li>Higher frequencies (100 Hz, 200 Hz) require proportionally larger window sizes to capture similar time intervals</li>
+          </ul>
+
+          <div class="project-image">
+            <img src="ts-anomaly-detection/roc.png" alt="ROC curve" />
+            <p class="image-caption">ROC curve showing model performance across different threshold values.</p>
+          </div>
+
+          <div class="project-image">
+            <img src="ts-anomaly-detection/det.png" alt="DET plot" />
+            <p class="image-caption">Detection Error Tradeoff (DET) plot for anomaly detection performance analysis.</p>
+          </div>
+
+          <h2 id="conclusion">6. Conclusion</h2>
+          <p>
+            This project demonstrated the effectiveness of Anomaly Transformer for unsupervised time-series anomaly detection in robotic sensor data. Our novel evaluation algorithm addresses the contextual nature of anomalies in industrial applications, where detecting any point within an anomalous segment is practically sufficient.
+          </p>
+          <p>
+            The choice of window size and sampling frequency significantly impacts detection performance. For real-world deployment, the ROC curves and DET plots provide guidance for threshold selection when ground truth labels are available. In truly unsupervised settings, the anomaly ratio parameter offers a practical alternative for threshold determination.
+          </p>
+        </section>
+
+        <footer class="project-footer">
+          <a href="../projects.html" class="back-link">Back to Projects</a>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      if (typeof hideConfig !== 'undefined' && hideConfig.hide_blog) {
+        var blogLink = document.getElementById('nav-blog');
+        if (blogLink) blogLink.style.display = 'none';
+      }
+      if (typeof hideConfig !== 'undefined' && hideConfig.project_max_width) {
+        document.documentElement.style.setProperty('--project-max-width', hideConfig.project_max_width);
+      }
+    });
+  </script>
+</body>
+</html>

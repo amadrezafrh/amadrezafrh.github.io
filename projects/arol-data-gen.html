@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>An IoT Synthetic Data Generation Module for Capping Devices - Amadreza Farahani</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Synthetic data generation module for capping devices using Temporal Fusion Transformer" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+  <link rel="stylesheet" href="../css/styles.css" />
+  <style>
+    .img-small {
+      max-width: 240px;
+      margin: 0 auto;
+      display: block;
+    }
+    .img-medium {
+      max-width: 400px;
+      margin: 0 auto;
+      display: block;
+    }
+    .img-large {
+      max-width: 550px;
+      margin: 0 auto;
+      display: block;
+    }
+    .project-image {
+      text-align: center;
+    }
+    .project-image img {
+      margin: 0 auto;
+    }
+    .img-row {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin: 1.5rem 0;
+    }
+    .img-row .project-image {
+      margin: 0;
+      flex: 0 1 280px;
+    }
+    .img-row .project-image img {
+      max-width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-content">
+        <div class="sidebar-photo">
+          <img src="../me.JPG" alt="Amadreza Farahani" />
+        </div>
+        <h1>Amadreza Farahani</h1>
+        <p class="tagline">AI/ML Engineer</p>
+        <p class="intro">Building intelligent systems with LLMs, Computer Vision, and scalable ML infrastructure.</p>
+        <div class="sidebar-links">
+          <a href="mailto:amadreza.farahani@outlook.com">Email</a>
+          <a href="https://linkedin.com/in/amadrezafrh" target="_blank">LinkedIn</a>
+          <a href="https://github.com/amadrezafrh" target="_blank">GitHub</a>
+          <a href="../resume/Amadreza.pdf" target="_blank">Resume</a>
+        </div>
+        <nav class="sidebar-nav">
+          <a href="../index.html">Home</a>
+          <a href="../index.html#experience">Experience</a>
+          <a href="../index.html#education">Education</a>
+          <a href="../projects.html">Projects</a>
+          <a href="../blog.html" id="nav-blog">Blog</a>
+          <a href="../index.html#contact">Contact</a>
+        </nav>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <article class="project-detail">
+        <header class="project-header">
+          <h1>An IoT Synthetic Data Generation Module for Capping Devices</h1>
+          <div class="project-meta">
+            <p class="project-date">January 2024</p>
+            <p class="project-tags">
+              <span>Python</span>
+              <span>PyTorch</span>
+              <span>React</span>
+              <span>TypeScript</span>
+              <span>Flask</span>
+              <span>MongoDB</span>
+              <span>Docker</span>
+              <span>Temporal Fusion Transformer</span>
+            </p>
+          </div>
+        </header>
+
+        <section class="project-content">
+          <nav class="toc">
+            <p class="toc-title">Contents</p>
+            <ul class="toc-list">
+              <li><a href="#overview">1. Overview</a></li>
+              <li><a href="#architecture">2. System Architecture</a></li>
+              <li><a href="#frontend">3. Frontend Application</a></li>
+              <li><a href="#backend">4. Backend and Thread Synchronization</a></li>
+              <li><a href="#preprocessing">5. Data Preprocessing</a></li>
+              <li><a href="#tft">6. Temporal Fusion Transformer</a></li>
+              <li><a href="#training">7. Model Training</a></li>
+              <li><a href="#results">8. Results and Conclusion</a></li>
+            </ul>
+          </nav>
+          
+          <!-- SECTION 1: Overview -->
+          <h2 id="overview">1. Overview</h2>
+          <p>
+            AROL S.p.A. is a leading manufacturer of capping machines for the food and beverage industry, 
+            producing automated systems that handle high-throughput bottle capping operations. These machines 
+            contain multiple capping heads equipped with sensors that monitor torque, position, and operational 
+            parameters in real-time.
+          </p>
+          <p>
+            The challenge: developing and testing machine learning models for predictive maintenance and 
+            anomaly detection requires large amounts of sensor data. However, collecting real production 
+            data is expensive, time-consuming, and often restricted due to operational constraints.
+          </p>
+          <p>
+            This project implements a full-stack web application that generates realistic synthetic sensor 
+            data using Temporal Fusion Transformers. The system allows engineers to configure simulation 
+            parameters, inject various fault patterns, and generate unlimited training data that mimics 
+            real sensor behavior including temporal dependencies and cross-sensor correlations.
+          </p>
+
+          <!-- SECTION 2: System Architecture -->
+          <h2 id="architecture">2. System Architecture</h2>
+          <p>
+            The application follows a three-tier architecture with clear separation of concerns. 
+            The frontend is built with React and TypeScript, providing an interactive interface for 
+            configuring simulations. The backend uses Flask with a RESTful API design, handling 
+            data generation logic and model inference. MongoDB serves as the data layer, storing 
+            both configuration data and generated sensor readings.
+          </p>
+          <p>
+            The system is containerized using Docker Compose, with separate containers for the 
+            frontend, backend, and database. This allows for easy deployment and scaling. The 
+            backend implements the MVC pattern, with controllers handling HTTP requests, services 
+            containing business logic, and models interfacing with the database through PyMongo.
+          </p>
+          <div class="project-image">
+            <img src="arol-data-gen/Diagram.png" alt="System Architecture" class="img-medium" />
+            <p class="image-caption">System design diagram showing frontend, backend, and database components</p>
+          </div>
+
+          <!-- SECTION 3: Frontend -->
+          <h2 id="frontend">3. Frontend Application</h2>
+          <p>
+            The React frontend uses TypeScript for type safety and Chakra UI for component styling. 
+            The interface allows users to select machinery types, configure sensor parameters, set 
+            simulation duration, and control fault injection settings.
+          </p>
+          <p>
+            State management is handled through React Context API, providing a global store for 
+            simulation configurations that persists across component navigation. The application 
+            communicates with the backend through Axios, with proper error handling and loading 
+            states for asynchronous operations.
+          </p>
+          <p>
+            Key features include real-time simulation progress monitoring, configuration presets 
+            for common scenarios, and data export functionality for downloading generated datasets 
+            in various formats compatible with machine learning pipelines.
+          </p>
+
+          <!-- SECTION 4: Backend & Concurrency -->
+          <h2 id="backend">4. Backend and Thread Synchronization</h2>
+          <p>
+            The Flask backend manages concurrent data generation using a thread pool architecture. 
+            Since capping machines have multiple heads (typically 8-16), each head's sensor data 
+            must be generated simultaneously while maintaining temporal correlations between heads.
+          </p>
+          <p>
+            The system uses Python's ThreadPoolExecutor with careful synchronization primitives. 
+            A barrier ensures all threads complete their current timestep before advancing, 
+            maintaining data consistency. Locks protect shared resources like the database 
+            connection pool and the trained TFT model during inference.
+          </p>
+          <p>
+            Fault injection is implemented at the thread level, where specific heads can be 
+            configured to produce anomalous readings (drift, spikes, or complete failures) 
+            at specified time intervals. This allows generation of labeled anomaly datasets 
+            for training fault detection models.
+          </p>
+          <div class="project-image">
+            <img src="arol-data-gen/threadschema.png" alt="Thread Synchronization" class="img-large" />
+            <p class="image-caption">Thread synchronization schema for concurrent data generation</p>
+          </div>
+
+          <!-- SECTION 5: Data Preprocessing -->
+          <h2 id="preprocessing">5. Data Preprocessing</h2>
+          <p>
+            The raw sensor data comes from three categories: EQTQ (torque measurements), DRIVE 
+            (motor parameters), and PLC (programmable logic controller signals). Each category 
+            contains multiple sensor types recorded at different sampling rates.
+          </p>
+          <p>
+            Preprocessing involves extracting data from MongoDB, resampling to uniform time 
+            intervals, and handling missing values through linear interpolation. The data is 
+            then normalized using robust scaling to handle outliers common in industrial sensors.
+          </p>
+          <p>
+            Correlation analysis between heads revealed strong dependencies that must be preserved 
+            in synthetic data. The plot below shows sensor readings across different heads over 
+            time, demonstrating the synchronized behavior that the generative model must capture.
+          </p>
+          <div class="project-image">
+            <img src="arol-data-gen/MinLockPosition_heads_14.png" alt="Sensor heads day 14" class="img-large" />
+            <p class="image-caption">MinLockPosition sensor readings across multiple heads</p>
+          </div>
+          <div class="project-image">
+            <img src="arol-data-gen/AverageTorque_corr.png" alt="Correlation matrix" class="img-medium" />
+            <p class="image-caption">Correlation matrix between different sensor heads</p>
+          </div>
+
+          <!-- SECTION 6: Temporal Fusion Transformer -->
+          <h2 id="tft">6. Temporal Fusion Transformer</h2>
+          <p>
+            Traditional RNNs and LSTMs suffer from vanishing gradients when modeling long sequences 
+            and cannot be parallelized during training. Transformer-based architectures address both 
+            issues through self-attention mechanisms that directly connect any two timesteps.
+          </p>
+          <p>
+            The Temporal Fusion Transformer (TFT), introduced by Lim et al. (2021), extends the 
+            transformer architecture for multi-horizon time series forecasting. Key components include:
+          </p>
+          <ul>
+            <li><strong>Variable Selection Networks:</strong> Automatically identify relevant input 
+            features at each timestep, handling the heterogeneous sensor inputs</li>
+            <li><strong>Gated Residual Networks:</strong> Control information flow and enable 
+            skip connections for efficient gradient propagation</li>
+            <li><strong>Temporal Self-Attention:</strong> Capture long-range dependencies with 
+            interpretable attention weights showing which past timesteps influence predictions</li>
+            <li><strong>Quantile Outputs:</strong> Predict distribution quantiles rather than 
+            point estimates, providing uncertainty bounds on generated data</li>
+          </ul>
+          <div class="project-image">
+            <img src="arol-data-gen/22.png" alt="TFT Architecture" class="img-large" />
+            <p class="image-caption">Temporal Fusion Transformer architecture (Lim et al., 2021)</p>
+          </div>
+
+          <!-- SECTION 7: Training -->
+          <h2 id="training">7. Model Training</h2>
+          <p>
+            Training is implemented using PyTorch Forecasting, a library built on PyTorch Lightning 
+            that provides high-level abstractions for time series models. Separate models are trained 
+            for each sensor category (EQTQ, DRIVE, PLC) using Python's multiprocessing to parallelize 
+            training across available GPUs.
+          </p>
+          <p>
+            The training configuration uses an encoder length of 168 timesteps (one week of hourly 
+            data) and a decoder length of 24 timesteps (one day prediction horizon). The loss 
+            function is quantile loss over the 10th, 50th, and 90th percentiles:
+          </p>
+          <p>
+            $$\mathcal{L}_q(y, \hat{y}) = \sum_{q \in \{0.1, 0.5, 0.9\}} \sum_t \max(q(y_t - \hat{y}_{t,q}), (q-1)(y_t - \hat{y}_{t,q}))$$
+          </p>
+          <p>
+            Learning rate is tuned using PyTorch Lightning's learning rate finder, starting from 
+            1e-5 and increasing exponentially until loss diverges. Early stopping monitors 
+            validation loss with patience of 10 epochs to prevent overfitting.
+          </p>
+
+          <!-- SECTION 8: Results & Conclusion -->
+          <h2 id="results">8. Results and Conclusion</h2>
+          <p>
+            The system successfully generates synthetic sensor data that preserves the statistical 
+            properties and temporal dynamics of real industrial sensors. Generated data maintains 
+            cross-head correlations, exhibits realistic noise patterns, and responds appropriately 
+            to injected fault conditions.
+          </p>
+          <p>
+            Key achievements include:
+          </p>
+          <ul>
+            <li>Web-based interface for non-technical users to configure and run simulations</li>
+            <li>Concurrent generation of multi-head sensor data with proper synchronization</li>
+            <li>Configurable fault injection for generating labeled anomaly datasets</li>
+            <li>Dockerized deployment for easy installation on factory edge servers</li>
+            <li>Quantile predictions providing uncertainty bounds on generated values</li>
+          </ul>
+          <p>
+            The generated datasets are being used by AROL's data science team for training 
+            predictive maintenance models without requiring expensive data collection from 
+            production machines.
+          </p>
+
+          <h2>Links</h2>
+          <p>
+            <a href="https://github.com/ahmadrezafrh/AROL-Data-Generation-Module" target="_blank">GitHub Repository</a>
+          </p>
+
+          <p>
+            <a href="../projects.html">Back to Projects</a>
+          </p>
+
+        </section>
+      </article>
+    </main>
+  </div>
+  <script src="../js/config.js"></script>
+  <script>
+    if (typeof siteConfig !== 'undefined') {
+      if (siteConfig.hide_blog) {
+        const blogNav = document.getElementById('nav-blog');
+        if (blogNav) blogNav.style.display = 'none';
+      }
+      if (siteConfig.project_max_width) {
+        document.documentElement.style.setProperty('--content-max-width', siteConfig.project_max_width);
+      }
+    }
+  </script>
+</body>
+</html>

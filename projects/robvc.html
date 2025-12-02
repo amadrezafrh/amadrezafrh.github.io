@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>RobVC: Robust End-to-End Self-Supervised Voice Conversion - Amadreza Farahani</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Master's thesis on voice conversion using novel cross-attention mechanism for implicit speaker-content disentanglement" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+  <link rel="stylesheet" href="../css/styles.css" />
+  <script src="../js/config.js"></script>
+  <style>
+    .project-content {
+      max-width: var(--project-max-width, 900px);
+    }
+    .project-image {
+      text-align: center;
+    }
+    .project-image img {
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-content">
+        <div class="sidebar-photo">
+          <img src="../me.JPG" alt="Amadreza Farahani" />
+        </div>
+        <h1>Amadreza Farahani</h1>
+        <p class="tagline">AI/ML Engineer</p>
+        <p class="intro">Building intelligent systems with LLMs, Computer Vision, and scalable ML infrastructure.</p>
+        <div class="sidebar-links">
+          <a href="mailto:amadreza.farahani@outlook.com">Email</a>
+          <a href="https://linkedin.com/in/amadrezafrh" target="_blank">LinkedIn</a>
+          <a href="https://github.com/amadrezafrh" target="_blank">GitHub</a>
+          <a href="../resume/Amadreza.pdf" target="_blank">Resume</a>
+        </div>
+        <nav class="sidebar-nav">
+          <a href="../index.html">Home</a>
+          <a href="../index.html#experience">Experience</a>
+          <a href="../index.html#education">Education</a>
+          <a href="../projects.html">Projects</a>
+          <a href="../blog.html" id="nav-blog">Blog</a>
+          <a href="../index.html#contact">Contact</a>
+        </nav>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <article class="project-detail">
+        <header class="project-header">
+          <h1>RobVC: A Robust End-to-End Self-Supervised Voice Conversion</h1>
+          <div class="project-meta">
+            <p class="project-date">March 2024</p>
+            <p class="project-tags">
+              <span>Deep Learning</span>
+              <span>Voice Conversion</span>
+              <span>Self-Supervised Learning</span>
+              <span>Cross-Attention</span>
+              <span>HuBERT</span>
+              <span>EnCodec</span>
+              <span>PyTorch</span>
+            </p>
+          </div>
+        </header>
+
+        <section class="project-content">
+          <nav class="toc">
+            <p class="toc-title">Contents</p>
+            <ul class="toc-list">
+              <li><a href="#overview">1. Overview</a></li>
+              <li><a href="#problem">2. Problem Statement</a></li>
+              <li><a href="#novelty">3. Our Novel Approach</a>
+                <ul class="toc-list toc-sub">
+                  <li><a href="#self-supervised">3.1. Self-Supervised Voice Conversion</a></li>
+                  <li><a href="#implicit-disentanglement">3.2. Implicit Disentanglement via Cross-Attention</a></li>
+                </ul>
+              </li>
+              <li><a href="#architecture">4. Architecture</a>
+                <ul class="toc-list toc-sub">
+                  <li><a href="#context-encoder">4.1. Context Encoder Block</a></li>
+                  <li><a href="#speaker-encoder">4.2. Speaker Encoder Block</a></li>
+                  <li><a href="#acoustic-generation">4.3. Acoustic Generation Block</a></li>
+                  <li><a href="#vocoder">4.4. Vocoder Block</a></li>
+                </ul>
+              </li>
+              <li><a href="#training">5. Training</a>
+                <ul class="toc-list toc-sub">
+                  <li><a href="#dataset">5.1. Dataset</a></li>
+                  <li><a href="#loss">5.2. Loss Function</a></li>
+                </ul>
+              </li>
+              <li><a href="#metrics">6. Evaluation Metrics</a>
+                <ul class="toc-list toc-sub">
+                  <li><a href="#speaker-similarity">6.1. Speaker Similarity</a></li>
+                  <li><a href="#context-similarity">6.2. Context Similarity</a></li>
+                  <li><a href="#f0-gpe">6.3. F0 Ground Pitch Error</a></li>
+                </ul>
+              </li>
+              <li><a href="#results">7. Results</a>
+                <ul class="toc-list toc-sub">
+                  <li><a href="#vc-task">7.1. Voice Conversion Task</a></li>
+                  <li><a href="#reconstruction-task">7.2. Reconstruction Task</a></li>
+                </ul>
+              </li>
+              <li><a href="#conclusion">8. Conclusion</a></li>
+              <li><a href="#links">9. Links</a></li>
+            </ul>
+          </nav>
+
+          <div class="project-image">
+            <img src="robvc/newdes.png" alt="RobVC Architecture" />
+            <p class="image-caption">RobVC end-to-end architecture for self-supervised voice conversion.</p>
+          </div>
+
+          <h2 id="overview">1. Overview</h2>
+          <p>
+            Voice Conversion (VC) is the task of transforming the voice characteristics of a source speaker to match those of a target speaker while preserving the linguistic content and prosody. This thesis presents RobVC, a robust end-to-end self-supervised voice conversion system that achieves state-of-the-art speaker similarity without requiring text supervision or explicit disentanglement mechanisms.
+          </p>
+          <p>
+            Voice conversion enables applications such as voice anonymization, dubbing, and communication aids for the speech-impaired. RobVC specifically addresses the challenging any-to-any (one-shot) scenario, where both source and target speakers are unseen during training and only limited target audio is available.
+          </p>
+          <p>
+            The key innovation of RobVC lies in its novel cross-attention mechanism that implicitly disentangles speaker identity from speech content using pretrained self-supervised representations from HuBERT and EnCodec models. The modular architecture decouples mel-spectrogram generation from speech synthesis, allowing errors in spectrogram prediction to not directly affect vocoder performance.
+          </p>
+
+          <h2 id="problem">2. Problem Statement</h2>
+          <p>Traditional voice conversion approaches face several challenges:</p>
+          <ul>
+            <li><strong>Low-Level Feature Methods:</strong> Earlier approaches like CycleGAN-VC using mel-cepstral coefficients produce robotic-sounding speech with low fidelity and poor generalization to unseen speakers.</li>
+            <li><strong>ASR-Based Methods:</strong> Systems like AutoVC and HiFi-VC use ASR features for content extraction but fail to adapt to target speaker style, creating a trade-off between content preservation and speaker similarity.</li>
+            <li><strong>Speaker Verification Embeddings:</strong> Many methods rely on speaker verification models, but these embeddings are optimized to be invariant to prosody and emotion, lacking the fine-grained style details needed for expressive voice conversion.</li>
+            <li><strong>Text Dependency:</strong> Many methods require parallel text data or ASR transcriptions, limiting their applicability.</li>
+            <li><strong>Zero-Shot Capability:</strong> Converting to unseen speakers with limited reference audio remains difficult.</li>
+            <li><strong>Cross-Lingual Transfer:</strong> Preserving content across different languages is challenging.</li>
+          </ul>
+          <p>RobVC addresses these challenges by using EnCodec for speaker features (which preserves rich acoustic details unlike speaker verification models) and HuBERT for content, combined with a novel cross-attention mechanism for implicit feature disentanglement.</p>
+
+          <h2 id="novelty">3. Our Novel Approach</h2>
+
+          <h3 id="self-supervised">3.1. Self-Supervised Voice Conversion</h3>
+          <p>Unlike traditional approaches that rely on text supervision or speaker labels, RobVC operates in a fully self-supervised manner:</p>
+          <ul>
+            <li><strong>No Text Required:</strong> The model learns content representations directly from audio using HuBERT embeddings.</li>
+            <li><strong>Zero-Shot Capability:</strong> Speaker characteristics are extracted from any reference audio without fine-tuning.</li>
+            <li><strong>Cross-Lingual Support:</strong> Since no text is involved, the model naturally supports cross-lingual voice conversion.</li>
+            <li><strong>Reconstruction-Based Training:</strong> Inspired by Soft-VC, AudioLM, and VALL-E, we use a reconstruction framework where the model learns to reconstruct speech from its own features.</li>
+          </ul>
+
+          <h3 id="implicit-disentanglement">3.2. Implicit Disentanglement via Cross-Attention</h3>
+          <p>The core novelty of RobVC is its implicit disentanglement strategy using cross-attention:</p>
+          <ul>
+            <li><strong>Content Features:</strong> HuBERT intermediate layers capture phonetic and prosodic information while being speaker-invariant.</li>
+            <li><strong>Speaker Features:</strong> EnCodec's coarse RVQ layers encode speaker-specific acoustic characteristics. Based on research from AudioLM and VALL-E, coarse quantizers recover acoustic properties like speaker identity and recording conditions due to the hierarchical structure of residual quantization.</li>
+            <li><strong>Cross-Attention Fusion:</strong> A multi-head cross-attention mechanism combines these features, using content as queries and speaker features as keys/values.</li>
+            <li><strong>Reconstruction Training:</strong> During training, content and speaker features are extracted from the same audio. The model learns to disentangle them through the attention mechanism, then during inference, they come from different sources.</li>
+          </ul>
+          <p>The attention uses RMSNorm on queries before computing scores:</p>
+          <p>$$\text{Attention}(Q_s, K, V) = \text{softmax}\left(\frac{\text{RMSNorm}(Q_s) K^\top}{\sqrt{d_k}}\right) V$$</p>
+          <p>This approach eliminates the need for explicit disentanglement losses or adversarial training, resulting in a simpler and more stable training process.</p>
+
+          <h2 id="architecture">4. Architecture</h2>
+          <p>The RobVC architecture consists of four main blocks working in sequence to transform source speech with target speaker characteristics.</p>
+
+          <h3 id="context-encoder">4.1. Context Encoder Block</h3>
+          <div class="project-image">
+            <img src="robvc/hub.png" alt="HuBERT Feature Extraction" />
+            <p class="image-caption">HuBERT-based context encoder for extracting speaker-invariant content features.</p>
+          </div>
+          <p>The Context Encoder uses HuBERT (Hidden-Unit BERT) as a pretrained feature extractor. Given a mono-channel input audio signal $x_t \in \mathbb{R}^{T_s}$ at 16kHz sample rate, we extract:</p>
+          <ul>
+            <li><strong>Mel Spectrogram:</strong> $x_m \in \mathbb{R}^{F_s \times M}$ where $M$ is the number of mel channels (128 in our implementation). This is used for reconstruction with LSTM layers in the decoder.</li>
+            <li><strong>HuBERT Soft-Units:</strong> $x_s \in \mathbb{R}^{F_s \times D}$ from intermediate layers, where $F_s$ is the number of frames and $D$ is the embedding dimension. These are speaker-invariant content features.</li>
+          </ul>
+          <p>The goal of this block is to extract context information from source speech without preserving speaker information. HuBERT embeddings capture phonetic content while remaining relatively speaker-invariant.</p>
+
+          <h3 id="speaker-encoder">4.2. Speaker Encoder Block</h3>
+          <div class="project-image">
+            <img src="robvc/encodecdes.png" alt="EnCodec Feature Extraction" />
+            <p class="image-caption">EnCodec-based speaker encoder extracting coarse RVQ tokens for speaker identity.</p>
+          </div>
+          <p>For speaker features, we use EnCodec's Residual Vector Quantization (RVQ) layers. The EnCodec model is pretrained on 24kHz samples. Given a prompt audio $x_p \in \mathbb{R}^{T_p}$:</p>
+          <ul>
+            <li>Extract $Q$ quantized RVQ layers for each frame, with $F_p$ total frames.</li>
+            <li>Each token takes a value between 1 and 1023.</li>
+            <li>Select the top $q_c$ coarse layers as speaker features, discarding fine layers $q_f$ which contain context/acoustic details.</li>
+            <li>The final speaker tokens $X_{tc} \in \mathbb{R}^{F_t}$ where $F_t = F_p \times q_c$.</li>
+          </ul>
+          <p>Coarse RVQ layers encode global acoustic characteristics including speaker identity and recording conditions, while fine layers capture detailed acoustic information. Since EnCodec is a reconstruction model, no prior knowledge about speakers is required during training.</p>
+
+          <h3 id="acoustic-generation">4.3. Acoustic Generation Block</h3>
+          <div class="project-image">
+            <img src="robvc/accdesg.png" alt="Acoustic Generation Block" />
+            <p class="image-caption">Acoustic generation block with cross-attention for speaker-content fusion.</p>
+          </div>
+          <p>The Acoustic Generation Block combines content and speaker features using cross-attention:</p>
+          <ol>
+            <li><strong>Context Encoder:</strong> Three 1D convolution layers process HuBERT embeddings to produce queries $Q_s \in \mathbb{R}^{F_s \times \acute{D}}$, where $\acute{D}$ is the mapped dimension. The number of frames remains the same as $x_s$.</li>
+            <li><strong>Coarse Transformer:</strong> Converts discrete speaker tokens into continuous embeddings with an embedding matrix of size $(n \times q_c, \acute{D})$ where $n=1024$ is the codebook size. Uses $N=6$ multi-head attention blocks. The frame size matches $x_p$.</li>
+            <li><strong>Cross-Attention:</strong> $M=4$ multi-head attention blocks combine content queries with speaker key-values to produce output $y_d$.</li>
+          </ol>
+          <div class="project-image">
+            <img src="robvc/casa.png" alt="Transformer Blocks" />
+            <p class="image-caption">Transformer blocks for coarse attention and cross-attention mechanisms.</p>
+          </div>
+          <p>The attention mechanism is computed as:</p>
+          <p>$$\text{MultiHead}(Q,K,V) = \text{Concat}(\text{head}_1, ..., \text{head}_H)W^O$$</p>
+          <p>where each head computes: $\text{head}_i = \text{Attention}(QW_i^Q, KW_i^K, VW_i^V)$, and $W_i^Q$, $W_i^K$, $W_i^V$ are learnable weight matrices for query, key, and value projections. $W^O$ is the output transformation matrix.</p>
+          <p>The attention weight $a_{ij}$ between positions $i$ and $j$ is:</p>
+          <p>$$a_{ij} = \frac{\exp(e_{ij})}{\sum_{k=1}^{n} \exp(e_{ik})}$$</p>
+          <p>where the attention score $e_{ij}$ is computed as:</p>
+          <p>$$e_{ij} = \text{softmax}(q_i \cdot k_j^\top)$$</p>
+          <p>Here, $q_i$ and $k_j$ represent the query and key vectors for positions $i$ and $j$ respectively.</p>
+          <p>The output $y_d \in \mathbb{R}^{F_s \times \acute{D}}$ is passed to a decoder inspired by Tacotron2 to generate mel-spectrograms $y_m \in \mathbb{R}^{F_s \times M}$. The decoder uses LSTM layers concatenated with source mel-spectrogram for autoregressive frame generation during inference.</p>
+
+          <h3 id="vocoder">4.4. Vocoder Block</h3>
+          <p>Once the acoustic model produces mel-spectrograms, the vocoder converts them into time-domain waveforms. We use HiFi-GAN, a deep learning-based vocoder that generates high-quality, natural-sounding speech. Alternative vocoders include WaveNet, Griffin-Lim, WaveGlow, and MelGAN. BigVGAN is a higher-quality variant that can be substituted for improved results.</p>
+
+          <h2 id="training">5. Training</h2>
+
+          <h3 id="dataset">5.1. Dataset</h3>
+          <p>RobVC was trained on large-scale publicly available multispeaker datasets:</p>
+          <ul>
+            <li><strong>LibriTTS:</strong> train-clean-360 and train-clean-100 subsets containing 245 hours of speech from 1,151 speakers.</li>
+            <li><strong>LibriLight:</strong> Medium version combined with LibriTTS, totaling over 60,000 hours of unlabeled English speech from 7,000+ unique speakers.</li>
+            <li><strong>Validation:</strong> dev-clean-other subset of LibriTTS.</li>
+          </ul>
+          <p>Audio clips are segmented between 5 to 10 seconds. The training is fully self-supervised with no speaker ID used during training - the model learns speaker information directly from EnCodec tokens and speech context from HuBERT units through a reconstruction task. During training, HuBERT embeddings and EnCodec tokens are extracted from the same audio, and the model learns to reconstruct the original mel-spectrogram. During inference, content and speaker come from different sources.</p>
+          <p>The architecture reduced model complexity by 70% compared to initial designs, with only two training stages: (1) acoustic model training for mel-reconstruction, and (2) vocoder fine-tuning.</p>
+
+          <h3 id="loss">5.2. Loss Function</h3>
+          <p>We use L1 loss (Mean Absolute Error) between generated and target mel-spectrograms. L1 loss is more resilient to outliers than L2 loss and helps preserve fine-grained details in the spectrograms:</p>
+          <p>$$\mathcal{L}_{\text{L1}} = \frac{1}{F_s \times M} \sum_{i=1}^{F_s} \sum_{j=1}^{M} \left| \hat{y}_m(i,j) - y_m(i,j) \right|$$</p>
+          <p>where $\hat{y}_m(i,j)$ is the generated mel-spectrogram value at frame $i$ and mel-channel $j$, $y_m(i,j)$ is the ground truth, $F_s$ is the number of frames, and $M$ is the number of mel channels (128).</p>
+          <div style="display: flex; gap: 1rem; margin: 1.5rem 0;">
+            <div class="project-image" style="flex: 1;">
+              <img src="robvc/train.png" alt="Training Loss" />
+              <p class="image-caption">Training loss over training steps.</p>
+            </div>
+            <div class="project-image" style="flex: 1;">
+              <img src="robvc/valid.png" alt="Validation Loss" />
+              <p class="image-caption">Validation loss over training steps.</p>
+            </div>
+          </div>
+          <p><strong>Training Configuration:</strong></p>
+          <ul>
+            <li>400K steps with batch size 4 on 4 NVIDIA RTX A6000 GPUs (3 days)</li>
+            <li>AdamW optimizer with initial learning rate $4 \times 10^{-4}$ and decay 0.999</li>
+            <li>Fine-tuning learning rate: $1 \times 10^{-5}$</li>
+            <li>Mel dimensions: 128, working frequency: 16kHz</li>
+            <li>HuBERT embeddings and EnCodec tokens pre-extracted and loaded via PyTorch DataLoader for acceleration</li>
+          </ul>
+
+          <h2 id="metrics">6. Evaluation Metrics</h2>
+
+          <h3 id="speaker-similarity">6.1. Speaker Similarity</h3>
+          <p><strong>Speaker Embedding Cosine Similarity (SECS):</strong> Measures similarity between prompt and generated speaker embeddings using cosine similarity in an inner product space. We use ECAPA-TDNN as the speaker embedding encoder to extract vectors $X_s \in \mathbb{R}^{K}$ from prompt speech and $Y_s \in \mathbb{R}^{K}$ from generated speech, where $K$ is the embedding size:</p>
+          <p>$$\text{cos}(\mathbf{X_s}, \mathbf{Y_s}) = \frac{\mathbf{X_s} \cdot \mathbf{Y_s}}{\|\mathbf{X_s}\| \|\mathbf{Y_s}\|}$$</p>
+          <p>A value of zero indicates maximum similarity. Lower SECS means better speaker conversion.</p>
+          <p><strong>Equal Error Rate (EER):</strong> A crucial metric in speaker verification that determines whether a speaker's claimed identity matches their actual identity. Based on SECS scores, we define a threshold $\tau$ and calculate:</p>
+          <p>$$\text{EER}(\tau) = \frac{\text{Number of samples accepted at threshold } \tau}{\text{Total number of samples}}$$</p>
+          <p>EER is the point where false acceptance rate equals false rejection rate. Higher EER indicates better speaker manipulation (the converted voice is accepted as the target speaker).</p>
+
+          <h3 id="context-similarity">6.2. Context Similarity</h3>
+          <p>We evaluate content preservation using ASR-based metrics. Since we don't have access to text in voice conversion, we first use WAV2VEC2 Large LV60K 960H (trained on LibriLight 60k hours, finetuned on LibriSpeech 960h) to extract transcriptions from both source and generated speech, then calculate:</p>
+          <p><strong>Word Error Rate (WER):</strong></p>
+          <p>$$\text{WER} = \frac{S + D + I}{N}$$</p>
+          <p>where $S$ = substitutions (words replaced), $D$ = deletions (words missing), $I$ = insertions (extra words), and $N$ = total words in original.</p>
+          <p><strong>Character Error Rate (CER):</strong></p>
+          <p>$$\text{CER} = \frac{\text{Total character errors}}{\text{Total characters in ground truth}} \times 100\%$$</p>
+          <p>where character errors include substitutions, deletions, and insertions at the character level.</p>
+          <p><strong>Phoneme Error Rate (PER):</strong></p>
+          <p>$$\text{PER} = \frac{\text{Total phoneme errors}}{\text{Total phonemes in ground truth}} \times 100\%$$</p>
+          <p>PER is useful for evaluating phonetic accuracy in ASR systems. Lower values for all metrics indicate better content preservation and intelligibility.</p>
+
+          <h3 id="f0-gpe">6.3. F0 Ground Pitch Error</h3>
+          <p>The fundamental frequency (F0) is the lowest frequency of a periodic waveform, representing the rate at which vocal folds vibrate and determining voice pitch (measured in Hz). Ground Pitch Error quantifies the deviation between estimated and ground truth F0:</p>
+          <p><strong>As percentage:</strong></p>
+          <p>$$\text{GPE}(\%) = \left| \frac{F0_{\text{estimated}} - F0_{\text{ground truth}}}{F0_{\text{ground truth}}} \right| \times 100\%$$</p>
+          <p><strong>In Hertz:</strong></p>
+          <p>$$\text{GPE}(\text{Hz}) = \left| F0_{\text{estimated}} - F0_{\text{ground truth}} \right|$$</p>
+          <p>This metric is only used in reconstruction tasks where we have access to ground truth F0. In voice conversion tasks, there is no ground truth available since the target speaker is different from the source.</p>
+
+          <h2 id="results">7. Results</h2>
+          <p>RobVC was evaluated on LibriTTS test-clean and test-other subsets against six state-of-the-art voice conversion models: YourTTS, FreeVC, TriAAN-VC, QuickVC, HiFi-VC, and LVC-VC. We used inference codes from their open-source repositories for fair comparison. All speakers were unseen by the evaluation models.</p>
+
+          <h3 id="vc-task">7.1. Voice Conversion Task</h3>
+          <div class="project-image">
+            <img src="robvc/table1.png" alt="Results Table" />
+            <p class="image-caption">Comparison of voice conversion models on LibriTTS test-clean and test-other subsets.</p>
+          </div>
+          <p>The test-other subset has a noisy distribution, making it more challenging. Despite LVC-VC showing better performance in context preservation metrics, we achieved significantly better results in speaker identity capture. Our model outperforms all baselines in speaker manipulation.</p>
+
+          <h3 id="reconstruction-task">7.2. Reconstruction Task</h3>
+          <p>In the reconstruction task, the model generates speech from its own prompt (same audio for both content and speaker). Our model achieves <strong>98.00% EER</strong> and <strong>SECS of 47.10</strong> on test-other, demonstrating excellent speaker preservation.</p>
+          <p>LVC-VC provides better results in reconstruction, suggesting it performs well at audio reconstruction but struggles to preserve characteristics of unseen speakers in voice conversion tasks.</p>
+          <p>Key observations:</p>
+          <ul>
+            <li>RobVC achieves the best speaker similarity (lowest SECS) and speaker verification (highest EER) across all benchmarks.</li>
+            <li>Content preservation (WER, CER, PER) is competitive with state-of-the-art, slightly behind LVC-VC but significantly better than other methods.</li>
+            <li>The model shows robust performance on both clean and noisy data distributions.</li>
+            <li>Results are consistent across test-clean and test-other subsets.</li>
+          </ul>
+
+          <h2 id="conclusion">8. Conclusion</h2>
+          <p>RobVC presents a novel approach to voice conversion that achieves state-of-the-art speaker similarity through:</p>
+          <ul>
+            <li><strong>Self-Supervised Learning:</strong> No text supervision required, enabling zero-shot and cross-lingual voice conversion.</li>
+            <li><strong>Implicit Disentanglement:</strong> Novel cross-attention mechanism combines HuBERT content features with EnCodec speaker features without explicit disentanglement losses.</li>
+            <li><strong>Robust Performance:</strong> Best-in-class speaker similarity (SECS: 47.10-62.83) and verification (EER: 85.67%-98.67%) with competitive content preservation.</li>
+            <li><strong>Reduced Complexity:</strong> 70% reduction in model complexity compared to baseline architectures with only two training stages.</li>
+          </ul>
+          <p>Future work includes improving content preservation metrics and extending the approach to multilingual voice conversion tasks.</p>
+
+          <h2 id="links">9. Links</h2>
+          <div class="project-links">
+            <a href="https://webthesis.biblio.polito.it/secure/35238/1/tesi.pdf" class="btn" target="_blank">Thesis PDF</a>
+          </div>
+        </section>
+
+        <footer class="project-footer">
+          <a href="../projects.html" class="back-link">Back to Projects</a>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      if (typeof hideConfig !== 'undefined' && hideConfig.hide_blog) {
+        var blogLink = document.getElementById('nav-blog');
+        if (blogLink) blogLink.style.display = 'none';
+      }
+      if (typeof hideConfig !== 'undefined' && hideConfig.project_max_width) {
+        document.documentElement.style.setProperty('--project-max-width', hideConfig.project_max_width);
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Projects - Amadreza Farahani</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Projects by Amadreza Farahani - AI/ML Engineer" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-content">
+        <div class="sidebar-photo">
+          <img src="me.JPG" alt="Amadreza Farahani" />
+        </div>
+        <h1>Amadreza Farahani</h1>
+        <p class="tagline">AI/ML Engineer</p>
+        <p class="intro">Building intelligent systems with LLMs, Computer Vision, and scalable ML infrastructure.</p>
+        <div class="sidebar-links">
+          <a href="mailto:amadreza.farahani@outlook.com">Email</a>
+          <a href="https://linkedin.com/in/amadrezafrh" target="_blank">LinkedIn</a>
+          <a href="https://github.com/amadrezafrh" target="_blank">GitHub</a>
+          <a href="resume/Amadreza.pdf" target="_blank">Resume</a>
+        </div>
+        <nav class="sidebar-nav">
+          <a href="index.html">Home</a>
+          <a href="index.html#experience">Experience</a>
+          <a href="index.html#education">Education</a>
+          <a href="projects.html" class="active">Projects</a>
+          <a href="blog.html" id="nav-blog">Blog</a>
+          <a href="index.html#contact">Contact</a>
+        </nav>
+      </div>
+    </aside>
+    <main class="main-content">
+      <section class="section">
+        <h1>Projects</h1>
+        <div class="projects-grid" id="all-projects-container">
+          <!-- Projects loaded dynamically -->
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="js/projects.js"></script>
+  <script>
+    const container = document.getElementById('all-projects-container');
+    if (container && typeof projectsData !== 'undefined' && projectsData.length > 0) {
+      const sorted = [...projectsData].sort((a, b) => new Date(b.date) - new Date(a.date));
+      container.innerHTML = sorted.map(project => `
+        <article class="project-card">
+          <h3>${project.title}</h3>
+          <p class="project-date">${project.date}</p>
+          <p>${project.description}</p>
+          ${project.preview ? `<div class="project-preview"><img src="${project.preview}" alt="${project.title}" /></div>` : ''}
+          <p class="project-tags">${project.tags.map(tag => `<span>${tag}</span>`).join('')}</p>
+          <p class="project-links">
+            ${project.page ? `<a href="${project.page}">Read more</a>` : ''}
+            ${project.github ? `<a href="${project.github}" target="_blank">GitHub</a>` : ''}
+            ${project.report ? `<a href="${project.report}" target="_blank">Report</a>` : ''}
+            ${project.demo ? `<a href="${project.demo}" target="_blank">Demo</a>` : ''}
+          </p>
+        </article>
+      `).join('');
+    }
+  </script>
+  <script src="js/config.js"></script>
+  <script>
+    if (typeof siteConfig !== 'undefined') {
+      if (siteConfig.hide_blog) {
+        const blogNav = document.getElementById('nav-blog');
+        if (blogNav) blogNav.style.display = 'none';
+      }
+      if (siteConfig.max_width) {
+        document.documentElement.style.setProperty('--content-max-width', siteConfig.max_width);
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sim-to-Real Transfer in Reinforcement Learning - Amadreza Farahani</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Sim-to-Real transfer of RL policies using domain randomization and vision-based learning" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+  <link rel="stylesheet" href="../css/styles.css" />
+  <style>
+    .img-small {
+      max-width: 280px;
+      margin: 0 auto;
+      display: block;
+    }
+    .img-medium {
+      max-width: 400px;
+      margin: 0 auto;
+      display: block;
+    }
+    .table-container {
+      text-align: center;
+      margin: 1.5rem 0;
+    }
+    .table-container img {
+      max-width: 680px;
+      margin: 0 auto;
+    }
+    .img-row {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin: 1.5rem 0;
+    }
+    .img-row .project-image {
+      margin: 0;
+      flex: 0 1 300px;
+    }
+    .img-row .project-image img {
+      max-width: 100%;
+    }
+    .project-image {
+      text-align: center;
+    }
+    .project-image img {
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-content">
+        <div class="sidebar-photo">
+          <img src="../me.JPG" alt="Amadreza Farahani" />
+        </div>
+        <h1>Amadreza Farahani</h1>
+        <p class="tagline">AI/ML Engineer</p>
+        <p class="intro">Building intelligent systems with LLMs, Computer Vision, and scalable ML infrastructure.</p>
+        <div class="sidebar-links">
+          <a href="mailto:amadreza.farahani@outlook.com">Email</a>
+          <a href="https://linkedin.com/in/amadrezafrh" target="_blank">LinkedIn</a>
+          <a href="https://github.com/amadrezafrh" target="_blank">GitHub</a>
+          <a href="../resume/Amadreza.pdf" target="_blank">Resume</a>
+        </div>
+        <nav class="sidebar-nav">
+          <a href="../index.html">Home</a>
+          <a href="../index.html#experience">Experience</a>
+          <a href="../index.html#education">Education</a>
+          <a href="../projects.html">Projects</a>
+          <a href="../blog.html" id="nav-blog">Blog</a>
+          <a href="../index.html#contact">Contact</a>
+        </nav>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <article class="project-detail">
+        <header class="project-header">
+          <h1>Sim-to-Real Transfer of RL Policies in Robotics</h1>
+          <div class="project-meta">
+            <p class="project-date">June 2023</p>
+            <p class="project-tags">
+              <span>Python</span>
+              <span>PyTorch</span>
+              <span>Stable Baselines3</span>
+              <span>MuJoCo</span>
+              <span>PPO</span>
+              <span>Domain Randomization</span>
+            </p>
+          </div>
+        </header>
+
+        <section class="project-content">
+          <nav class="toc">
+            <p class="toc-title">Contents</p>
+            <ul class="toc-list">
+              <li><a href="#overview">1. Overview</a></li>
+              <li><a href="#reality-gap">2. The Reality Gap Problem</a></li>
+              <li><a href="#rl-background">3. Reinforcement Learning Background</a>
+                <ul class="toc-list toc-sub">
+                  <li><a href="#fundamentals">3.1. Fundamentals</a></li>
+                  <li><a href="#value-functions">3.2. Value Functions</a></li>
+                  <li><a href="#actor-critic">3.3. Actor-Critic Methods</a></li>
+                  <li><a href="#ppo">3.4. Proximal Policy Optimization</a></li>
+                </ul>
+              </li>
+              <li><a href="#hyperparameter-tuning">4. Hyperparameter Tuning</a>
+                <ul class="toc-list toc-sub">
+                  <li><a href="#grid-search">4.1. Grid Search</a></li>
+                  <li><a href="#optuna">4.2. Optuna Optimization</a></li>
+                </ul>
+              </li>
+              <li><a href="#domain-randomization">5. Domain Randomization</a></li>
+              <li><a href="#vision-rl">6. Vision-Based Reinforcement Learning</a>
+                <ul class="toc-list toc-sub">
+                  <li><a href="#preprocessing">6.1. Preprocessing Pipeline</a></li>
+                  <li><a href="#mobilenet">6.2. Transfer Learning with MobileNetV2</a></li>
+                </ul>
+              </li>
+              <li><a href="#results">7. Results</a></li>
+              <li><a href="#conclusion">8. Conclusion</a></li>
+            </ul>
+          </nav>
+
+          <h2 id="overview">1. Overview</h2>
+          <p>
+            Reinforcement learning (RL) is a computational approach to goal-directed learning where an agent learns 
+            from direct interaction with its environment without requiring supervision or complete environment models. 
+            This project addresses the challenge of transferring RL policies trained in simulation to real-world 
+            robotic systems using domain randomization.
+          </p>
+
+          <p>
+            We train agents on the MuJoCo Hopper environment - a one-legged robot consisting of four body parts 
+            (torso, thigh, leg, foot) whose task is to learn forward hopping without falling. The agent applies 
+            torques on three hinges connecting the body parts. Observations consist of positional values and 
+            velocities of different body parts.
+          </p>
+
+          <p>
+            The reward function consists of three components:
+          </p>
+          <ul>
+            <li><strong>Healthy reward:</strong> Fixed reward for each timestep the hopper remains upright</li>
+            <li><strong>Forward reward:</strong> Positive reward for hopping in the forward (right) direction</li>
+            <li><strong>Control cost:</strong> Penalty for taking actions with large magnitudes</li>
+          </ul>
+
+          <h2 id="reality-gap">2. The Reality Gap Problem</h2>
+          <p>
+            Simulation-to-reality (Sim2Real) transfer faces fundamental challenges. While simulations offer 
+            cost-effectiveness, safety, and environmental control, they suffer from:
+          </p>
+          <ul>
+            <li><strong>Transfer issues:</strong> Policies performing well in simulation may fail in reality due to 
+            differences in physics, sensors, and dynamics</li>
+            <li><strong>Lack of complexity:</strong> Simulations are simplified versions that cannot fully capture 
+            real-world complexity</li>
+            <li><strong>Reality gap:</strong> Unmodeled physical effects like nonrigidity, gear backlash, 
+            wear-and-tear, and fluid dynamics</li>
+          </ul>
+          <p>
+            System identification (tuning simulation parameters to match physical behavior) is time-consuming 
+            and error-prone. Domain randomization offers an alternative: if simulation variability is sufficient, 
+            models generalize to the real world without additional training.
+          </p>
+
+          <h2 id="rl-background">3. Reinforcement Learning Background</h2>
+          
+          <h3 id="fundamentals">3.1. Fundamentals</h3>
+          <p>
+            RL uses Markov Decision Processes (MDPs) to formalize agent-environment interaction. A policy $\pi$ 
+            is a rule for selecting actions - either deterministic $a_t = \mu(s_t)$ or stochastic $a_t \sim \pi(\cdot|s_t)$.
+          </p>
+
+          <p>
+            A trajectory $\tau$ is a sequence of states and actions:
+          </p>
+          $$\tau = (s_0, a_0, s_1, a_1, \ldots)$$
+
+          <p>
+            The initial state $s_0$ is sampled from the start-state distribution $s_0 \sim \rho_0$. The reward 
+            function $R$ depends on current state, action, and next state:
+          </p>
+          $$r_t = R(s_t, a_t, s_{t+1})$$
+
+          <p>
+            The infinite-horizon discounted return uses discount factor $\gamma \in (0,1)$, where $\gamma$ 
+            determines how much the agent prioritizes immediate vs. future rewards:
+          </p>
+          $$R(\tau) = \sum_{t=0}^{\infty} \gamma^t r_t$$
+
+          <p>
+            For stochastic environments and policies, the probability of a T-step trajectory is:
+          </p>
+          $$P(\tau|\pi) = \rho_0(s_0) \prod_{t=0}^{T-1} P(s_{t+1}|s_t, a_t) \pi(a_t|s_t)$$
+
+          <p>
+            The expected return (objective function) is:
+          </p>
+          $$J(\pi) = \int_\tau P(\tau|\pi) R(\tau) = \mathbb{E}_{\tau \sim \pi}[R(\tau)]$$
+
+          <p>
+            The central RL optimization problem is finding the optimal policy:
+          </p>
+          $$\pi^* = \arg\max_\pi J(\pi)$$
+
+          <h3 id="value-functions">3.2. Value Functions</h3>
+          <p>
+            The optimal value function $V^*(s)$ gives the expected return starting from state $s$ under the 
+            optimal policy:
+          </p>
+          $$V^*(s) = \max_\pi \mathbb{E}_{\tau \sim \pi}[R(\tau) | s_0 = s]$$
+
+          <p>
+            Value functions satisfy Bellman equations - the value of a state equals the immediate reward plus 
+            the discounted value of the next state:
+          </p>
+          $$V^*(s) = \max_a \mathbb{E}_{s' \sim P}[r(s,a) + \gamma V^*(s')]$$
+
+          <h3 id="actor-critic">3.3. Actor-Critic Methods</h3>
+          <p>
+            Actor-critic algorithms combine policy-based (actor) and value-based (critic) methods. The actor 
+            selects actions based on current state; the critic evaluates action quality. This approach works 
+            well for continuous state and action spaces.
+          </p>
+
+          <h3 id="ppo">3.4. Proximal Policy Optimization (PPO)</h3>
+          <p>
+            Unlike Q-learning which stores transitions $(s, a, r, s')$ in a replay buffer, PPO learns directly 
+            from experience (on-policy, model-free). The policy gradient loss is:
+          </p>
+          $$L^{PG}(\theta) = \mathbb{E}_t[\log \pi_\theta(a_t|s_t) \hat{A}_t]$$
+
+          <p>
+            The advantage estimate $\hat{A}_t$ measures how much better an action is compared to the baseline 
+            (value function). If positive, the action probability increases; if negative, it decreases.
+          </p>
+
+          <p>
+            To prevent destructive updates when the policy moves too far from the data distribution, PPO 
+            clips the objective:
+          </p>
+          $$L(s,a,\theta_k,\theta) = \min\left( \frac{\pi_\theta(a|s)}{\pi_{\theta_k}(a|s)} A^{\pi_{\theta_k}}(s,a), \; \text{clip}\left(\frac{\pi_\theta(a|s)}{\pi_{\theta_k}(a|s)}, 1-\epsilon, 1+\epsilon\right) A^{\pi_{\theta_k}}(s,a) \right)$$
+
+          <p>
+            The hyperparameter $\epsilon$ controls how far the new policy can deviate from the old one.
+          </p>
+
+          <h2 id="hyperparameter-tuning">4. Hyperparameter Tuning</h2>
+          <p>
+            Hyperparameters critically determine whether an RL algorithm converges to an optimal policy. 
+            We explored two approaches with the notation $\langle train, eval \rangle$ indicating training 
+            and evaluation environments (source = simulation, target = real-world proxy).
+          </p>
+
+          <h3 id="grid-search">4.1. Grid Search</h3>
+          <p>
+            We systematically evaluated combinations of learning rate, discount factor ($\gamma$), clip range, 
+            steps (before weight update), and GAE lambda (bias-variance tradeoff). Initial experiments fixed 
+            $\gamma=0.99$ and GAE $\lambda=0.95$ based on Stable Baselines3 defaults.
+          </p>
+
+          <div class="table-container">
+            <img src="sim-to-real/tables/table1.png" alt="Grid search results" />
+            <p class="image-caption">Grid search results showing rewards for different learning rates, steps, and clip ranges. 
+            Note the inconsistency between source and target performance.</p>
+          </div>
+
+          <div class="project-image">
+            <img src="sim-to-real/lr.png" alt="Learning rate effect" class="img-medium" />
+            <p class="image-caption">Reward progression during training for different learning rates. 
+            Learning rate is the most critical hyperparameter.</p>
+          </div>
+
+          <div class="img-row">
+            <div class="project-image">
+              <img src="sim-to-real/gamma.png" alt="Gamma effect" />
+              <p class="image-caption">Effect of $\gamma$</p>
+            </div>
+            <div class="project-image">
+              <img src="sim-to-real/gae.png" alt="GAE lambda effect" />
+              <p class="image-caption">Effect of GAE $\lambda$</p>
+            </div>
+          </div>
+
+          <p>
+            The discount factor and GAE lambda are less critical than learning rate. The key observation 
+            is that rewards on target are inconsistent with source.
+          </p>
+
+          <div class="table-container">
+            <img src="sim-to-real/tables/table2.png" alt="Top 10 grid search results" />
+            <p class="image-caption">Top 10 configurations from grid search ranked by source performance.</p>
+          </div>
+
+          <h3 id="optuna">4.2. Optuna Optimization</h3>
+          <p>
+            Optuna combines pruning algorithms with Bayesian optimization to efficiently search the hyperparameter 
+            space, discarding unpromising configurations early.
+          </p>
+
+          <div class="table-container">
+            <img src="sim-to-real/tables/table3.png" alt="Optuna results" />
+            <p class="image-caption">Top 10 Optuna results showing improved source performance (~1790 vs ~1700 from grid search).</p>
+          </div>
+
+          <h2 id="domain-randomization">5. Domain Randomization</h2>
+          <p>
+            Domain randomization (DR) creates varied simulated environments with randomized properties to train 
+            models that generalize across different dynamics. Unlike domain adaptation which requires real data, 
+            DR needs little to no real data.
+          </p>
+
+          <p>
+            We randomize physical parameters at episode start, sampled from uniform distributions:
+          </p>
+          <ul>
+            <li>Thigh mass (middle section)</li>
+            <li>Leg mass (bottom section)</li>
+            <li>Foot mass (base)</li>
+          </ul>
+          <p>
+            Torso mass remains constant. Distribution bounds are tuned via grid search.
+          </p>
+
+          <div class="table-container">
+            <img src="sim-to-real/tables/table4.png" alt="Domain randomization on best model" />
+            <p class="image-caption">Domain randomization on best Optuna model. Target reward improved significantly 
+            (e.g., 1286 to 1686 with bounds [1.5, 4]).</p>
+          </div>
+
+          <div class="table-container">
+            <img src="sim-to-real/tables/table5.png" alt="Domain randomization on top 10" />
+            <p class="image-caption">Domain randomization applied to top 10 models. Before vs. after comparison 
+            shows consistent improvement in target rewards.</p>
+          </div>
+
+          <h2 id="vision-rl">6. Vision-Based Reinforcement Learning</h2>
+          <p>
+            Vision-based RL uses visual observations (pixels) instead of state vectors, requiring extraction 
+            of meaningful features from high-dimensional input.
+          </p>
+
+          <div class="project-image">
+            <img src="sim-to-real/rgb.png" alt="Hopper RGB observation" class="img-medium" />
+            <p class="image-caption">Hopper RGB observation (500x500, 3 channels)</p>
+          </div>
+
+          <h3 id="preprocessing">6.1. Preprocessing Pipeline</h3>
+
+          <p><strong>1. Grayscaling:</strong> Color is irrelevant; reduce 3 channels to 1.</p>
+
+          <p><strong>2. Resizing:</strong> Smaller images improve efficiency while preserving features.</p>
+
+          <div class="img-row">
+            <div class="project-image">
+              <img src="sim-to-real/gray.png" alt="Grayscale observation" />
+              <p class="image-caption">Grayscale</p>
+            </div>
+            <div class="project-image">
+              <img src="sim-to-real/resize.png" alt="Resized observation" />
+              <p class="image-caption">Resized (120x120)</p>
+            </div>
+          </div>
+
+          <div class="table-container">
+            <img src="sim-to-real/tables/table6.png" alt="CNN rewards for different image sizes" />
+            <p class="image-caption">Effect of image size. Smaller images (120x120) outperform larger ones.</p>
+          </div>
+
+          <p><strong>3. Frame Stacking:</strong> Stack consecutive frames for temporal context.</p>
+
+          <div class="table-container">
+            <img src="sim-to-real/tables/table7.png" alt="CNN rewards for different stack sizes" />
+            <p class="image-caption">Effect of frame stack size. 4 frames performs best.</p>
+          </div>
+
+          <p><strong>4. Feature Extraction:</strong> Remove background noise, isolate the hopper.</p>
+
+          <div class="project-image">
+            <img src="sim-to-real/sup.png" alt="Supervised feature extraction" class="img-small" />
+            <p class="image-caption">Supervised feature extraction using thresholds</p>
+          </div>
+
+          <h3 id="mobilenet">6.2. Transfer Learning with MobileNetV2</h3>
+          <p>
+            MobileNetV2 uses inverted residual blocks for efficient feature extraction without supervision.
+          </p>
+
+          <div class="img-row">
+            <div class="project-image">
+              <img src="sim-to-real/mobilenet_0.png" alt="MobileNet features 1" />
+            </div>
+            <div class="project-image">
+              <img src="sim-to-real/mobilenet_20.png" alt="MobileNet features 2" />
+            </div>
+            <div class="project-image">
+              <img src="sim-to-real/mobilenet_8.png" alt="MobileNet features 3" />
+            </div>
+            <div class="project-image">
+              <img src="sim-to-real/mobilenet_28.png" alt="MobileNet features 4" />
+            </div>
+          </div>
+          <p class="image-caption" style="text-align: center;">Features from MobileNetV2 intermediate layers</p>
+
+          <div class="table-container">
+            <img src="sim-to-real/tables/table9.png" alt="Feature extraction comparison" />
+            <p class="image-caption">Comparison of feature extraction methods.</p>
+          </div>
+
+          <h2 id="results">7. Results</h2>
+
+          <div class="table-container">
+            <img src="sim-to-real/tables/table10.png" alt="Final results" />
+            <p class="image-caption">Final comparison of all methods with domain randomization.</p>
+          </div>
+
+          <p>Key findings:</p>
+          <ul>
+            <li>Raw state observation with MLP achieves best performance (~1700 reward)</li>
+            <li>Domain randomization effectively bridges the sim-to-real gap</li>
+            <li>Vision-based approaches achieve ~300 reward without preprocessing</li>
+            <li>RL hyperparameters are more sensitive than in supervised learning</li>
+          </ul>
+
+          <h2 id="conclusion">8. Conclusion</h2>
+          <p>
+            Domain randomization is an effective technique for sim-to-real transfer. By randomizing 
+            physical parameters during training, policies become robust to modeling errors and transfer 
+            better to real systems without requiring real-world data.
+          </p>
+
+          <p>
+            The experiments highlighted that hyperparameter sensitivity in RL is higher than supervised 
+            learning because each training run generates different data. While vision-based RL shows promise, 
+            raw state observations remain superior when available.
+          </p>
+
+          <h2>Links</h2>
+          <p>
+            <a href="https://github.com/ahmadrezafrh/Sim-to-Real-transfer-in-Reinforcement-Learning" target="_blank">GitHub Repository</a>
+          </p>
+          <p>
+            <a href="../projects.html">Back to Projects</a>
+          </p>
+
+        </section>
+      </article>
+    </main>
+  </div>
+  <script src="../js/config.js"></script>
+  <script>
+    if (typeof siteConfig !== 'undefined') {
+      if (siteConfig.hide_blog) {
+        const blogNav = document.getElementById('nav-blog');
+        if (blogNav) blogNav.style.display = 'none';
+      }
+      if (siteConfig.project_max_width) {
+        document.documentElement.style.setProperty('--content-max-width', siteConfig.project_max_width);
+      }
+    }
+  </script>
+</body>
+</html>

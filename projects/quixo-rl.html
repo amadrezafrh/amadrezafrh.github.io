@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Custom Gym Environment for Board Game RL - Amadreza Farahani</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Quixo Game AI using Reinforcement Learning with custom Gym environment and Stable Baselines3" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+  <link rel="stylesheet" href="../css/styles.css" />
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-content">
+        <div class="sidebar-photo">
+          <img src="../me.JPG" alt="Amadreza Farahani" />
+        </div>
+        <h1>Amadreza Farahani</h1>
+        <p class="tagline">AI/ML Engineer</p>
+        <p class="intro">Building intelligent systems with LLMs, Computer Vision, and scalable ML infrastructure.</p>
+        <div class="sidebar-links">
+          <a href="mailto:amadreza.farahani@outlook.com">Email</a>
+          <a href="https://linkedin.com/in/amadrezafrh" target="_blank">LinkedIn</a>
+          <a href="https://github.com/amadrezafrh" target="_blank">GitHub</a>
+          <a href="../resume/Amadreza.pdf" target="_blank">Resume</a>
+        </div>
+        <nav class="sidebar-nav">
+          <a href="../index.html">Home</a>
+          <a href="../index.html#experience">Experience</a>
+          <a href="../index.html#education">Education</a>
+          <a href="../projects.html">Projects</a>
+          <a href="../blog.html" id="nav-blog">Blog</a>
+          <a href="../index.html#contact">Contact</a>
+        </nav>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <article class="project-detail">
+        <header class="project-header">
+          <h1>Custom Gym Environment for Board Game RL with Stable Baselines3</h1>
+          <div class="project-meta">
+            <p class="project-date">December 2023</p>
+            <p class="project-tags">
+              <span>Python</span>
+              <span>Reinforcement Learning</span>
+              <span>OpenAI Gym</span>
+              <span>Stable Baselines3</span>
+            </p>
+          </div>
+        </header>
+
+        <section class="project-content">
+          <nav class="toc">
+            <p class="toc-title">Contents</p>
+            <ul class="toc-list">
+              <li><a href="#overview">1. Overview</a></li>
+              <li><a href="#rl-background">2. Reinforcement Learning Background</a></li>
+              <li><a href="#ppo">3. Proximal Policy Optimization (PPO)</a></li>
+              <li><a href="#quixo-game">4. The Quixo Game</a></li>
+              <li><a href="#environment">5. Environment Formulation</a>
+                <ul class="toc-list toc-sub">
+                  <li><a href="#state-space">5.1. State Space</a></li>
+                  <li><a href="#action-space">5.2. Action Space</a></li>
+                  <li><a href="#reward-function">5.3. Reward Function</a></li>
+                </ul>
+              </li>
+              <li><a href="#step-impl">6. Environment Step Implementation</a></li>
+              <li><a href="#training-arch">7. Training Architecture</a></li>
+              <li><a href="#results">8. Training Results</a></li>
+              <li><a href="#baseline">9. Value-Based Baseline</a></li>
+            </ul>
+          </nav>
+
+          <h2 id="overview">1. Overview</h2>
+          <p>
+            This project develops reinforcement learning agents from scratch to play Quixo, a strategic 5x5 board game. The primary goal was to design and implement a complete RL pipeline: a custom OpenAI Gym environment, shaped reward functions, and training algorithms. The environment was built from scratch to understand the fundamentals of RL environment design.
+          </p>
+
+          <h2 id="rl-background">2. Background: Reinforcement Learning</h2>
+          <p>
+            Reinforcement Learning (RL) is a paradigm where an agent learns to make decisions by interacting with an environment. At each timestep $t$, the agent observes state $s_t$, takes action $a_t$, receives reward $r_t$, and transitions to state $s_{t+1}$. The goal is to learn a policy $\pi(a|s)$ that maximizes cumulative reward.
+          </p>
+          <p>
+            The agent-environment interaction follows a Markov Decision Process (MDP):
+          </p>
+          <p class="math-block">
+            $\text{MDP} = (\mathcal{S}, \mathcal{A}, P, R, \gamma)$
+          </p>
+          <p>
+            where $\mathcal{S}$ is the state space, $\mathcal{A}$ is the action space, $P(s'|s,a)$ is the transition probability, $R(s,a,s')$ is the reward function, and $\gamma \in [0,1]$ is the discount factor.
+          </p>
+
+          <h2 id="ppo">3. Proximal Policy Optimization (PPO)</h2>
+          <p>
+            PPO is a policy gradient method that improves training stability by limiting policy updates. Instead of allowing arbitrary large updates, PPO clips the probability ratio between new and old policies:
+          </p>
+          <p class="math-block">
+            $L^{CLIP}(\theta) = \mathbb{E}_t \left[ \min \left( r_t(\theta) \hat{A}_t, \, \text{clip}(r_t(\theta), 1-\epsilon, 1+\epsilon) \hat{A}_t \right) \right]$
+          </p>
+          <p>
+            where $r_t(\theta) = \frac{\pi_\theta(a_t|s_t)}{\pi_{\theta_{old}}(a_t|s_t)}$ is the probability ratio and $\hat{A}_t$ is the advantage estimate. The clipping prevents destructively large policy updates, making training more stable compared to vanilla policy gradient methods.
+          </p>
+
+          <h2 id="quixo-game">4. The Quixo Game</h2>
+          <p>
+            Quixo is a two-player abstract strategy game played on a 5x5 grid. Players take turns selecting a piece from the border (that is either empty or their own) and sliding it to the opposite side. The objective is to align five pieces in a row, column, or diagonal. The sliding mechanic creates complex state transitions that make the game challenging for AI agents.
+          </p>
+          <div class="project-figure">
+            <img src="quixo-rl/gui2.png" alt="Quixo Game GUI" />
+            <p class="figure-caption">Simple Python GUI for playing against trained agents</p>
+          </div>
+
+          <h2 id="environment">5. Environment Formulation</h2>
+          
+          <h3 id="state-space">5.1. State Space</h3>
+          <p>
+            The observation space combines the board state with action-value indicators:
+          </p>
+          <p class="math-block">
+            $s_t = [B_t \, || \, A_t] \in \mathbb{R}^{69}$
+          </p>
+          <p>
+            where $B_t \in \{-1, 0, 1\}^{25}$ is the flattened board (empty, player 0, player 1) and $A_t \in \mathbb{R}^{44}$ contains action-value estimates for all 44 possible moves. Including action values in the observation helps the agent learn which moves lead to winning positions.
+          </p>
+
+          <h3 id="action-space">5.2. Action Space</h3>
+          <p>
+            Actions are discrete selections from 44 valid moves. Each move consists of selecting a border piece and a slide direction:
+          </p>
+          <p class="math-block">
+            $\mathcal{A} = \{(p, d) \mid p \in \text{Border}, d \in \{\text{TOP}, \text{BOTTOM}, \text{LEFT}, \text{RIGHT}\}\}$
+          </p>
+          <p>
+            The action generation filters directions based on piece position:
+          </p>
+
+          <pre><code>def acceptable_slides(from_position):
+    acceptable_slides = [Move.BOTTOM, Move.TOP, Move.LEFT, Move.RIGHT]
+    axis_0, axis_1 = from_position
+    if axis_0 == 0:
+        acceptable_slides.remove(Move.TOP)
+    elif axis_0 == 4:
+        acceptable_slides.remove(Move.BOTTOM)
+    if axis_1 == 0:
+        acceptable_slides.remove(Move.LEFT)
+    elif axis_1 == 4:
+        acceptable_slides.remove(Move.RIGHT)
+    return acceptable_slides</code></pre>
+
+          <h3 id="reward-function">5.3. Reward Function</h3>
+          <p>
+            The reward function combines terminal rewards with intermediate shaping:
+          </p>
+          <p class="math-block">
+            $R(s, a, s') = R_{\text{terminal}} + R_{\text{action}} + R_{\text{progress}}$
+          </p>
+          
+          <p><strong>Terminal Rewards:</strong> Time-discounted win bonus encouraging faster victories:</p>
+          <p class="math-block">
+            $R_{\text{win}} = \begin{cases}
+            110 & \text{if } t < 10 \\
+            80 & \text{if } t < 20 \\
+            60 & \text{if } t < 30 \\
+            40 & \text{if } t < 40 \\
+            20 & \text{if } t < 60 \\
+            10 & \text{otherwise}
+            \end{cases}$
+          </p>
+          <p class="math-block">
+            $R_{\text{loss}} = -10, \quad R_{\text{invalid}} = -15$
+          </p>
+
+          <p><strong>Action-Value Estimation:</strong> Each action is evaluated by simulating its outcome:</p>
+          <pre><code>def get_action_results(self):
+    rewards = []
+    for i, (pos, mov) in enumerate(self.actions):
+        if self.board[pos] == self.opposite:
+            rewards.append(0)  # Invalid: opponent's piece
+        else:
+            cp_board = deepcopy(self.board)
+            cp_board[pos] = self.player
+            self.simulate_slide(cp_board, pos, mov)
+            winner = self.check_winner(cp_board, self.player)
+            if winner == self.opposite:
+                rewards.append(-1)  # Losing move
+            elif winner == self.player:
+                rewards.append(2)   # Winning move
+            else:
+                rewards.append(1)   # Neutral move
+    return rewards</code></pre>
+
+          <p><strong>Progress Reward:</strong> Encourages efficient play in longer games:</p>
+          <p class="math-block">
+            $R_{\text{progress}} = 1 + \text{winning\_moves} + \max(0, 35 - t)$
+          </p>
+
+          <h2 id="step-impl">6. Environment Step Implementation</h2>
+          <p>
+            The step function handles player moves, opponent responses, and reward calculation:
+          </p>
+
+          <pre><code>def step(self, action):
+    self.ep_count += 1
+    
+    # Execute player move
+    pos, mov = self.actions[action]
+    if self.board[pos] == self.opposite:
+        return self.observation, -15, False, {"detail": "invalid"}
+    
+    self.board[pos] = self.player
+    self.slide(pos, mov)
+    
+    # Check win condition
+    winner = self.check_winner(self.board, self.player)
+    if winner == self.player:
+        return self.observation, self.time_reward(), True, {"winner": self.player}
+    
+    # Opponent move (random policy during training)
+    op_actions = self.get_moves(self.player)
+    op_action = random.choice(op_actions)
+    op_pos, op_mov = self.actions[op_action]
+    self.board[op_pos] = self.opposite
+    self.slide(op_pos, op_mov)
+    
+    # Calculate intermediate reward
+    action_results, win_count, _ = self.get_action_results()
+    score = 1 + win_count + max(0, 35 - self.ep_count)
+    
+    observation = np.append(self.board.flatten(), action_results)
+    return observation, score, False, {"winner": -1}</code></pre>
+
+          <h2 id="training-arch">7. Training Architecture</h2>
+          <p>
+            Neural networks use a 4-layer MLP with decreasing width:
+          </p>
+          <p class="math-block">
+            $\pi_\theta: \mathbb{R}^{69} \rightarrow [1024 \rightarrow 512 \rightarrow 256 \rightarrow 128] \rightarrow \mathbb{R}^{44}$
+          </p>
+
+          <pre><code>class PPOWrapper:
+    def train(self, net_arch=dict(pi=[1024, 512, 256, 128], 
+                                   vf=[32, 32, 32, 32]),
+              ts=5e5, callbacks=50000):
+        for player in [0, 1]:
+            env = QuixoEnv(player=player)
+            model = PPO('MlpPolicy', env, 
+                       policy_kwargs=dict(net_arch=net_arch),
+                       tensorboard_log="./logs/ppo")
+            model.learn(total_timesteps=ts, 
+                       callback=CheckpointCallback(save_freq=callbacks))</code></pre>
+
+          <h2 id="results">8. Training Results</h2>
+          <p>
+            The PPO agent was trained for 500,000 timesteps. The mean episode reward shows consistent improvement as the agent learns to win games faster:
+          </p>
+          <div class="project-figure">
+            <img src="quixo-rl/ppo-rew.png" alt="PPO Training Reward" />
+            <p class="figure-caption">Mean episode reward over 500k training steps (PPO)</p>
+          </div>
+
+          <h2 id="baseline">9. Value-Based Baseline</h2>
+          <p>
+            A tabular value learning approach was implemented for comparison:
+          </p>
+          <p class="math-block">
+            $V(s) \leftarrow V(s) + \epsilon \cdot (R - V(s))$
+          </p>
+          <p>
+            States are hashed as strings for dictionary lookup, enabling fast updates over millions of training games.
+          </p>
+
+          <h2>Links</h2>
+          <p class="project-links">
+            <a href="https://github.com/ahmadrezafrh/Quixo-Computational-Intelligence-2023-2024" target="_blank">GitHub Repository</a>
+          </p>
+        </section>
+
+        <a href="../projects.html" class="back-link">Back to Projects</a>
+      </article>
+    </main>
+  </div>
+
+  <script src="../js/config.js"></script>
+  <script>
+    if (typeof siteConfig !== 'undefined') {
+      if (siteConfig.hide_blog) {
+        const blogNav = document.getElementById('nav-blog');
+        if (blogNav) blogNav.style.display = 'none';
+      }
+      if (siteConfig.project_max_width) {
+        document.documentElement.style.setProperty('--content-max-width', siteConfig.project_max_width);
+      }
+    }
+  </script>
+</body>
+</html>

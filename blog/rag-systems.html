@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>RAG Systems: Beyond Basic Retrieval - Amadreza Farahani</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css" />
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-content">
+      <a href="../index.html" class="nav-logo">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="3" y="3" width="18" height="18" rx="2"/>
+          <path d="M9 9h6M9 12h6M9 15h4"/>
+        </svg>
+      </a>
+      <ul class="nav-links">
+        <li><a href="../index.html#about">About</a></li>
+        <li><a href="../index.html#experience">Experience</a></li>
+        <li><a href="../index.html#education">Education</a></li>
+        <li><a href="../projects.html">Projects</a></li>
+        <li><a href="../blog.html">Blog</a></li>
+        <li><a href="../index.html#contact">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="page-content blog-page">
+    <a href="../blog.html" class="back-link">Back to Blog</a>
+    
+    <article class="blog-detail">
+      <h1>RAG Systems: Beyond Basic Retrieval</h1>
+      <p class="blog-meta">September 2025</p>
+      <p class="blog-keywords">
+        <span>LLM</span>
+        <span>RAG</span>
+        <span>NLP</span>
+      </p>
+
+      <section class="blog-content">
+        <p>
+          Retrieval-Augmented Generation has become essential for building LLM applications 
+          that need access to specific knowledge. But basic vector search is just the beginning.
+        </p>
+
+        <h2>Chunking Strategies</h2>
+        <p>
+          How you split documents significantly impacts retrieval quality. Semantic chunking, 
+          overlapping windows, and hierarchical approaches each have their place depending 
+          on the content type.
+        </p>
+
+        <h2>Hybrid Search</h2>
+        <p>
+          Combining dense vector search with sparse keyword matching often outperforms either 
+          approach alone. BM25 plus embedding similarity provides both semantic understanding 
+          and exact match capabilities.
+        </p>
+
+        <h2>Reranking</h2>
+        <p>
+          A two-stage retrieval process using a fast first-stage retriever followed by a 
+          more accurate reranker can dramatically improve the quality of retrieved context.
+        </p>
+      </section>
+    </article>
+  </main>
+
+  <footer class="footer">
+    <p>&copy; <span id="year"></span> Amadreza Farahani</p>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
