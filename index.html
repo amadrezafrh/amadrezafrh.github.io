@@ -73,11 +73,12 @@
             <span class="experience-location">Turin</span>
           </div>
           <ul>
-            <li>Supervised a team of two to ship a local cross-platform LLM meeting assistant (Electron, React, FastAPI/Node.js) using RAG, LangChain, LangGraph, integrated speaker verification and real-time transcription, deployed via Kubernetes and AWS Bedrock</li>
-            <li>Architectured an LLM-driven assistant for consultancy and HR departments (Hugging Face, vLLM/TorchServe), integrating MLflow and Grafana; reduced manual processing by ~50 hours per month and productized the solution for external clients</li>
-            <li>Built a rail-safety computer-vision pipeline (YOLOv8/PyTorch) to detect sign defects and segment/track rails from nadir and frontal views</li>
-            <li>Shipped and benchmarked a custom UNet against internal baselines (Random Forest, XGBoost, KMeans), raising F1-score by 10% on multispectral imagery; orchestrated reproducible training with Airflow</li>
-            <li>Developed an aquatic-vegetation detection pipeline (Docker + Kubernetes, SageMaker) using multispectral satellite data, with Prometheus observability, reducing human inspection by 80% and compute cost by 35% while maintaining less than 3% accuracy drift</li>
+            <li>Led a team of two to build a cross-platform LLM meeting assistant (Electron/React + <strong>FastAPI</strong>) with RAG (<strong>LangChain</strong>/<strong>LangGraph</strong>), integrating speaker verification, and real-time transcription on <strong>AWS Bedrock</strong> for meeting summaries and Q&A.</li>
+            <li>Built a rail-safety computer-vision pipeline (<strong>Python</strong>/<strong>YOLOv8</strong>/<strong>PyTorch</strong>) to detect sign defects and segment/track rails from nadir and frontal views.</li>
+            <li>Defined user stories, architecture designs, and detailed design requirements for safety and diagnostics modules based on customer needs, ensuring alignment with project specifications and driving an efficient architecture.</li>
+            <li>Designed and implemented a custom <strong>U-Net</strong> for multispectral imagery, automated data ingestion, training and evaluation with <strong>Airflow</strong>, outperforming internal baselines (Random Forest, <strong>XGBoost</strong>, K-Means) in F1 by ~10%.</li>
+            <li>Refined and optimized an aquatic-vegetation detection pipeline on AWS using multispectral satellite data, dockerized and trained on <strong>SageMaker</strong>, and deployed on <strong>Kubernetes</strong> (<strong>EKS</strong> on <strong>EC2</strong>) with <strong>Prometheus</strong> metrics, keeping accuracy drift <3% and reducing manual image review by ~80%.</li>
+            <li>Deployed an LLM assistant for consultancy and HR workflows, serving <strong>HuggingFace</strong> models via <strong>vLLM</strong>/<strong>TorchServe</strong> with <strong>MLflow</strong> tracking and <strong>Grafana</strong> dashboards, cutting manual document processing by ~50 hours/month and enabling the product for other clients.</li>
           </ul>
         </article>
 
@@ -91,27 +92,56 @@
             <span class="experience-location">Darmstadt</span>
           </div>
           <ul>
-            <li>Designed and architectured a Diffusion Transformer (Python, PyTorch) for voice conversion, trained on distributed HPC GPUs, improving speaker similarity by ~9% compared to open source baselines with lower sampling steps, allowing real-time voice conversion</li>
-            <li>Orchestrated the model on AWS (Docker + ECS) with MLflow for experiment tracking and performance monitoring</li>
+            <li>Designed a Diffusion <strong>Transformer</strong> for voice conversion (Python, PyTorch) on <strong>HPC</strong> GPUs, improving speaker similarity by ~9% over open-source baselines with fewer sampling steps, enabling real-time conversion.</li>
+            <li>Deployed low-latency inference on AWS <strong>ECS</strong> with EC2 GPUs, using MLflow to track experiments and monitor production performance.</li>
           </ul>
         </article>
 
         <article class="experience-item">
           <div class="experience-header">
             <h3>AI Engineer</h3>
-            <span class="experience-date">Nov 2018 - Mar 2022</span>
+            <span class="experience-date">Jun 2019 - Mar 2022</span>
           </div>
           <div class="experience-company-row">
             <span class="experience-company">Part AI Research Center</span>
             <span class="experience-location">Tehran</span>
           </div>
           <ul>
-            <li>Developed an Android keyword-spotting app (Java), fine-tuned on hard negative samples, reducing false positives by ~30%</li>
-            <li>Built a speaker verification system on TensorFlow, fine-tuned on new domains that reduced the Equal Error Rate (EER) by ~2%</li>
-            <li>Engineered Test-Driven Development (TDD) for the Persian ASR and NLP services; authored unit/integration tests to reach 100% coverage and set up Jenkins CI/CD to automate builds, tests, and releases</li>
-            <li>Automated a traffic-flow monitoring system (C++/Python, OpenCV, YOLOv3) for vehicle detection, multi-object tracking, and flow estimation, reducing manual review effort (national project)</li>
-            <li>Delivered a customer testing dashboard without exposing proprietary data by developing a synthetic machinery data generator (TensorFlow + Flask + MongoDB), packaged with Docker Compose (client/server/DB), runnable examples, and API docs</li>
-            <li>Mentored new joiners on best practices for writing clean and production-ready Python code</li>
+            <li>Refined and fine-tuned an on-device keyword-spotting Android app in <strong>Java</strong>, using hard negative samples to reduce false positives by ~30%.</li>
+            <li>Optimized a speaker verification system on <strong>TensorFlow</strong>, fine-tuned on new domains that reduced the Equal Error Rate (EER) by ~2%.</li>
+            <li>Engineered <strong>Test-Driven Development</strong> <strong>TDD</strong> for Persian <strong>ASR</strong> and <strong>NLP</strong> services; wrote unit/integration tests to reach 100% coverage and set up <strong>Jenkins CI/CD</strong> to automate builds, tests, and releases.</li>
+            <li>Mentored new team members on clean, production-ready Python (structure, testing, logging), improving code quality and easing model iterations.</li>
+          </ul>
+        </article>
+
+        <article class="experience-item">
+          <div class="experience-header">
+            <h3>Associate Machine Learning Developer</h3>
+            <span class="experience-date">Jan 2023 - Sep 2023</span>
+          </div>
+          <div class="experience-company-row">
+            <span class="experience-company">AROL S.p.a</span>
+            <span class="experience-location">Turin</span>
+          </div>
+          <ul>
+            <li>Developed a synthetic machinery data generator (TensorFlow + <strong>Flask</strong> + <strong>MongoDB</strong>) and a customer testing dashboard, packaged with <strong>Docker Compose</strong> (client/server/DB) and REST API docs to avoid exposing proprietary data.</li>
+            <li>Designed KPIs and Python tests to validate synthetic vs. real machinery signals and API responses, integrating these checks into the team's <strong>CI pipeline</strong> and reducing manual QA effort for customer demos.</li>
+            <li>Reviewed over 5,000 lines of production <strong>Python</strong> and ML pipeline code (training, inference, data preprocessing), adding tests and reducing compute cost while making models easier to debug and extend.</li>
+          </ul>
+        </article>
+
+        <article class="experience-item">
+          <div class="experience-header">
+            <h3>Computer Vision</h3>
+            <span class="experience-date">Nov 2018 - Jun 2019</span>
+          </div>
+          <div class="experience-company-row">
+            <span class="experience-company">Megamouj Co. | University of Science and Technology (IUST)</span>
+            <span class="experience-location">Tehran</span>
+          </div>
+          <ul>
+            <li>Automated a traffic-flow monitoring system (<strong>C++</strong>/Python, <strong>OpenCV</strong>, YOLOv3) for vehicle detection, tracking, and flow estimation, reducing manual video review in a national-scale project.</li>
+            <li>Labeled and augmented traffic video data and trained/evaluated detection and tracking models in <strong>Python</strong>, tuning YOLOv3 hyperparameters and metrics to keep counting errors within acceptable limits across varying lighting and weather conditions.</li>
           </ul>
         </article>
       </div>
