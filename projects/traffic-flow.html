@@ -9,6 +9,15 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/styles.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+  <link rel="stylesheet" href="../css/styles.css" />
+  <style>
+    .figure-small img {
+      max-width: 600px;
+    }
+  </style>
 </head>
 <body>
   <div class="layout">
@@ -47,9 +56,9 @@
               <span>Python</span>
               <span>TensorFlow</span>
               <span>YOLOv4</span>
-              <span>Deep Learning</span>
+              <span>DeepSORT</span>
               <span>Computer Vision</span>
-              <span>OpenCV</span>
+              <span>scikit-learn</span>
             </p>
           </div>
         </header>
@@ -59,111 +68,115 @@
             <p class="toc-title">Contents</p>
             <ul class="toc-list">
               <li><a href="#overview">1. Overview</a></li>
-              <li><a href="#problem">2. Problem</a></li>
-              <li><a href="#solution">3. Solution</a>
+              <li><a href="#pipeline">2. Pipeline</a>
                 <ul class="toc-list toc-sub">
-                  <li><a href="#detection-tracking">3.1. Vehicle Detection and Tracking</a></li>
-                  <li><a href="#lane-clustering">3.2. Lane Clustering</a></li>
-                  <li><a href="#svm-classification">3.3. SVM Classification</a></li>
-                  <li><a href="#realtime-analysis">3.4. Real-time Video Analysis</a></li>
+                  <li><a href="#detection-tracking">2.1. Detection and Tracking</a></li>
+                  <li><a href="#lane-clustering">2.2. Lane Clustering</a></li>
+                  <li><a href="#svm-classification">2.3. SVM Classification</a></li>
+                  <li><a href="#realtime-analysis">2.4. Real-time Analysis</a></li>
                 </ul>
               </li>
-              <li><a href="#tech-stack">4. Technical Stack</a></li>
-              <li><a href="#results">5. Results</a></li>
+              <li><a href="#conclusion">3. Conclusion</a></li>
+              <li><a href="#links">4. Links</a></li>
             </ul>
           </nav>
 
           <h2 id="overview">1. Overview</h2>
           <p>
             This project was developed as part of a national initiative to measure traffic flow through 
-            monitoring cameras installed at junctions in Tehran, Iran. The system uses deep neural networks 
-            and image processing algorithms to detect vehicles from aerial imagery, track their movements, 
-            and classify traffic lanes for real-time flow analysis.
+            monitoring cameras installed at junctions in Tehran, Iran. The system uses YOLOv4 for vehicle 
+            detection, DeepSORT for multi-object tracking, and a semi-supervised approach combining 
+            Spectral Clustering with SVM for lane classification.
+          </p>
+          <p>
+            <strong>Note:</strong> This project uses YOLOv4 and was trained on limited data with augmentation. 
+            Many newer detection and tracking algorithms have since been developed with improved performance.
           </p>
 
-          <p>
-            <strong>Note:</strong> The training was performed on limited data, with image augmentations applied to increase robustness and prevent overfitting. This project is outdated and was trained using YOLOv4, which is an older, non-optimized model. Many newer object detection and tracking algorithms have since been developed that offer improved performance.
-          </p>
-
-          <h2 id="problem">2. Problem</h2>
-          <p>
-            Traffic management in large cities requires accurate, real-time data about vehicle flow across 
-            different lanes. Manual monitoring is impractical at scale, and traditional computer vision 
-            methods struggle with the complexity of aerial traffic imagery. The challenge was to build an 
-            automated system that could detect vehicles, track them across frames, and classify which lane 
-            each vehicle belongs to.
-          </p>
-
-          <h2 id="solution">3. Solution</h2>
-          <p>
-            The project was developed in four stages, combining multiple machine learning techniques:
-          </p>
+          <h2 id="pipeline">2. Pipeline</h2>
           
-          <h3 id="detection-tracking">3.1. Vehicle Detection and Tracking</h3>
+          <h3 id="detection-tracking">2.1. Detection and Tracking</h3>
           <p>
-            Trained a custom YOLOv4 model on aerial imagery datasets to detect vehicles. The DeepSORT 
-            algorithm was then applied for multi-object tracking, maintaining vehicle identities across 
-            video frames. Features such as position and trajectory are extracted and stored for each 
-            tracked vehicle.
+            A custom YOLOv4 model was trained on aerial vehicle imagery. DeepSORT algorithm handles 
+            multi-object tracking using a Kalman filter for state prediction and cosine distance 
+            for appearance matching.
+          </p>
+          <p>
+            The tracker maintains vehicle identities across frames using an 8-dimensional state space:
+          </p>
+          <p>
+            $$\mathbf{x} = [x, y, a, h, \dot{x}, \dot{y}, \dot{a}, \dot{h}]^T$$
+          </p>
+          <p>
+            where $(x, y)$ is the bounding box center, $a$ is the aspect ratio, $h$ is the height, 
+            and the remaining components are their respective velocities.
+          </p>
+          <p>
+            Association between detections and tracks uses a cost matrix combining appearance features 
+            (cosine distance) and motion information (Mahalanobis distance), solved via the Hungarian algorithm.
           </p>
           <div class="project-figure">
             <img src="traffic-flow/tracking.gif" alt="Vehicle tracking demonstration" />
             <p class="figure-caption">Real-time vehicle detection and tracking using YOLOv4 and DeepSORT</p>
           </div>
 
-          <h3 id="lane-clustering">3.2. Lane Clustering</h3>
+          <h3 id="lane-clustering">2.2. Lane Clustering</h3>
           <p>
-            Using features extracted from tracking (horizontal position, vertical position, and vehicle angle), 
-            a semi-supervised approach with Spectral Clustering was applied to group vehicles by lane. 
-            Processing 1000 frames with approximately 60,000 vehicle detections and 180,000 features 
-            provided sufficient data for accurate clustering.
+            From tracking, three features are extracted for each detected vehicle and normalized using StandardScaler:
           </p>
-          <div class="project-figure">
+          <ul>
+            <li>Horizontal position ($x$)</li>
+            <li>Vertical position ($y$)</li>
+            <li>Vehicle angle ($\theta$)</li>
+          </ul>
+          <p>
+            Spectral Clustering is applied to group vehicles by lane. Processing 1000 frames yielded 
+            approximately 60,000 vehicle detections with 180,000 total features. Various clustering 
+            algorithms were evaluated using silhouette score, with Spectral Clustering producing the 
+            best results.
+          </p>
+          <div class="project-figure figure-small">
             <img src="traffic-flow/spec_4.png" alt="Spectral clustering results" />
-            <p class="figure-caption">Initial lane clustering using Spectral Clustering algorithm</p>
+            <p class="figure-caption">Lane clustering using Spectral Clustering with 4 clusters</p>
           </div>
 
-          <h3 id="svm-classification">3.3. SVM Classification</h3>
+          <h3 id="svm-classification">2.3. SVM Classification</h3>
           <p>
-            To improve accuracy and handle edge cases from clustering, a Support Vector Machine with RBF 
-            kernel was trained on the labeled data from Stage 2. This classification model significantly 
-            reduced errors in lane assignment.
+            To refine the clustering results and handle edge cases, an SVM with RBF kernel was 
+            trained on the labeled data from the clustering stage:
           </p>
-          <div class="project-figure">
+          <p>
+            $$K(x_i, x_j) = \exp\left(-\gamma \|x_i - x_j\|^2\right)$$
+          </p>
+          <p>
+            The classifier takes normalized $(x, y)$ coordinates and predicts lane assignments, 
+            reducing errors in lane boundaries.
+          </p>
+          <div class="project-figure figure-small">
             <img src="traffic-flow/spec_4_svm.png" alt="SVM classification results" />
-            <p class="figure-caption">Improved lane classification after SVM training</p>
+            <p class="figure-caption">Refined lane classification after SVM training</p>
           </div>
 
-          <h3 id="realtime-analysis">3.4. Real-time Video Analysis</h3>
+          <h3 id="realtime-analysis">2.4. Real-time Analysis</h3>
           <p>
-            The final stage integrates all components into a real-time video analysis pipeline. The system 
-            visualizes lane assignments, calculates average vehicle speeds per lane, and provides data 
-            that can be used for traffic light control optimization.
+            The final pipeline integrates all components for real-time video processing. The system 
+            classifies each detected vehicle into lanes and calculates per-lane statistics including 
+            vehicle count and average speed for traffic management applications.
           </p>
           <div class="project-figure">
-            <img src="traffic-flow/classification.gif" alt="Real-time traffic analysis" />
-            <p class="figure-caption">Complete pipeline with lane classification and speed calculation</p>
+            <img src="traffic-flow/demo.gif" alt="Real-time traffic analysis" />
+            <p class="figure-caption">Complete pipeline with lane classification and traffic analysis</p>
           </div>
 
-          <h2 id="tech-stack">4. Technical Stack</h2>
-          <ul>
-            <li><strong>Detection:</strong> YOLOv4 (custom trained on aerial vehicle dataset)</li>
-            <li><strong>Tracking:</strong> DeepSORT algorithm</li>
-            <li><strong>Clustering:</strong> Spectral Clustering with normalized features</li>
-            <li><strong>Classification:</strong> SVM with RBF kernel</li>
-            <li><strong>Framework:</strong> TensorFlow, OpenCV, scikit-learn</li>
-            <li><strong>Data Processing:</strong> Pandas, NumPy</li>
-          </ul>
+          <h2 id="conclusion">3. Conclusion</h2>
+          <p>
+            This project demonstrates a complete pipeline for automated traffic flow measurement from 
+            aerial imagery. The combination of deep learning-based detection (YOLOv4), robust tracking 
+            (DeepSORT with Kalman filtering), and semi-supervised lane classification (Spectral Clustering 
+            refined with SVM) provides an automated solution for traffic monitoring at scale.
+          </p>
 
-          <h2 id="results">5. Results</h2>
-          <ul>
-            <li>Accurate vehicle detection from aerial imagery using custom-trained YOLOv4</li>
-            <li>Robust multi-object tracking maintaining vehicle IDs across frames</li>
-            <li>Automated lane classification with improved accuracy using SVM refinement</li>
-            <li>Real-time speed estimation per lane for traffic management applications</li>
-          </ul>
-
-          <h2>Links</h2>
+          <h2 id="links">4. Links</h2>
           <p class="project-links">
             <a href="https://github.com/amadrezafrh/Traffic-Flow-Measurement-Deep-Learning" target="_blank">GitHub Repository</a>
           </p>
