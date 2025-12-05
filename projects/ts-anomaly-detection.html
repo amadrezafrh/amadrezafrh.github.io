@@ -33,7 +33,7 @@
           <a href="mailto:amadreza.farahani@outlook.com">Email</a>
           <a href="https://linkedin.com/in/amadrezafrh" target="_blank">LinkedIn</a>
           <a href="https://github.com/amadrezafrh" target="_blank">GitHub</a>
-          <a href="../resume/Amadreza.pdf" target="_blank">Resume</a>
+          <a href="../resume/Amadreza.pdf" target="_blank" id="resume-link">Resume</a>
         </div>
         <nav class="sidebar-nav">
           <a href="../index.html">Home</a>
@@ -318,14 +318,21 @@ while A(x_t) is not None where t = n:
     </main>
   </div>
 
+  <script src="../js/config.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      if (typeof hideConfig !== 'undefined' && hideConfig.hide_blog) {
-        var blogLink = document.getElementById('nav-blog');
-        if (blogLink) blogLink.style.display = 'none';
-      }
-      if (typeof hideConfig !== 'undefined' && hideConfig.project_max_width) {
-        document.documentElement.style.setProperty('--project-max-width', hideConfig.project_max_width);
+      if (typeof siteConfig !== 'undefined') {
+        if (siteConfig.hide_blog) {
+          var blogLink = document.getElementById('nav-blog');
+          if (blogLink) blogLink.style.display = 'none';
+        }
+        if (siteConfig.hide_resume) {
+          var resumeLink = document.getElementById('resume-link');
+          if (resumeLink) resumeLink.style.display = 'none';
+        }
+        if (siteConfig.project_max_width) {
+          document.documentElement.style.setProperty('--project-max-width', siteConfig.project_max_width);
+        }
       }
     });
   </script>

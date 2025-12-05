@@ -25,7 +25,7 @@
           <a href="mailto:amadreza.farahani@outlook.com">Email</a>
           <a href="linkedin.com/in/amadrezafrh" target="_blank">LinkedIn</a>
           <a href="https://github.com/amadrezafrh" target="_blank">GitHub</a>
-          <a href="resume/Amadreza.pdf" target="_blank">Resume</a>
+          <a href="resume/Amadreza.pdf" target="_blank" id="resume-link">Resume</a>
         </div>
 
         <nav class="sidebar-nav">
@@ -222,11 +222,17 @@
   <script src="js/blog.js"></script>
   <script src="js/main.js"></script>
   <script>
-    if (typeof siteConfig !== 'undefined' && siteConfig.hide_blog) {
-      const blogSection = document.getElementById('blog');
-      const blogNav = document.getElementById('nav-blog');
-      if (blogSection) blogSection.style.display = 'none';
-      if (blogNav) blogNav.style.display = 'none';
+    if (typeof siteConfig !== 'undefined') {
+      if (siteConfig.hide_blog) {
+        const blogSection = document.getElementById('blog');
+        const blogNav = document.getElementById('nav-blog');
+        if (blogSection) blogSection.style.display = 'none';
+        if (blogNav) blogNav.style.display = 'none';
+      }
+      if (siteConfig.hide_resume) {
+        const resumeLink = document.getElementById('resume-link');
+        if (resumeLink) resumeLink.style.display = 'none';
+      }
     }
   </script>
 </body>

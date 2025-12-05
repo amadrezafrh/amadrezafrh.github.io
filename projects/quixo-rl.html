@@ -27,7 +27,7 @@
           <a href="mailto:amadreza.farahani@outlook.com">Email</a>
           <a href="https://linkedin.com/in/amadrezafrh" target="_blank">LinkedIn</a>
           <a href="https://github.com/amadrezafrh" target="_blank">GitHub</a>
-          <a href="../resume/Amadreza.pdf" target="_blank">Resume</a>
+          <a href="../resume/Amadreza.pdf" target="_blank" id="resume-link">Resume</a>
         </div>
         <nav class="sidebar-nav">
           <a href="../index.html">Home</a>
@@ -292,6 +292,10 @@
       if (siteConfig.hide_blog) {
         const blogNav = document.getElementById('nav-blog');
         if (blogNav) blogNav.style.display = 'none';
+      }
+      if (siteConfig.hide_resume) {
+        const resumeLink = document.getElementById('resume-link');
+        if (resumeLink) resumeLink.style.display = 'none';
       }
       if (siteConfig.project_max_width) {
         document.documentElement.style.setProperty('--content-max-width', siteConfig.project_max_width);
