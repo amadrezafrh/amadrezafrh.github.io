@@ -223,15 +223,15 @@
   <script src="js/main.js"></script>
   <script>
     if (typeof siteConfig !== 'undefined') {
-      if (siteConfig.hide_blog) {
+      if (!siteConfig.hide_blog) {
         const blogSection = document.getElementById('blog');
         const blogNav = document.getElementById('nav-blog');
-        if (blogSection) blogSection.style.display = 'none';
-        if (blogNav) blogNav.style.display = 'none';
+        if (blogSection) blogSection.style.display = '';
+        if (blogNav) blogNav.style.display = '';
       }
-      if (siteConfig.hide_resume) {
+      if (!siteConfig.hide_resume) {
         const resumeLink = document.getElementById('resume-link');
-        if (resumeLink) resumeLink.style.display = 'none';
+        if (resumeLink) resumeLink.style.display = '';
       }
     }
   </script>

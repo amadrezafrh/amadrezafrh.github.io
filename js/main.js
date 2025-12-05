@@ -14,6 +14,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Load blog posts
   loadBlogPosts();
+
+  // Reveal main content after loading
+  const mainContent = document.querySelector('.main-content');
+  if (mainContent) mainContent.classList.add('loaded');
 });
 
 // Load featured projects from data
@@ -22,7 +26,7 @@ function loadFeaturedProjects() {
   if (!container) return;
 
   if (typeof projectsData !== 'undefined' && projectsData.length > 0) {
-    const sorted = [...projectsData].sort((a, b) => new Date(b.date) - new Date(a.date));
+    const sorted = [...projectsData].sort((a, b) => new Date('1 ' + b.date) - new Date('1 ' + a.date));
     const featured = sorted.filter(p => p.featured);
     container.innerHTML = featured.map(project => `
       <article class="project-card">

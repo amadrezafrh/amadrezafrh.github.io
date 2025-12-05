@@ -49,7 +49,7 @@
   <script>
     const container = document.getElementById('all-projects-container');
     if (container && typeof projectsData !== 'undefined' && projectsData.length > 0) {
-      const sorted = [...projectsData].sort((a, b) => new Date(b.date) - new Date(a.date));
+      const sorted = [...projectsData].sort((a, b) => new Date('1 ' + b.date) - new Date('1 ' + a.date));
       container.innerHTML = sorted.map(project => `
         <article class="project-card">
           <h3>${project.title}</h3>
@@ -70,18 +70,21 @@
   <script src="js/config.js"></script>
   <script>
     if (typeof siteConfig !== 'undefined') {
-      if (siteConfig.hide_blog) {
+      if (!siteConfig.hide_blog) {
         const blogNav = document.getElementById('nav-blog');
-        if (blogNav) blogNav.style.display = 'none';
+        if (blogNav) blogNav.style.display = '';
       }
-      if (siteConfig.hide_resume) {
+      if (!siteConfig.hide_resume) {
         const resumeLink = document.getElementById('resume-link');
-        if (resumeLink) resumeLink.style.display = 'none';
+        if (resumeLink) resumeLink.style.display = '';
       }
       if (siteConfig.max_width) {
         document.documentElement.style.setProperty('--content-max-width', siteConfig.max_width);
       }
     }
+    // Reveal main content
+    const mainContent = document.querySelector('.main-content');
+    if (mainContent) mainContent.classList.add('loaded');
   </script>
 </body>
 </html>

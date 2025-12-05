@@ -21,6 +21,22 @@
   --content-max-width: 900px;
 }
 
+/* Hide resume and blog by default, JS will show if config allows */
+#resume-link,
+#nav-blog,
+#blog {
+  display: none;
+}
+
+/* Prevent flash of unstyled content */
+.main-content {
+  opacity: 0;
+  transition: opacity 0.15s ease-in;
+}
+.main-content.loaded {
+  opacity: 1;
+}
+
 body {
   font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   background: var(--color-bg);

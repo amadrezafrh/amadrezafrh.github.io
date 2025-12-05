@@ -308,18 +308,21 @@
   <script src="../js/config.js"></script>
   <script>
     if (typeof siteConfig !== 'undefined') {
-      if (siteConfig.hide_blog) {
+      if (!siteConfig.hide_blog) {
         const blogNav = document.getElementById('nav-blog');
-        if (blogNav) blogNav.style.display = 'none';
+        if (blogNav) blogNav.style.display = '';
       }
-      if (siteConfig.hide_resume) {
+      if (!siteConfig.hide_resume) {
         const resumeLink = document.getElementById('resume-link');
-        if (resumeLink) resumeLink.style.display = 'none';
+        if (resumeLink) resumeLink.style.display = '';
       }
       if (siteConfig.project_max_width) {
         document.documentElement.style.setProperty('--content-max-width', siteConfig.project_max_width);
       }
     }
+    // Reveal main content
+    const mainContent = document.querySelector('.main-content');
+    if (mainContent) mainContent.classList.add('loaded');
   </script>
 </body>
 </html>
