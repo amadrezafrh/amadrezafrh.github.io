@@ -366,7 +366,7 @@ a:hover {
    shrinks (e.g. user zoom). Masonry-col wrappers collapse via
    display: contents so cards stack as one tight column instead of
    one column per masonry-col. */
-@container rail (max-width: 780px) {
+@container rail (max-width: 480px) {
   .right-rail .projects-grid {
     flex-direction: column;
   }
@@ -375,7 +375,7 @@ a:hover {
   }
 }
 
-@media (max-width: 1700px) {
+@media (max-width: 1500px) {
   .right-rail .projects-grid {
     flex-direction: column;
   }
