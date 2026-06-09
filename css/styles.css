@@ -336,6 +336,14 @@ a:hover {
   overflow-y: auto;
   border-left: 2px solid var(--color-border);
   padding: 3rem 4rem 3rem 2.5rem;
+  container-type: inline-size;
+  container-name: rail;
+}
+
+@container rail (max-width: 520px) {
+  .right-rail .projects-grid {
+    flex-direction: column;
+  }
 }
 
 .right-rail .projects-grid {
