@@ -24,26 +24,50 @@ document.addEventListener('DOMContentLoaded', function() {
 function loadFeaturedProjects() {
   const container = document.getElementById('featured-projects-container');
   if (!container) return;
+  if (typeof projectsData === 'undefined' || projectsData.length === 0) return;
 
-  if (typeof projectsData !== 'undefined' && projectsData.length > 0) {
-    const sorted = [...projectsData].sort((a, b) => new Date('1 ' + b.date) - new Date('1 ' + a.date));
-    const featured = sorted.filter(p => p.featured);
-    container.innerHTML = featured.map(project => `
-      <article class="project-card">
+  const sorted = [...projectsData].sort((a, b) => new Date('1 ' + b.date) - new Date('1 ' + a.date));
+  const featured = sorted.filter(p => p.featured);
+
+  const linkBtn = (href, label, external) => href
+    ? `<a class="project-link" href="${href}"${external ? ' target="_blank" rel="noopener"' : ''}>${label}</a>`
+    : '';
+
+  const cardHTML = project => `
+    <article class="project-card">
+      <div class="project-card-body">
         <h3>${project.title}</h3>
         <p class="project-date">${project.date}</p>
         <p>${project.description}</p>
         ${project.preview ? `<div class="project-preview"><img src="${project.preview}" alt="${project.title}" /></div>` : ''}
         <p class="project-tags">${project.tags.map(tag => `<span>${tag}</span>`).join('')}</p>
-        <p class="project-links">
-          ${project.page ? `<a href="${project.page}">Read more</a>` : ''}
-          ${project.github ? `<a href="${project.github}" target="_blank">GitHub</a>` : ''}
-          ${project.report ? `<a href="${project.report}" target="_blank">Report</a>` : ''}
-          ${project.demo ? `<a href="${project.demo}" target="_blank">Demo</a>` : ''}
-        </p>
-      </article>
-    `).join('');
+      </div>
+      <div class="project-links">
+        ${linkBtn(project.page, 'Read more', false)}
+        ${linkBtn(project.github, 'GitHub', true)}
+        ${linkBtn(project.report, 'Report', true)}
+        ${linkBtn(project.demo, 'Demo', true)}
+      </div>
+    </article>
+  `;
+
+  const isRail = container.closest('.right-rail') !== null;
+
+  if (!isRail) {
+    container.innerHTML = featured.map(cardHTML).join('');
+    return;
   }
+
+  // 2-column rail: alternate items so each column gets the same count.
+  // Cards stack vertically and each column flows independently.
+  container.innerHTML = '<div class="masonry-col"></div><div class="masonry-col"></div>';
+  const colA = container.children[0];
+  const colB = container.children[1];
+  featured.forEach((project, i) => {
+    const tmp = document.createElement('div');
+    tmp.innerHTML = cardHTML(project).trim();
+    (i % 2 === 0 ? colA : colB).appendChild(tmp.firstChild);
+  });
 }
 
 // Load blog posts from data
