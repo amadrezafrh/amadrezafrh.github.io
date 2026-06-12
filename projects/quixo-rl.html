@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
-  <link rel="stylesheet" href="../css/styles.css?v=16" />
+  <link rel="stylesheet" href="../css/styles.css?v=17" />
 </head>
 <body>
   <div class="layout">
@@ -65,7 +65,8 @@
     </aside>
 
     <main class="main-content">
-      <article class="project-detail">
+      <div class="content-column">
+        <article class="project-detail">
         <header class="project-header">
           <h1>Custom Gym Environment for Board Game RL with Stable Baselines3</h1>
           <div class="project-meta">
@@ -306,11 +307,19 @@
         </section>
 
         <a href="../index.html#projects" class="back-link">Back to Projects</a>
-      </article>
+        </article>
+
+      </div>
+      <aside class="right-rail">
+        <section class="section">
+          <h2>Notes</h2>
+          <p class="placeholder">Technical notes, design choices, and disclaimers for this project will appear here.</p>
+        </section>
+      </aside>
     </main>
   </div>
 
-  <script src="../js/config.js?v=16"></script>
+  <script src="../js/config.js?v=17"></script>
   <script>
     if (typeof siteConfig !== 'undefined') {
       if (!siteConfig.hide_blog) {

@@ -11,8 +11,8 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
-  <link rel="stylesheet" href="../css/styles.css?v=16" />
-  <script src="../js/config.js?v=16"></script>
+  <link rel="stylesheet" href="../css/styles.css?v=17" />
+  <script src="../js/config.js?v=17"></script>
   <style>
     .project-content {
       max-width: var(--project-max-width, 900px);
@@ -71,7 +71,8 @@
     </aside>
 
     <main class="main-content">
-      <article class="project-detail">
+      <div class="content-column">
+        <article class="project-detail">
         <header class="project-header">
           <h1>Kuka-V1 Robot Anomaly Detection Using Transformer and Graph Attention Models</h1>
           <div class="project-meta">
@@ -340,11 +341,19 @@ while A(x_t) is not None where t = n:
         </section>
 
         <a href="../index.html#projects" class="back-link">Back to Projects</a>
-      </article>
+        </article>
+
+      </div>
+      <aside class="right-rail">
+        <section class="section">
+          <h2>Notes</h2>
+          <p class="placeholder">Technical notes, design choices, and disclaimers for this project will appear here.</p>
+        </section>
+      </aside>
     </main>
   </div>
 
-  <script src="../js/config.js?v=16"></script>
+  <script src="../js/config.js?v=17"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       if (typeof siteConfig !== 'undefined') {
