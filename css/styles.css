@@ -313,7 +313,8 @@ a:hover {
   max-width: var(--content-max-width);
 }
 
-.main-content:has(.right-rail) {
+.main-content:has(.right-rail),
+.main-content.three-col {
   max-width: none;
   height: 100vh;
   overflow: hidden;
@@ -328,12 +329,14 @@ a:hover {
   height: 100vh;
   overflow-x: hidden;
   overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 3rem 2.5rem 3rem 4rem;
 }
 
 .right-rail {
   height: 100vh;
   overflow-y: auto;
+  overscroll-behavior: contain;
   border-left: 2px solid var(--color-border);
   padding: 3rem 4rem 3rem 2.5rem;
   container-type: inline-size;
