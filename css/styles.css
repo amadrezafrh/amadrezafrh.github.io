@@ -313,8 +313,17 @@ a:hover {
   max-width: var(--content-max-width);
 }
 
-.main-content:has(.right-rail),
 .main-content.three-col {
+  max-width: none;
+  height: 100vh;
+  overflow: hidden;
+  padding: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 740px) minmax(400px, 1fr);
+  gap: 0;
+}
+
+.main-content:has(.right-rail) {
   max-width: none;
   height: 100vh;
   overflow: hidden;
@@ -326,8 +335,6 @@ a:hover {
 
 /* Lock html/body when the page uses the three-column layout so the
    document itself cannot scroll; only the internal columns scroll. */
-html:has(.main-content.three-col),
-html:has(.main-content:has(.right-rail)),
 body.three-col-page,
 html.three-col-page {
   height: 100vh;
