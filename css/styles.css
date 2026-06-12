@@ -324,6 +324,16 @@ a:hover {
   gap: 0;
 }
 
+/* Lock html/body when the page uses the three-column layout so the
+   document itself cannot scroll; only the internal columns scroll. */
+html:has(.main-content.three-col),
+html:has(.main-content:has(.right-rail)),
+body.three-col-page,
+html.three-col-page {
+  height: 100vh;
+  overflow: hidden;
+}
+
 .content-column {
   min-width: 0;
   height: 100vh;
