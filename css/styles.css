@@ -278,11 +278,12 @@ a:hover {
   letter-spacing: -0.005em;
   color: var(--color-text-secondary);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  flex-wrap: nowrap;
-  gap: 0.35rem;
-  white-space: nowrap;
+  gap: 0.25rem;
+  text-align: center;
+  line-height: 1.35;
 }
 
 .sidebar-location {
@@ -297,8 +298,14 @@ a:hover {
   flex-shrink: 0;
 }
 
+.sidebar-name {
+  word-break: normal;
+  overflow-wrap: anywhere;
+}
+
+/* In the stacked layout the middle dot would just hang on its own row; drop it. */
 .sidebar-dot {
-  opacity: 0.55;
+  display: none;
 }
 
 .sidebar-spacer {
@@ -1546,6 +1553,12 @@ a.contact-link:hover {
 
 .project-detail .back-link {
   margin: 1.5rem 0 0;
+}
+
+/* When the back-link sits inside the Links row, kill the top margin so it
+   aligns with the github-pills on the same line. */
+.project-content .project-links .back-link {
+  margin: 0;
 }
 
 .project-detail .github-pill:hover,
