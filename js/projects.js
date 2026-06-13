@@ -1,6 +1,18 @@
 // Projects data - add your projects here
 const projectsData = [
   {
+    title: "Gender Identification Using Machine Learning and Pattern Recognition",
+    date: "March 2022",
+    description: "Course project implementing MVG, prior-weighted Logistic Regression, SVM (linear/poly/RBF), and Gaussian Mixture Models from scratch in NumPy/SciPy for binary classification of face embeddings, with score calibration and fusion.",
+    tags: ["Python", "NumPy", "SciPy", "Machine Learning", "Pattern Recognition", "From Scratch"],
+    github: "https://github.com/amadrezafrh/Gender-Identification-MLPR",
+    report: "projects/ml-scratch/report.pdf",
+    demo: null,
+    page: "projects/ml-scratch.html",
+    featured: true,
+    preview: "projects/ml-scratch/train/part0_heatmap.png"
+  },
+  {
     title: "Deep Learning-Based Vehicle Detection and Traffic Flow Analysis",
     date: "June 2021",
     description: "Built an end-to-end system for traffic monitoring using YOLOv4, DeepSORT tracking, and SVM classification for lane detection from aerial imagery.",
@@ -18,7 +30,7 @@ const projectsData = [
     description: "Trained PPO agents on the MuJoCo Hopper environment with domain randomization to bridge the sim-to-real gap. Explored vision-based RL with CNN preprocessing and MobileNetV2 feature extraction.",
     tags: ["Python", "PyTorch", "MuJoCo", "PPO", "Domain Randomization"],
     github: "https://github.com/amadrezafrh/Sim-to-Real-transfer-in-Reinforcement-Learning",
-    report: null,
+    report: "projects/sim-to-real/report.pdf",
     demo: null,
     page: "projects/sim-to-real.html",
     featured: true,
@@ -30,7 +42,7 @@ const projectsData = [
     description: "Designed a custom OpenAI Gym environment with shaped reward functions for the Quixo board game. Trained PPO, DQN, and A2C agents using Stable Baselines3 with custom MLP architectures.",
     tags: ["Python", "Reinforcement Learning", "OpenAI Gym", "Stable Baselines3"],
     github: "https://github.com/amadrezafrh/Quixo-Computational-Intelligence-2023-2024",
-    report: null,
+    report: "projects/quixo-rl/report.pdf",
     demo: null,
     page: "projects/quixo-rl.html",
     featured: true,
@@ -42,7 +54,7 @@ const projectsData = [
     description: "Full-stack web application for generating synthetic sensor data using Temporal Fusion Transformer. React/TypeScript frontend, Flask backend with thread pool for concurrent generation, MongoDB storage.",
     tags: ["Python", "PyTorch", "React", "Flask", "MongoDB", "TFT"],
     github: "https://github.com/amadrezafrh/AROL-Data-Generation-Module",
-    report: null,
+    report: "projects/arol-data-gen/report.pdf",
     demo: null,
     page: "projects/arol-data-gen.html",
     featured: true,
@@ -54,7 +66,7 @@ const projectsData = [
     description: "Unsupervised time-series anomaly detection for robotic sensor data using Anomaly Transformer. Developed a novel evaluation algorithm for contextual anomaly detection with sliding window scoring.",
     tags: ["Python", "PyTorch", "Transformers", "Anomaly Detection", "Time Series"],
     github: "https://github.com/amadrezafrh/Time-Series-Anomaly-Detection-SOTA-Investigation",
-    report: null,
+    report: "projects/ts-anomaly-detection/report.pdf",
     demo: null,
     page: "projects/ts-anomaly-detection.html",
     featured: true,
@@ -73,11 +85,11 @@ const projectsData = [
     preview: "projects/robvc/newdes.png"
   },
   {
-    title: "RobDiffVC: Diffusion-Based Voice Conversion",
+    title: "RobDiffVC: A Robust Multi-Modal Diffusion Transformer for Voice Conversion",
     date: "August 2025",
     description: "Lab-external extension of RobVC: a diffusion transformer voice conversion model that cuts inference time and parameter count while preserving speaker similarity. Built from scratch outside the original lab environment.",
     tags: ["Python", "PyTorch", "Diffusion", "Voice Conversion", "DiT"],
-    github: null,
+    github: "https://github.com/amadrezafrh/RobDiffVC-A-Robust-Multi-Modal-Diffusion-Transformer-for-Voice-Conversion",
     report: null,
     demo: "projects/robdiffvc.html",
     page: "projects/robdiffvc.html",

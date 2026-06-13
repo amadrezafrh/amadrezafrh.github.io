@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Gender Identification Using ML and Pattern Recognition - Amadreza Farahani</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Course project implementing MVG, Logistic Regression, SVM, and GMM classifiers from scratch for binary gender identification from face embeddings." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css?v=51" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/atom-one-dark.min.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/highlight.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/languages/python.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () { if (window.hljs) { hljs.highlightAll(); } });</script>
+  <script src="../js/config.js?v=51"></script>
+  <style>
+    .project-content {
+      max-width: 100%;
+    }
+    .project-image {
+      text-align: center;
+    }
+    .project-image img {
+      display: inline-block;
+      max-width: 100%;
+    }
+    .mlpr-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.92rem;
+    }
+    .mlpr-table th, .mlpr-table td {
+      border-bottom: 1px solid #E5E5E5;
+      padding: 0.45rem 0.55rem;
+      text-align: center;
+    }
+    .mlpr-table th {
+      font-weight: 600;
+      background: #FAFAFA;
+    }
+    .mlpr-table td:first-child, .mlpr-table th:first-child {
+      text-align: left;
+    }
+    .mlpr-table caption {
+      caption-side: top;
+      text-align: left;
+      font-style: italic;
+      color: var(--color-text-secondary);
+      margin-bottom: 0.4rem;
+      font-size: 0.85rem;
+    }
+    .mlpr-table .group-row td {
+      background: #F4F4F4;
+      font-weight: 600;
+      font-style: italic;
+    }
+    .mlpr-table .best {
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body class="three-col-page">
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-content">
+        <div class="sidebar-photo">
+          <img src="../me.JPG" alt="Amadreza Farahani" />
+        </div>
+        <div class="sidebar-identity">
+          <h1>Amadreza Farahani</h1>
+          <p class="tagline">ML/AI Software Engineer</p>
+        </div>
+
+        <div class="sidebar-about">
+          <p>ML/AI software engineer with 4+ years of experience in Agentic AI, LLMs/RAG, Computer Vision, and Speech Processing. I have built inference pipelines, cloud-deployed ML services, and safety-critical diagnostic systems used in industry.</p>
+          <p>M.Sc. Computer Engineering, Politecnico di Torino, with a thesis on voice conversion at TU Darmstadt.</p>
+        </div>
+
+        <nav class="sidebar-nav">
+          <a href="../index.html">Home</a>
+          <a href="../index.html#experience">Experience</a>
+          <a href="../index.html#skills">Skills</a>
+          <a href="../index.html#education">Education</a>
+          <a href="../index.html#projects">Projects</a>
+          <a href="../blog.html" id="nav-blog">Blog</a>
+        </nav>
+        <div class="sidebar-spacer"></div>
+        <div class="sidebar-socials">
+          <a href="mailto:amadreza.farahani@outlook.com" class="social-btn" aria-label="Email" title="Email">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2.5"/><path d="m22 7-10 5L2 7"/></svg><span>Email</span>
+          </a>
+          <a href="https://linkedin.com/in/amadrezafrh" target="_blank" rel="noopener" class="social-btn" aria-label="LinkedIn" title="LinkedIn">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4V8h4v2"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg><span>LinkedIn</span>
+          </a>
+          <a href="https://github.com/amadrezafrh" target="_blank" rel="noopener" class="social-btn" aria-label="GitHub" title="GitHub">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg><span>GitHub</span>
+          </a>
+          <a href="../resume/Amadreza.pdf" target="_blank" rel="noopener" class="social-btn" aria-label="CV" title="CV">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><span>CV</span>
+          </a>
+          <a href="../resume/Amadreza.pdf" target="_blank" rel="noopener" class="social-btn" aria-label="Resume" title="Resume" id="resume-link">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span>Resume</span>
+          </a>
+        </div>
+        <div class="sidebar-footer">
+          <span class="sidebar-location"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 7-8 13-8 13s-8-6-8-13a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> Turin, Italy</span>
+          <span class="sidebar-dot">&middot;</span>
+          <span class="sidebar-name">&copy; 2026 Amadreza Farahani</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content three-col">
+      <div class="content-column">
+        <article class="project-detail">
+          <header class="project-header">
+            <h1>Gender Identification Using Machine Learning and Pattern Recognition</h1>
+            <div class="project-meta">
+              <p class="project-date">March 2022</p>
+              <p class="project-tags">
+                <span>Python</span>
+                <span>NumPy</span>
+                <span>SciPy</span>
+                <span>Machine Learning</span>
+                <span>Pattern Recognition</span>
+                <span>From Scratch</span>
+              </p>
+            </div>
+          </header>
+
+          <section class="project-content">
+            <nav class="toc">
+              <p class="toc-title">Contents</p>
+              <ul class="toc-list">
+                <li><a href="#overview">1. Overview</a></li>
+                <li><a href="#preprocessing">2. Pre-Processing</a>
+                  <ul class="toc-list toc-sub">
+                    <li><a href="#normalization">2.1. Normalization</a></li>
+                    <li><a href="#pca">2.2. Principal Component Analysis</a></li>
+                  </ul>
+                </li>
+                <li><a href="#mvg">3. Multivariate Gaussian Classifiers</a></li>
+                <li><a href="#logreg">4. Logistic Regression</a>
+                  <ul class="toc-list toc-sub">
+                    <li><a href="#linear-lr">4.1. Linear Logistic Regression</a></li>
+                    <li><a href="#quad-lr">4.2. Quadratic Logistic Regression</a></li>
+                  </ul>
+                </li>
+                <li><a href="#svm">5. Support Vector Machines</a>
+                  <ul class="toc-list toc-sub">
+                    <li><a href="#linear-svm">5.1. Linear SVM</a></li>
+                    <li><a href="#poly-svm">5.2. Polynomial SVM</a></li>
+                    <li><a href="#rbf-svm">5.3. RBF SVM</a></li>
+                  </ul>
+                </li>
+                <li><a href="#gmm">6. Gaussian Mixture Models</a></li>
+                <li><a href="#calibration">7. Score Calibration and Fusion</a></li>
+                <li><a href="#evaluation">8. Evaluation on Test Set</a></li>
+                <li><a href="#conclusion">9. Conclusion</a></li>
+                <li><a href="#links">10. Links</a></li>
+              </ul>
+            </nav>
+
+            <h2 id="overview">1. Overview</h2>
+            <p>
+              The goal of this project is to build, from scratch, a classifier that identifies the gender associated with a high-level embedding of a face image. The dataset is a synthetic set of low-dimensional embeddings the kind of vector produced by a face encoder neural network and the task is the binary classification problem on top.
+            </p>
+            <p>
+              Rather than reach for a single black-box classifier, the project walks through the full pattern-recognition pipeline as taught in the Machine Learning and Pattern Recognition course at Politecnico di Torino: feature exploration, normalisation, dimensionality reduction, four families of classifiers, score calibration, and model fusion. Every model including the Gaussian classifiers, the regularised logistic regression, the SVM dual formulation with kernels, and the EM-trained Gaussian Mixture Model is implemented in NumPy/SciPy from first principles, with no scikit-learn or PyTorch in sight.
+            </p>
+            <p>
+              All hyper-parameters are picked with $K$-fold cross-validation at $K = 6$. The target metric is the <strong>normalised minimum detection cost function</strong> ($\text{minDCF}$), computed on three application points: the balanced application $(\pi, C_{fn}, C_{fp}) = (0.5, 1, 1)$ and the two imbalanced ones $(0.1, 1, 1)$ and $(0.9, 1, 1)$.
+            </p>
+            <p>
+              The dataset itself consists of image embeddings low-dimensional representations of face images obtained by mapping them to a common manifold via a neural encoder. Embeddings are synthetic for tractability and have considerably lower dimension than real-world ones. The classifier families analysed are:
+            </p>
+            <ul>
+              <li>Generative Gaussian models (full / diagonal / tied)</li>
+              <li>Logistic regression (linear and quadratic, prior-weighted)</li>
+              <li>Support vector machines (linear, polynomial kernel, RBF kernel)</li>
+              <li>Gaussian mixture models (full / diagonal / tied components)</li>
+            </ul>
+            <p>
+              Each family is studied across three preprocessing variants (raw, z-scored, Gaussianised) and four PCA settings (no PCA, $m \in \{10, 8, 6\}$), giving a wide search space that the cross-validation prunes.
+            </p>
+
+            <h2 id="preprocessing">2. Pre-Processing</h2>
+            <p>
+              Before any classifier is fit, the dataset is explored to decide which preprocessing techniques are worth running. Two visual summaries drive that decision: the per-feature distribution and the feature-correlation heatmap.
+            </p>
+            <div class="project-image">
+              <img src="ml-scratch/train/part0_distribution_raw.png" alt="Raw feature distributions" />
+              <p class="image-caption">Distribution of the raw features. Most are roughly Gaussian; a handful are multi-modal presumably reflecting demographic sub-populations in the underlying face data.</p>
+            </div>
+            <p>
+              Most features look approximately Gaussian, with a minority displaying bimodal or trimodal shapes that are likely mixtures over latent sub-populations (different ages, accents, recording conditions). This already tells us that a generative model with Gaussian assumptions is a reasonable first stop, but that a mixture model will probably do better when the modes matter.
+            </p>
+            <div class="project-image">
+              <img src="ml-scratch/train/part0_heatmap.png" alt="Feature correlation heatmap" />
+              <p class="image-caption">Correlation heatmap of the raw features.</p>
+            </div>
+            <p>
+              The correlation heatmap shows that several features are strongly correlated, so a model that assumes diagonal covariance (na&iuml;ve Bayes) is expected to lose information. It also suggests PCA might find a smaller, decorrelated representation without throwing away much signal.
+            </p>
+
+            <h3 id="normalization">2.1. Normalization</h3>
+            <p><strong>Z-score</strong> shifts each feature to zero mean and unit variance:</p>
+            <p>$$ z = \frac{x - \mu}{\sigma}. $$</p>
+            <p>
+              Z-scoring is the standard recipe for distance-based and gradient-based models and is what most discriminative classifiers expect at their input. It preserves the shape of each marginal distribution.
+            </p>
+            <div class="project-image">
+              <img src="ml-scratch/train/part0_distribution_zscore.png" alt="Z-scored distributions" />
+              <p class="image-caption">Per-feature distributions after z-scoring. Only the scale changes; the shapes are preserved.</p>
+            </div>
+            <p>
+              <strong>Gaussianisation</strong> goes a step further and forces each marginal towards a standard normal via the inverse CDF of an empirical rank statistic. For a sample $x_j$ with empirical CDF rank $r$ on a training set of size $N$,
+            </p>
+            <p>$$ y = \Phi^{-1}\!\left(\frac{r}{N + 2}\right). $$</p>
+            <p>
+              Where z-scoring only fixes the first two moments, Gaussianisation removes skew and tails. The cost is that the transform is non-linear and is fit on the training distribution; at test time, ranks are interpolated against the training quantiles.
+            </p>
+            <div class="project-image">
+              <img src="ml-scratch/train/part0_distribution_gauss.png" alt="Gaussianised distributions" />
+              <p class="image-caption">Per-feature distributions after Gaussianisation. All marginals now look standard normal.</p>
+            </div>
+
+            <h3 id="pca">2.2. Principal Component Analysis</h3>
+            <p>
+              PCA seeks the direction that maximises projected variance. For a zero-mean random variable $x$ with covariance $\Sigma$, the first principal direction $w$ solves
+            </p>
+            <p>$$ \max_w\; w^\top \Sigma w \quad \text{s.t.} \quad \lVert w \rVert = 1. $$</p>
+            <p>The Lagrangian $\mathcal{L} = w^\top \Sigma w + \lambda(w^\top w - 1)$ stationary in $w$ yields the eigen-problem</p>
+            <p>$$ \Sigma w = \lambda w, \quad \text{with} \quad w^\top \Sigma w = \lambda. $$</p>
+            <p>
+              The leading eigenvector of the sample covariance captures the most variance; the second leading eigenvector (orthogonal to the first) captures the second most, and so on. The full set is obtained via the SVD of the centred data matrix. Empirically the heatmap above hinted at meaningful redundancy, so PCA is evaluated at $m \in \{10, 8, 6\}$ alongside no-PCA.
+            </p>
+
+            <h2 id="mvg">3. Multivariate Gaussian Classifiers</h2>
+            <p>
+              The first family is the generative Gaussian classifier. For each class $c$, we model
+            </p>
+            <p>$$ p(x \mid y = c) = \mathcal{N}(x \mid \mu_c, \Sigma_c), $$</p>
+            <p>where the density of a $p$-dimensional Gaussian with mean $\mu$ and covariance $\Sigma$ is</p>
+            <p>$$ \mathcal{N}(x \mid \mu, \Sigma) = \frac{1}{(2\pi)^{p/2} |\Sigma|^{1/2}} \exp\!\left[-\frac{1}{2}(x - \mu)^\top \Sigma^{-1} (x - \mu)\right]. $$</p>
+            <p>The Maximum Likelihood estimates of mean and covariance from $N$ samples are</p>
+            <p>$$ \hat\mu_{\text{ML}} = \frac{1}{N} \sum_{i=1}^N x_i, \qquad \hat\Sigma_{\text{ML}} = \frac{1}{N} \sum_{i=1}^N (x_i - \bar x)(x_i - \bar x)^\top. $$</p>
+            <p>
+              Bayes&rsquo; rule then turns class likelihoods into posteriors. For binary classification we compare $p(y=0 \mid x)$ against $p(y=1 \mid x)$, where the normalisation constant cancels and only the unnormalised log-likelihood ratio matters.
+            </p>
+            <p>Four variants are evaluated:</p>
+            <ul>
+              <li><strong>Full-Cov</strong> per-class full covariance, giving quadratic decision surfaces.</li>
+              <li><strong>Diag-Cov</strong> per-class diagonal covariance (na&iuml;ve Bayes), expected to suffer because the heatmap showed strong off-diagonal correlations.</li>
+              <li><strong>Tied Full-Cov</strong> shared full covariance across classes, giving linear decision surfaces.</li>
+              <li><strong>Tied Diag-Cov</strong> shared diagonal covariance.</li>
+            </ul>
+            <p>
+              Since the marginals were already roughly Gaussian, the family is expected to do well. The diagonal variants are expected to suffer because of the strong off-diagonal correlations the heatmap revealed.
+            </p>
+
+            <table class="mlpr-table">
+              <caption>MVG results on the raw features, $\text{minDCF}$ at three application points. K-fold figures correspond to $K = 6$. Best in bold.</caption>
+              <thead>
+                <tr><th rowspan="2">Model</th><th colspan="3">Single Fold</th><th colspan="3">6-Folds</th></tr>
+                <tr><th>$\pi = 0.5$</th><th>$\pi = 0.1$</th><th>$\pi = 0.9$</th><th>$\pi = 0.5$</th><th>$\pi = 0.1$</th><th>$\pi = 0.9$</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Full-Cov</td><td>0.126</td><td>0.340</td><td>0.388</td><td>0.115</td><td class="best">0.283</td><td>0.360</td></tr>
+                <tr><td>Diag-Cov</td><td>0.515</td><td>0.784</td><td>0.822</td><td>0.467</td><td>0.795</td><td>0.789</td></tr>
+                <tr><td>Tied Full-Cov</td><td>0.125</td><td>0.302</td><td>0.426</td><td class="best">0.113</td><td>0.289</td><td class="best">0.339</td></tr>
+                <tr><td>Tied Diag-Cov</td><td>0.505</td><td>0.784</td><td>0.842</td><td>0.461</td><td>0.790</td><td>0.799</td></tr>
+              </tbody>
+            </table>
+
+            <p>
+              Both full-covariance variants (full and tied) sit around $\text{minDCF} = 0.11$ at the balanced application. The diagonal variants are catastrophically worse, in line with the prediction from the heatmap. Normalisation and PCA were also evaluated; they do not help on this family raw features with the tied full-covariance model already capture the structure of the data. Tied beats full on the balanced application, which is the first signal that the optimal class boundary on this dataset is linear.
+            </p>
+
+            <h2 id="logreg">4. Logistic Regression</h2>
+            <p>
+              The discriminative counterpart is logistic regression. Because the project explicitly evaluates three application points with very different priors, we use the <strong>prior-weighted</strong> objective:
+            </p>
+            <p>$$ R(w) = \frac{\lambda}{2}\lVert w \rVert^2 + \frac{\pi_T}{n_T} \sum_{i : z_i = 1} \log\!\left(1 + e^{-z_i s_i}\right) + \frac{1 - \pi_T}{n_F} \sum_{i : z_i = -1} \log\!\left(1 + e^{-z_i s_i}\right), $$</p>
+            <p>where $s_i = w^\top x_i + b$, $z_i \in \{-1, +1\}$, and $\pi_T$ is the target prior we want to optimise for at training time.</p>
+            <p>
+              The same trainer also produces quadratic separators by applying the model to the feature expansion
+            </p>
+            <p>$$ \phi(x) = \begin{bmatrix} \text{vec}(x x^\top) \\ x \end{bmatrix}. $$</p>
+            <p>
+              A linear separator on $\phi(x)$ is a quadratic separator on $x$. This trick lets the same logistic-regression code carry both the linear and quadratic models.
+            </p>
+
+            <h3 id="linear-lr">4.1. Linear Logistic Regression</h3>
+            <div class="project-image">
+              <img src="ml-scratch/train/part2_linear_upZ_midG_downR_leftKFOLDS.png" alt="Linear logistic regression minDCF vs lambda" />
+              <p class="image-caption">Linear logistic regression: $\text{minDCF}$ vs. regularisation $\lambda$. Top: z-scored features. Middle: Gaussianised. Bottom: raw. Left: 6-fold CV. Right: single fold.</p>
+            </div>
+            <p>
+              Regularisation buys very little on this dataset; the curves are flat until around $\lambda \approx 0.1$ where they start to degrade. The minimum sits around $\lambda = 10^{-5}$. Z-scoring and Gaussianisation do not help they are not detrimental either, but they bring no measurable gain. Raw features perform best on the balanced application.
+            </p>
+
+            <table class="mlpr-table">
+              <caption>Linear logistic regression at $\lambda = 10^{-5}$. Best in bold.</caption>
+              <thead>
+                <tr><th>Model</th><th>$\pi = 0.5$</th><th>$\pi = 0.1$</th><th>$\pi = 0.9$</th></tr>
+              </thead>
+              <tbody>
+                <tr class="group-row"><td colspan="4">Raw features</td></tr>
+                <tr><td>MVG (Full-Cov)</td><td>0.115</td><td>0.283</td><td>0.360</td></tr>
+                <tr><td>MVG (Tied Full-Cov)</td><td>0.113</td><td>0.289</td><td>0.339</td></tr>
+                <tr><td>LogReg ($\pi_T = 0.1$)</td><td>0.122</td><td class="best">0.273</td><td>0.392</td></tr>
+                <tr><td>LogReg ($\pi_T = 0.5$)</td><td class="best">0.115</td><td>0.290</td><td>0.349</td></tr>
+                <tr><td>LogReg ($\pi_T = 0.9$)</td><td>0.116</td><td>0.324</td><td class="best">0.324</td></tr>
+                <tr class="group-row"><td colspan="4">Gaussianised features</td></tr>
+                <tr><td>LogReg ($\pi_T = 0.5$)</td><td>0.127</td><td>0.362</td><td>0.362</td></tr>
+              </tbody>
+            </table>
+
+            <p>
+              Linear logistic regression essentially recovers the tied-covariance MVG. Tuning $\pi_T$ buys a small win at the matching application (training at $\pi_T = 0.9$ helps the $\pi = 0.9$ test point) but the overall picture matches the prediction: a linear boundary is the right boundary on this data.
+            </p>
+
+            <h3 id="quad-lr">4.2. Quadratic Logistic Regression</h3>
+            <div class="project-image">
+              <img src="ml-scratch/train/part2_quad_upZ_midG_downR_leftKFOLDS.png" alt="Quadratic logistic regression minDCF vs lambda" />
+              <p class="image-caption">Quadratic logistic regression: $\text{minDCF}$ vs. $\lambda$. Top: z-scored, Middle: Gaussianised, Bottom: raw.</p>
+            </div>
+            <p>
+              For the quadratic version, regularisation matters more for the normalised features the higher-dimensional $\phi(x)$ expansion makes the loss landscape stiffer. On raw features the model is once again insensitive to $\lambda$. None of the quadratic LR configurations beats the linear version, which is consistent with the linear-boundary story.
+            </p>
+
+            <table class="mlpr-table">
+              <caption>Quadratic logistic regression vs. MVG, raw features, $\lambda = 10^{-5}$. Best linear baseline in bold.</caption>
+              <thead>
+                <tr><th>Model</th><th>$\pi = 0.5$</th><th>$\pi = 0.1$</th><th>$\pi = 0.9$</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>MVG (Full-Cov)</td><td>0.115</td><td class="best">0.283</td><td>0.360</td></tr>
+                <tr><td>MVG (Tied Full-Cov)</td><td class="best">0.113</td><td>0.289</td><td class="best">0.339</td></tr>
+                <tr><td>Quad LR ($\pi_T = 0.5$)</td><td>0.134</td><td>0.331</td><td>0.336</td></tr>
+                <tr><td>Quad LR ($\pi_T = 0.1$)</td><td>0.134</td><td>0.367</td><td>0.359</td></tr>
+                <tr><td>Quad LR ($\pi_T = 0.9$)</td><td>0.138</td><td>0.360</td><td>0.371</td></tr>
+              </tbody>
+            </table>
+
+            <h2 id="svm">5. Support Vector Machines</h2>
+            <p>
+              The third family is the support vector machine. Three flavours are evaluated: a linear SVM solved through the primal, and two non-linear SVMs polynomial and RBF kernels solved through the dual.
+            </p>
+
+            <h3 id="linear-svm">5.1. Linear SVM</h3>
+            <p>The linear primal is</p>
+            <p>$$ \hat J(\hat w) = \frac{1}{2}\lVert \hat w \rVert^2 + C \sum_{i=1}^n \max\!\left(0, 1 - z_i\, \hat w^\top \hat x_i\right), $$</p>
+            <p>
+              with $\hat x_i = [x_i^\top, K]^\top$ and $\hat w = [w^\top, b]^\top$. The constant $K$ in the augmented input compensates for the way bias gets regularised inside the augmented norm.
+            </p>
+            <div class="project-image">
+              <img src="ml-scratch/train/part3_upKFOLDS_rightIMB_False.png" alt="Linear SVM minDCF vs C" />
+              <p class="image-caption">Linear SVM: $\text{minDCF}$ vs. $C$. Top: 6-fold CV. Bottom: single fold. Left: balanced. Right: standard imbalanced.</p>
+            </div>
+            <p>
+              Across the sweep, $C = 10^{-2}$ is a reasonable choice. Class re-balancing inside the SVM (the imbalanced variant) does not help: the default formulation already tracks the linear MVG and LR results closely. Linear SVM is the best of the three linear baselines but only marginally.
+            </p>
+            <table class="mlpr-table">
+              <caption>Comparison of linear models, raw features. Best in bold.</caption>
+              <thead>
+                <tr><th>Model</th><th>$\pi = 0.5$</th><th>$\pi = 0.1$</th><th>$\pi = 0.9$</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>MVG (Tied Full-Cov)</td><td>0.113</td><td>0.289</td><td>0.339</td></tr>
+                <tr><td>LogReg ($\pi_T = 0.5$)</td><td>0.115</td><td>0.290</td><td>0.349</td></tr>
+                <tr><td>Linear SVM ($C = 10^{-2}$)</td><td class="best">0.112</td><td class="best">0.286</td><td>0.334</td></tr>
+                <tr><td>Linear SVM ($C = 10^{-2}, \pi_T = 0.5$)</td><td>0.116</td><td>0.296</td><td class="best">0.328</td></tr>
+              </tbody>
+            </table>
+
+            <h3 id="poly-svm">5.2. Polynomial SVM</h3>
+            <p>The non-linear SVMs are solved through the dual</p>
+            <p>$$ \max_\alpha\; \alpha^\top \mathbf{1} - \tfrac{1}{2} \alpha^\top H \alpha \quad \text{s.t.} \quad 0 \le \alpha_i \le C,\; \sum_i \alpha_i z_i = 0. $$</p>
+            <p>The kernel function is then plugged into $H_{ij} = z_i z_j \, k(x_i, x_j)$. For the polynomial kernel of degree $d$,</p>
+            <p>$$ k(x_1, x_2) = (x_1^\top x_2 + 1)^d + \zeta, $$</p>
+            <p>with $\zeta = K^2$ taking on the role of a regularised bias term.</p>
+            <div class="project-image">
+              <img src="ml-scratch/train/part5_leftKFOLDS_gaussianization.png" alt="Polynomial SVM minDCF vs C across degrees" />
+              <p class="image-caption">Polynomial SVM on Gaussianised features. $\text{minDCF}$ vs. $C$ across polynomial degrees.</p>
+            </div>
+            <div class="project-image">
+              <img src="ml-scratch/train/part5_leftKFOLDS_pi_gaussianization.png" alt="Polynomial SVM minDCF vs C across pi_T" />
+              <p class="image-caption">Polynomial SVM on Gaussianised features, sweep over $\pi_T$. The sweet spot lands around $C = 10^{-2.3}$ at degree 2.</p>
+            </div>
+            <table class="mlpr-table">
+              <caption>Non-linear models comparison. Best in bold.</caption>
+              <thead>
+                <tr><th>Model</th><th>$\pi = 0.5$</th><th>$\pi = 0.1$</th><th>$\pi = 0.9$</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>MVG (Full-Cov)</td><td>0.115</td><td class="best">0.283</td><td>0.360</td></tr>
+                <tr><td>Quad LR ($\pi_T = 0.5$)</td><td>0.134</td><td>0.331</td><td>0.336</td></tr>
+                <tr><td>Quad SVM ($C = 10^{-2.3}, d = 3$)</td><td class="best">0.109</td><td>0.320</td><td class="best">0.320</td></tr>
+              </tbody>
+            </table>
+            <p>
+              Quadratic SVM beats quadratic LR at every application point and beats MVG at the balanced one. Different choices of $\pi_T$ give very similar numbers, with the imbalanced default narrowly the best.
+            </p>
+
+            <h3 id="rbf-svm">5.3. RBF SVM</h3>
+            <p>The RBF kernel is</p>
+            <p>$$ k(x_1, x_2) = e^{-\gamma \lVert x_1 - x_2 \rVert^2}, $$</p>
+            <p>and produces a richer decision surface at the cost of one extra hyper-parameter, $\gamma$.</p>
+            <div class="project-image">
+              <img src="ml-scratch/train/part4_leftKFOLDS_False.png" alt="RBF SVM minDCF on raw features" />
+              <p class="image-caption">RBF SVM on raw features: $\text{minDCF}$ vs. $C$ across $\gamma$. Best results sit around $\log \gamma = -3$ and $C = 10$.</p>
+            </div>
+            <table class="mlpr-table">
+              <caption>Best RBF SVM compared against the other families.</caption>
+              <thead>
+                <tr><th>Model</th><th>$\pi = 0.5$</th><th>$\pi = 0.1$</th><th>$\pi = 0.9$</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>MVG (Full-Cov)</td><td>0.115</td><td>0.283</td><td>0.360</td></tr>
+                <tr><td>Quad LR ($\pi_T = 0.5$)</td><td>0.134</td><td>0.331</td><td>0.336</td></tr>
+                <tr><td>Quad SVM ($C = 10^{-2.3}, d = 3$)</td><td>0.109</td><td>0.320</td><td>0.320</td></tr>
+                <tr><td>RBF SVM ($\log C = 1, \log \gamma = -3$)</td><td class="best">0.091</td><td class="best">0.240</td><td class="best">0.228</td></tr>
+              </tbody>
+            </table>
+            <p>
+              The RBF kernel is the first model that substantially improves over the linear baseline at every application point: $\text{minDCF} = 0.091$ at the balanced application is a ~20% relative reduction over the tied MVG, and the imbalanced points improve by even more. Class re-balancing on top of RBF brings small further gains at the matching application but loses elsewhere; in practice the unbalanced default is the safest choice unless the deployment scenario is fixed in advance.
+            </p>
+            <div class="project-image">
+              <img src="ml-scratch/train/part4_leftKFOLDS_gaussianization.png" alt="RBF SVM on Gaussianised features" />
+              <p class="image-caption">RBF SVM on Gaussianised features. The best $\gamma$ shifts to $10^{-1}$, and absolute numbers are slightly worse than the raw-feature counterpart.</p>
+            </div>
+
+            <h2 id="gmm">6. Gaussian Mixture Models</h2>
+            <p>
+              The last family models each class as a mixture of Gaussians,
+            </p>
+            <p>$$ p(x \mid y = c) = \sum_{k=1}^K \pi_{c,k} \, \mathcal{N}(x \mid \mu_{c,k}, \Sigma_{c,k}), $$</p>
+            <p>
+              fit by the EM algorithm. The E-step computes the responsibilities $\gamma_{c,k}(x_i) = \pi_{c,k} \mathcal{N}(x_i \mid \mu_{c,k}, \Sigma_{c,k}) / \sum_j \pi_{c,j} \mathcal{N}(x_i \mid \mu_{c,j}, \Sigma_{c,j})$ and the M-step updates the means, covariances, and mixture weights from the weighted statistics. The number of components per class is grown using the LBG splitting procedure (each step doubles the number of components and runs a few EM iterations to convergence).
+            </p>
+            <p>
+              The multi-modal shapes we noticed in the very first distribution plot are exactly the case GMM should handle better than a single Gaussian. We sweep the number of components in $\{1, 2, 4, 8, 16, 32\}$ for both Full-covariance and Tied-covariance variants.
+            </p>
+            <div class="project-image">
+              <img src="ml-scratch/train/part6_upFULL_rightTIED_False.png" alt="GMM components on raw features" />
+              <p class="image-caption">GMM $\text{minDCF}$ vs. number of components on raw features. Left: full covariance per component. Right: tied covariance.</p>
+            </div>
+            <div class="project-image">
+              <img src="ml-scratch/train/part6_upFULL_rightTIED_gaussianization.png" alt="GMM components on Gaussianised features" />
+              <p class="image-caption">Same sweep on Gaussianised features.</p>
+            </div>
+            <p>
+              GMM improves on the single-Gaussian MVG once we have enough components to capture the bimodal features, with the best validation score competing closely with the RBF SVM at the balanced application. The full-covariance variant outperforms tied on this dataset, again confirming that the off-diagonal structure of the features carries useful information.
+            </p>
+
+            <h2 id="calibration">7. Score Calibration and Fusion</h2>
+            <p>
+              All the classifiers above produce scores, but the threshold at which scores translate into class decisions is application-specific. For each application point we need a calibrated score $\tilde s$ such that the theoretical optimal threshold $-\log(\pi / (1 - \pi))$ is also the empirically best threshold. We fit a one-parameter logistic regression on the development scores to learn the affine map
+            </p>
+            <p>$$ \tilde s = \alpha \, s + \beta - \log\!\left(\frac{\pi}{1 - \pi}\right), $$</p>
+            <p>
+              with $\pi$ the target prior used during calibration. The same calibrator is then frozen for all applications; the prior-shift term at the end takes care of redirecting it to non-balanced operating points.
+            </p>
+            <div class="project-image">
+              <img src="ml-scratch/train/part7_not_calibrated.png" alt="Bayes error before calibration" />
+              <p class="image-caption">Bayes error plot before calibration. The gap between actDCF and minDCF grows on the tails raw scores are miscalibrated for the imbalanced applications.</p>
+            </div>
+            <div class="project-image">
+              <img src="ml-scratch/train/part7_calibrated.png" alt="Bayes error after calibration" />
+              <p class="image-caption">After calibration: actDCF tracks minDCF much more closely across the full prior range.</p>
+            </div>
+            <p>
+              <strong>Score fusion.</strong> We finally combine the calibrated scores of the strongest two models (RBF SVM and full-cov GMM) by averaging them in the logit domain, which is equivalent to fitting a multi-input prior-weighted logistic regression on the dev scores. Fusion gives a further small but consistent gain the two models make different mistakes and averaging in log-odds compresses some of that variance.
+            </p>
+            <div class="project-image">
+              <img src="ml-scratch/train/part7_calibrated_and_fusion.png" alt="Calibrated single models vs fusion" />
+              <p class="image-caption">Bayes error: calibrated individual scores vs. the fused two-system score across all priors. The fused score is the lower envelope at every operating point.</p>
+            </div>
+
+            <h2 id="evaluation">8. Evaluation on Test Set</h2>
+            <p>
+              The held-out evaluation set is treated as a true blind test: no model selection or hyper-parameter tuning is performed against it. The candidate pipeline (RBF SVM with raw features, calibrated, fused with the GMM full-cov classifier) is run as is. The Bayes error plot below shows that the qualitative picture from cross-validation holds: the chosen system is well-calibrated across the full prior range, and the fusion remains the lower envelope.
+            </p>
+            <div class="project-image">
+              <img src="ml-scratch/test/part7_calibrated.png" alt="Test set: calibrated single models" />
+              <p class="image-caption">Test set Bayes error after calibration.</p>
+            </div>
+            <div class="project-image">
+              <img src="ml-scratch/test/part7_calibrated_and_fusion.png" alt="Test set: calibrated and fused" />
+              <p class="image-caption">Test set Bayes error after calibration plus fusion.</p>
+            </div>
+            <div class="project-image">
+              <img src="ml-scratch/test/part7_calibrated_fusion_det.png" alt="Test set DET curves" />
+              <p class="image-caption">DET curves on the test set: the fused system Pareto-dominates each individual classifier.</p>
+            </div>
+
+            <h2 id="conclusion">9. Conclusion</h2>
+            <p>
+              Across four families of classifiers, the picture is consistent. The dataset's linear-boundary structure is captured by the tied-covariance MVG, the linear LR, and the linear SVM, all of which sit around $\text{minDCF} \approx 0.11$ at the balanced application. Quadratic models improve only marginally. The RBF SVM is the first non-linear model that meaningfully improves the result, dropping the balanced $\text{minDCF}$ to ~0.09 and producing the biggest gains on the imbalanced applications. The GMM with a moderate number of full-covariance components closes most of the same gap by modelling the bimodal feature distributions directly. Calibrating the strongest models and fusing them in the logit domain gives a final small but consistent improvement, and the held-out evaluation confirms the cross-validation ranking.
+            </p>
+            <p>
+              The bigger takeaway is methodological. Writing every classifier from first principles (Gaussian density, EM, LBG splitting, dual SVM with kernels, prior-weighted logistic regression) makes the modelling assumptions concrete: the heatmap predicted diagonal Gaussians would fail; the marginals predicted GMM would help; the application-point analysis motivated calibration. None of the wins on this dataset came from off-the-shelf tooling they came from understanding which assumption matched the data at each step.
+            </p>
+
+            <h2 id="links">10. Links</h2>
+            <p class="project-links">
+              <a href="../index.html#projects" class="back-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg><span>Back to Projects</span></a>
+              <a href="https://github.com/amadrezafrh/Gender-Identification-MLPR" target="_blank" class="github-pill"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg><span>GitHub Repository</span></a>
+              <a href="ml-scratch/report.pdf" target="_blank" class="github-pill"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><span>Report (PDF)</span></a>
+            </p>
+          </section>
+        </article>
+      </div>
+      <aside class="right-rail">
+        <section class="section notes">
+          <header class="notes-header">
+            <p class="notes-eyebrow">Behind the Build</p>
+            <h2 class="notes-title">Engineering Notes</h2>
+            <p class="notes-lede">Course project, March 2022. Every classifier in this project is written from first principles in NumPy/SciPy no scikit-learn, no PyTorch so the engineering side is mostly about turning the math into vectorised code that runs in seconds rather than minutes.</p>
+          </header>
+
+          <div class="notes-context">
+            <p><strong>Stack.</strong> Python + NumPy + SciPy. No scikit-learn, no PyTorch. The whole library is in four files (<code>classifiers.py</code>, <code>preprocess.py</code>, <code>postprocess.py</code>, <code>utils.py</code>) totalling ~1k lines. Below are the four classifier families, each shown by the line that actually does the work.</p>
+          </div>
+
+          <h3>1. MVG: ML estimate per class</h3>
+          <p>One <code>fit</code> covers four variants (full / diagonal &times; per-class / tied) by switching the covariance after the per-class moments are estimated.</p>
+<pre><code class="language-python">class MVG:
+    def fit(self, x_train, y_train):
+        if self.tied:                          # one shared covariance
+            c = sum(calculate_cov(x_train[:, y_train[0] == lab])
+                    for lab in [0, 1])
+            for lab in [0, 1]:
+                mu = calculate_mean(x_train[:, y_train[0] == lab])
+                if self.model == "diagonal":
+                    c = np.diag(np.diag(c))
+                self.h[lab] = (mu, c / 2)
+        else:                                  # per-class covariance
+            for lab in [0, 1]:
+                mu = calculate_mean(x_train[:, y_train[0] == lab])
+                c  = calculate_cov(x_train[:, y_train[0] == lab])
+                if self.model == "diagonal":
+                    c = np.diag(np.diag(c))
+                self.h[lab] = (mu, c)
+        return self.h</code></pre>
+
+          <h3>2. Logistic Regression: prior-weighted loss</h3>
+          <p>The objective is wrapped as a closure and handed to <code>scipy.optimize.fmin_l_bfgs_b</code>. The <code>balance</code> branch splits the cross-entropy across the two classes weighted by the target prior <code>pi</code>.</p>
+<pre><code class="language-python">def _logreg_obj(v):
+    w, b = vcol(v[:m]), v[-1]
+    s = np.dot(w.T, x) + b                    # raw scores
+    if self.balance:
+        r1 = np.logaddexp(0, -s[y == 1] * z[y == 1]).sum()
+        r0 = np.logaddexp(0, -s[y == 0] * z[y == 0]).sum()
+        loss = (pi / nt) * r1 + ((1 - pi) / nf) * r0
+    else:
+        loss = np.logaddexp(0, -s * z).mean()
+    return loss + 0.5 * l * np.linalg.norm(w) ** 2</code></pre>
+          <p>The quadratic variant reuses the same trainer by expanding each input <code>x</code> into <code>[vec(x x.T); x]</code> first.</p>
+
+          <h3>3. SVM: dual with three kernels</h3>
+          <p>The kernel matrix is built explicitly, multiplied by the label outer-product, and the dual is solved with L-BFGS-B with box constraints on <code>alpha</code>.</p>
+<pre><code class="language-python">xe = np.vstack([self.x, np.ones((1, self.x.shape[1]))])     # augmented x
+
+if self.kernel == "rbf":
+    d = vcol((xe**2).sum(0)) + vrow((xe**2).sum(0)) - 2 * xe.T @ xe
+    K = np.exp(-gamma * d) + k
+elif self.kernel == "polynomial":
+    K = (xe.T @ xe + poly_bias) ** degree + bias
+else:                                                       # linear
+    K = xe.T @ xe
+
+self.h = vcol(z) * vrow(z) * K                              # H_ij = z_i z_j K_ij
+self.alpha_star, *_ = scipy.optimize.fmin_l_bfgs_b(
+    self._Ldual, np.zeros(N),
+    bounds=[(0, c)] * N, factr=0.0, maxiter=iteration,
+)</code></pre>
+
+          <h3>4. GMM: one EM step + LBG split</h3>
+          <p>Responsibilities are computed in log-space (<code>scipy.special.logsumexp</code>), then the weighted-mean / weighted-cov M-step writes the new components. <code>LBG</code> doubles the number of components by perturbing each mean along the principal direction of its covariance and re-running EM.</p>
+<pre><code class="language-python">sj = np.array([logpdf_GAU_ND(x, mu_i, cov_i) + np.log(w_i)
+               for (w_i, mu_i, cov_i) in gmm])
+sm = scipy.special.logsumexp(sj, axis=0)
+gamma = np.exp(sj - sm)                       # E-step responsibilities
+ll_new = sm.mean()                            # log-likelihood for stop test
+
+for i, gam in enumerate(gamma):               # M-step per component
+    z = gam.sum()
+    mu  = vcol((gam * x).sum(1) / z)
+    cov = (x * gam) @ x.T / z - mu @ mu.T
+    if self.model == "diagonal":
+        cov = np.diag(np.diag(cov))
+    u, s, _ = np.linalg.svd(cov); s[s &lt; 0.01] = 0.01     # cov floor
+    gmm_new.append((z / n, mu, u @ vcol(s) * u.T))</code></pre>
+
+          <h3>5. Score calibration &amp; fusion</h3>
+          <p>Calibration is just a one-feature logistic regression on the dev scores, with the target prior subtracted at the end so the trained map is application-agnostic. Fusion is the same trainer fed multiple score columns and averages them in log-odds.</p>
+<pre><code class="language-python">def calibrate(scores_dev, y_dev, pi=0.5):
+    lr = LR("linear")
+    lr.fit(vrow(scores_dev), y_dev, lamb=1e-3, pi=pi, balance=True)
+    w, b = lr._w, lr._b
+    return lambda s: w * s + b - np.log(pi / (1 - pi))
+
+def fuse(score_columns, y_dev, pi=0.5):
+    lr = LR("linear")
+    lr.fit(np.vstack(score_columns), y_dev, lamb=1e-3, pi=pi, balance=True)
+    return lambda S: np.dot(lr._w.T, np.vstack(S)) + lr._b \
+                     - np.log(pi / (1 - pi))</code></pre>
+        </section>
+      </aside>
+    </main>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      if (typeof siteConfig !== 'undefined') {
+        if (!siteConfig.hide_blog) {
+          var blogLink = document.getElementById('nav-blog');
+          if (blogLink) blogLink.style.display = '';
+        }
+        if (!siteConfig.hide_resume) {
+          var resumeLink = document.getElementById('resume-link');
+          if (resumeLink) resumeLink.style.display = '';
+        }
+      }
+      var mainContent = document.querySelector('.main-content');
+      if (mainContent) mainContent.classList.add('loaded');
+    });
+  </script>
+</body>
+</html>
