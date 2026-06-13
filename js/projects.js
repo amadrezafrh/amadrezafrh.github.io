@@ -13,7 +13,7 @@ const projectsData = [
     preview: "projects/traffic-flow/demo.gif"
   },
   {
-    title: "Sim-to-Real Transfer of RL Policies in Robotics",
+    title: "Sim-to-Real Transfer of Reinforcement Learning Policies in Robotics",
     date: "March 2023",
     description: "Trained PPO agents on the MuJoCo Hopper environment with domain randomization to bridge the sim-to-real gap. Explored vision-based RL with CNN preprocessing and MobileNetV2 feature extraction.",
     tags: ["Python", "PyTorch", "MuJoCo", "PPO", "Domain Randomization"],
@@ -62,7 +62,7 @@ const projectsData = [
   },
   {
     title: "RobVC: A Robust End-to-End Self-Supervised Voice Conversion",
-    date: "April 2025",
+    date: "November 2024",
     description: "Master's thesis on voice conversion using novel cross-attention mechanism for implicit speaker-content disentanglement. Achieves state-of-the-art speaker similarity using HuBERT and EnCodec pretrained models.",
     tags: ["Python", "PyTorch", "Deep Learning", "Voice Conversion", "Self-Supervised Learning"],
     github: null,
@@ -71,5 +71,17 @@ const projectsData = [
     page: "projects/robvc.html",
     featured: true,
     preview: "projects/robvc/newdes.png"
+  },
+  {
+    title: "RobDiffVC: Diffusion-Based Voice Conversion",
+    date: "August 2025",
+    description: "Lab-external extension of RobVC: a diffusion transformer voice conversion model that cuts inference time and parameter count while preserving speaker similarity. Built from scratch outside the original lab environment.",
+    tags: ["Python", "PyTorch", "Diffusion", "Voice Conversion", "DiT"],
+    github: null,
+    report: null,
+    demo: "projects/robdiffvc.html",
+    page: "projects/robdiffvc.html",
+    featured: true,
+    preview: "projects/robdiffvc/Design.png"
   }
 ];

@@ -11,7 +11,11 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
-  <link rel="stylesheet" href="../css/styles.css?v=21" />
+  <link rel="stylesheet" href="../css/styles.css?v=39" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/atom-one-dark.min.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/highlight.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/languages/python.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () { if (window.hljs) { hljs.highlightAll(); } });</script>
   <style>
     .img-small {
       max-width: 240px;
@@ -63,7 +67,7 @@
         </div>
 
         <div class="sidebar-about">
-          <p>ML/AI software engineer with 5+ years of experience in Agentic AI, LLMs/RAG, Computer Vision, and Speech Processing. I have built inference pipelines, cloud-deployed ML services, and safety-critical diagnostic systems used in industry.</p>
+          <p>ML/AI software engineer with 4+ years of experience in Agentic AI, LLMs/RAG, Computer Vision, and Speech Processing. I have built inference pipelines, cloud-deployed ML services, and safety-critical diagnostic systems used in industry.</p>
           <p>M.Sc. Computer Engineering, Politecnico di Torino, with a thesis on voice conversion at TU Darmstadt.</p>
         </div>
 
@@ -319,11 +323,11 @@
 
           <h2>Links</h2>
           <p>
-            <a href="https://github.com/amadrezafrh/AROL-Data-Generation-Module" target="_blank">GitHub Repository</a>
+            <a href="https://github.com/amadrezafrh/AROL-Data-Generation-Module" target="_blank" class="github-pill"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg><span>GitHub Repository</span></a>
           </p>
 
           <p>
-            <a href="../index.html#projects">Back to Projects</a>
+            <a href="../index.html#projects" class="back-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg><span>Back to Projects</span></a>
           </p>
 
         </section>
@@ -331,14 +335,148 @@
 
       </div>
       <aside class="right-rail">
-        <section class="section">
-          <h2>Notes</h2>
-          <p class="placeholder">Technical notes, design choices, and disclaimers for this project will appear here.</p>
+        <section class="section notes">
+          <header class="notes-header">
+            <p class="notes-eyebrow">Behind the Build</p>
+            <h2 class="notes-title">Engineering Notes</h2>
+            <p class="notes-lede">How a noisy capping-line data feed becomes a per-sensor Temporal Fusion Transformer, what was reused from upstream, what the server-side contribution actually is, and what a 2026 stack would look like.</p>
+          </header>
+
+          <div class="notes-context">
+            <p><strong>Context.</strong> Course Internship (Generative AI) at AROL S.p.a., late 2022 to early 2023. Built as the data-generation feature on top of an existing AROL Cloud project, so customers could exercise dashboards without exposing real proprietary recordings.</p>
+          </div>
+
+          <h3>Architecture</h3>
+          <p>Two services behind Docker Compose: a React/TS client for picking machinery + sensors + fault rates, and a Flask server that owns the model, the training sweep, and the live generation loop. MongoDB is the source of truth for both training recordings and generated samples.</p>
+<pre><code>React/TS client
+  |  pick machinery + category + sensors + fault rate
+  v
+Flask /generate REST API
+  |
+  +-- /train -&gt; multi-process driver
+  |       per (machinery, category, sensor, head):
+  |         Extract / ExtractPlc (MongoDB -&gt; pandas)
+  |         classify deterministic vs. continuous
+  |         NaN fill, group-by-day, time_idx
+  |         TimeSeriesDataSet -&gt; TFT (pytorch-forecasting)
+  |         checkpoints/{machinery}/{category}/{head}/{sensor}.ckpt
+  |
+  +-- /simulate -&gt; ThreadPoolExecutor
+          per sensor tick:
+            Generate / GeneratePlc rolls encoder window
+            normal: TFT.predict(median quantile) -&gt; round to original dtype
+            fault : mean + std * (k + U[0,1])  for continuous
+                    mean * (1 + bias_percent)  for deterministic
+            put_mongo() -&gt; live dashboards / customer testing</code></pre>
+
+          <h3>Disclaimers and attribution</h3>
+          <ul>
+            <li><strong>Forked, reused as scaffolding.</strong> The web client, the Flask app shell, the MongoDB schema, and the configuration model come from <a href="https://github.com/MarioDeda" target="_blank" rel="noopener">Mario Deda's AROL Cloud</a> project (SDP 2022 to 2023). The data-generation feature was bolted onto that shell; the UI chrome and the existing routes are upstream.</li>
+            <li><strong>Forked, used as is.</strong> The forecasting model is the <a href="https://arxiv.org/abs/1912.09363" target="_blank" rel="noopener">Temporal Fusion Transformer</a> (Lim et al., 2019), consumed through the <a href="https://github.com/jdb78/pytorch-forecasting" target="_blank" rel="noopener">pytorch-forecasting</a> library. <code>TimeSeriesDataSet</code>, the TFT class, the QuantileLoss and the Lightning callbacks are imported and used unchanged.</li>
+            <li><strong>Mine.</strong> Everything in <code>server/</code>: ingest, training driver, generator, fault synthesiser, Flask routes, Docker glue. Listed below.</li>
+          </ul>
+
+          <h3>The contribution: handling noisy industrial data</h3>
+          <p>Off-the-shelf TFT inputs assume well-conditioned, regularly sampled multivariate series. Capping-line recordings violate both. There are deterministic sensors (constant set-points), low-variance channels, irregular timestamps, and many NaN holes from the source system. The preprocessing layer in <code>server/modules/preprocessing.py</code> reshapes the raw MongoDB feed into a TFT-ready frame and tags which sensors are constants so the trainer can skip them.</p>
+
+<pre><code class="language-python">class Extract:
+    def get_raw_data(self):
+        # walk MongoDB recordings, build a per-head, per-timestamp frame
+        ...
+
+    def preprocess_data(self, extr_df):
+        det_sensors = {}
+        for sensor in self.sensors:
+            df = extr_df[sensor]
+            # a sensor is deterministic if every head has zero variance
+            if all(df[head].nunique(dropna=True) &lt;= 1 for head in df.columns):
+                det_sensors[sensor] = {h: df[h].dropna().iloc[0]
+                                       for h in df.columns}
+        return extr_df, det_sensors
+
+    def fill_data(self, df, det_sensors):
+        # forward-fill within day boundaries; deterministic sensors get
+        # their constant. Never leaks future information backward.
+        ...</code></pre>
+
+          <p>The trainer wraps pytorch-forecasting's TFT so the rest of the pipeline does not have to know about Lightning. Per (machinery, category, sensor, head) it builds a <code>TimeSeriesDataSet</code>, runs the LR finder, fits with early stopping, and writes a checkpoint keyed by the same tuple.</p>
+
+<pre><code class="language-python">class Trainer:
+    def create_dataloaders(self, data, training_cutoff,
+                           max_prediction_length, max_encoder_length,
+                           target, unk_vars, group_ids):
+        self.training = TimeSeriesDataSet(
+            data[lambda x: x.time_idx &lt;= training_cutoff],
+            time_idx="time_idx",
+            target=target,
+            group_ids=group_ids,
+            min_encoder_length=max_encoder_length // 2,
+            max_encoder_length=max_encoder_length,
+            max_prediction_length=max_prediction_length,
+            static_categoricals=group_ids,
+            time_varying_known_reals=["time_idx"],
+            time_varying_unknown_reals=[target],
+            target_normalizer=GroupNormalizer(groups=group_ids,
+                                              transformation="softplus"),
+            add_relative_time_idx=True,
+            add_target_scales=True,
+            add_encoder_length=True,
+        )
+        ...
+        self.train_dataloader = self.training.to_dataloader(
+            train=True, batch_size=self.batch_size, num_workers=0)
+        self.val_dataloader   = self.validation.to_dataloader(
+            train=False, batch_size=self.batch_size * 10, num_workers=0)</code></pre>
+
+          <p>At generation time the <code>Generate</code> class holds an encoder buffer and rolls it forward sample by sample. Fault generation is a small, reviewable rule: for continuous sensors, push the next value out by the local standard deviation multiplied by a configurable coefficient; for deterministic sensors, offset by a fixed percentage.</p>
+
+<pre><code class="language-python">def gen_fault(self, std_param=3, bias_percent=0.1):
+    values = {}
+    now = pd.Timestamp.now()
+    for head in self.heads:
+        values[head] = self.encoder_data[head].iloc[-1]
+        if not self.det_sensor:
+            std = self.encoder_data[head][head].std()
+            if std == 0:
+                values[head][head] += bias_percent * values[head][head]
+            else:
+                values[head][head] += std * (std_param + random.uniform(0, 1))
+            if self.sen[self.inf_args.category][self.inf_args.sensor] == int:
+                values[head][head] = values[head][head].round(0)
+        values[head].name = now
+    return values</code></pre>
+
+          <p>Training is parallelised in <code>server/train.py</code> across (machinery, category, sensor, head) with <code>torch.multiprocessing</code>; output is silenced per task so a failing head does not flood the console. Live serving in <code>server/simulation.py</code> runs a <code>ThreadPoolExecutor</code> bounded at <code>cpu_count() - 1</code> so each sensor ticks at its own rate without blocking the others.</p>
+
+          <h3>Why the seemingly heavy stack pays off</h3>
+          <ul>
+            <li><strong>Customer dashboards stay live without real data.</strong> The whole point: the generated stream is statistically faithful enough that the front-end charts, alerts, and operator UX can be demoed end to end without shipping proprietary recordings.</li>
+            <li><strong>Faults are explicit and tunable.</strong> Operators can set a fault frequency and probability per sensor, so QA can rehearse a specific failure shape rather than waiting for one to occur in the wild.</li>
+            <li><strong>Per-head models match the physical reality.</strong> A 24-head capper is 24 only loosely correlated machines; one TFT per (machinery, category, sensor, head) avoids fighting cross-head variance.</li>
+          </ul>
+
+          <h3>A 2026 take</h3>
+          <p>The stack was 2023-class. Today the same outcome is much cheaper:</p>
+          <ul>
+            <li><strong>Model.</strong> Replace per-sensor TFT training with a single time-series foundation model (Chronos, TimesFM, Moirai) zero-shot prompted on each sensor's recent history. No per-sensor checkpoint, no LR sweep, no Lightning loop.</li>
+            <li><strong>Storage.</strong> MongoDB is fine for the configuration documents, but the generated time series should land in a column store (DuckDB, ClickHouse) so customers can compute aggregates on the synthetic stream as fast as on the real one.</li>
+            <li><strong>Fault model.</strong> Train a tiny diffusion or VAE per sensor on a small library of real fault snippets, then sample from it instead of using the rule-based <code>mean + k * std</code>. The rule is easy to detect; learned faults will exercise the dashboards more honestly.</li>
+            <li><strong>UX.</strong> Add an "explain this anomaly" button that runs a VLM on the same series to produce a natural-language root-cause hint. Useful for sales demos and matches how operators actually triage in 2026.</li>
+          </ul>
+
+          <h3>What I would still keep, and what I would add</h3>
+          <ul>
+            <li><strong>Keep.</strong> The Extract / Trainer / Generate split. Each layer is testable in isolation, the model is decoupled from the data layout, and swapping TFT for any other forecaster is a single class change.</li>
+            <li><strong>Add: schema validation at the boundary.</strong> The current Flask routes hand-roll validation in <code>util.validate</code>. A Pydantic / FastAPI rewrite removes a class of bugs and gives free OpenAPI docs.</li>
+            <li><strong>Add: per-sensor evaluation.</strong> Right now training success is a binary <code>SUCCESSFUL</code>; track MAE / pinball loss per sensor and surface the worst offenders in the UI so the user knows where the synthetic stream is least trustworthy.</li>
+            <li><strong>Add: drift watcher.</strong> Keep a rolling mean of the encoder buffer per sensor and trigger a retrain when it diverges from the training distribution. Today a new production line silently degrades the generator.</li>
+            <li><strong>Add: fault library export.</strong> Once learned-fault sampling is in, expose a "save this synthetic anomaly" endpoint so QA can build a regression suite of named faults.</li>
+          </ul>
         </section>
       </aside>
     </main>
   </div>
-  <script src="../js/config.js?v=21"></script>
+  <script src="../js/config.js?v=39"></script>
   <script>
     if (typeof siteConfig !== 'undefined') {
       if (!siteConfig.hide_blog) {

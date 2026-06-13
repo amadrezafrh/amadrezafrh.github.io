@@ -11,11 +11,15 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
-  <link rel="stylesheet" href="../css/styles.css?v=21" />
-  <script src="../js/config.js?v=21"></script>
+  <link rel="stylesheet" href="../css/styles.css?v=39" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/atom-one-dark.min.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/highlight.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/languages/python.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () { if (window.hljs) { hljs.highlightAll(); } });</script>
+  <script src="../js/config.js?v=39"></script>
   <style>
     .project-content {
-      max-width: var(--project-max-width, 900px);
+      max-width: 100%;
     }
     .project-image {
       text-align: center;
@@ -38,7 +42,7 @@
         </div>
 
         <div class="sidebar-about">
-          <p>ML/AI software engineer with 5+ years of experience in Agentic AI, LLMs/RAG, Computer Vision, and Speech Processing. I have built inference pipelines, cloud-deployed ML services, and safety-critical diagnostic systems used in industry.</p>
+          <p>ML/AI software engineer with 4+ years of experience in Agentic AI, LLMs/RAG, Computer Vision, and Speech Processing. I have built inference pipelines, cloud-deployed ML services, and safety-critical diagnostic systems used in industry.</p>
           <p>M.Sc. Computer Engineering, Politecnico di Torino, with a thesis on voice conversion at TU Darmstadt.</p>
         </div>
 
@@ -82,7 +86,7 @@
         <header class="project-header">
           <h1>RobVC: A Robust End-to-End Self-Supervised Voice Conversion</h1>
           <div class="project-meta">
-            <p class="project-date">March 2024</p>
+            <p class="project-date">November 2024</p>
             <p class="project-tags">
               <span>Deep Learning</span>
               <span>Voice Conversion</span>
@@ -139,9 +143,13 @@
             </ul>
           </nav>
 
-          <div class="project-image">
-            <img src="robvc/newdes.png" alt="RobVC Architecture" />
-            <p class="image-caption">RobVC end-to-end architecture for self-supervised voice conversion.</p>
+          <div class="notes-context" style="margin: 0 0 1.5rem;">
+            <p><strong>Successor:</strong> a lab-external diffusion-transformer re-implementation called <a href="robdiffvc.html"><strong>RobDiffVC</strong></a> is in active development (August 2025). It reduces parameter count and inference latency while preserving speaker similarity. RobVC code itself stays inside the TU Darmstadt lab and cannot be released publicly.</p>
+            <video controls preload="metadata" playsinline style="display: block; width: 100%; max-width: 760px; margin: 1rem auto 0; border-radius: 10px; box-shadow: 0 8px 22px rgba(15,23,42,0.12); background: #000;">
+              <source src="robdiffvc/demo.mp4" type="video/mp4" />
+              Your browser does not support embedded video.
+            </video>
+            <p class="image-caption" style="margin-top: 0.5rem;">RobDiffVC inference demo. <a href="robdiffvc.html">See the RobDiffVC page</a> for details.</p>
           </div>
 
           <h2 id="overview">1. Overview</h2>
@@ -151,6 +159,10 @@
           <p>
             Voice conversion enables applications such as voice anonymization, dubbing, and communication aids for the speech-impaired. RobVC specifically addresses the challenging any-to-any (one-shot) scenario, where both source and target speakers are unseen during training and only limited target audio is available.
           </p>
+          <div class="project-image">
+            <img src="robvc/newdes.png" alt="RobVC Architecture" />
+            <p class="image-caption">RobVC end-to-end architecture for self-supervised voice conversion.</p>
+          </div>
           <p>
             The key innovation of RobVC lies in its novel cross-attention mechanism that implicitly disentangles speaker identity from speech content using pretrained self-supervised representations from HuBERT and EnCodec models. The modular architecture decouples mel-spectrogram generation from speech synthesis, allowing errors in spectrogram prediction to not directly affect vocoder performance.
           </p>
@@ -350,15 +362,304 @@
         </section>
 
         <footer class="project-footer">
-          <a href="../index.html#projects" class="back-link">Back to Projects</a>
+          <a href="../index.html#projects" class="back-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg><span>Back to Projects</span></a>
         </footer>
         </article>
 
       </div>
       <aside class="right-rail">
-        <section class="section">
-          <h2>Notes</h2>
-          <p class="placeholder">Technical notes, design choices, and disclaimers for this project will appear here.</p>
+        <section class="section notes">
+          <header class="notes-header">
+            <p class="notes-eyebrow">Behind the Build</p>
+            <h2 class="notes-title">Engineering Notes</h2>
+            <p class="notes-lede">A walk through how the four blocks of RobVC are wired up in PyTorch, where HuBERT and EnCodec actually enter the graph, and the dataloader that ties them together. Code in this rail is illustrative; the lab implementation is access-restricted.</p>
+          </header>
+
+          <div class="notes-context">
+            <p><strong>Context.</strong> M.Sc. thesis at TU Darmstadt CROSSING lab, August 2023 to November 2024. Reviewed under publication restrictions.</p>
+          </div>
+
+          <h3>Important disclaimer</h3>
+          <p>The RobVC code lives inside the TU Darmstadt CROSSING lab environment and cannot be released publicly. Everything that follows is the architecture described at the design level, with PyTorch skeletons I would write from public components to reproduce the same behaviour. If you want to read or run actual code that follows this design, see the lab-external successor:</p>
+          <p><a href="robdiffvc.html"><strong>RobDiffVC</strong></a> &middot; a diffusion-transformer re-implementation, built from scratch outside the lab, with smaller parameters and faster inference.</p>
+
+          <h3>The four blocks, in one picture</h3>
+<pre><code>             source wav (s_x)            reference wav (s_y)
+                  |                              |
+                  v                              v
+       +---------------------+         +---------------------+
+       | Context Encoder     |         | Speaker Encoder     |
+       | HuBERT(frozen)+proj |         | mel + ECAPA-like    |
+       +---------------------+         +---------------------+
+                  |                              |
+                  | C in R^(T_c x d_c)           | s in R^(d_s)
+                  v                              v
+                +-----------------------------------+
+                | Acoustic Generator                |
+                | cross-attention: Q=C, K=V=f(s)    |
+                | outputs EnCodec discrete codes    |
+                +-----------------------------------+
+                                  |
+                                  | tokens in R^(T_a x K)
+                                  v
+                       +-----------------------+
+                       | Vocoder (EnCodec dec) |
+                       +-----------------------+
+                                  |
+                                  v
+                            converted wav</code></pre>
+
+          <h3>Block 1: Context Encoder (HuBERT, frozen)</h3>
+          <p>The encoder lifts a 16 kHz waveform into a sequence of self-supervised content embeddings. HuBERT's 9th transformer layer gives a representation that is content-rich but timbre-poor; freezing the backbone keeps the content invariant across speakers and avoids training instability when the rest of the network is still moving.</p>
+<pre><code class="language-python">from transformers import HubertModel
+import torch
+import torch.nn as nn
+
+class ContextEncoder(nn.Module):
+    def __init__(self,
+                 hubert_name: str = "facebook/hubert-base-ls960",
+                 layer_idx: int = 9,
+                 d_content: int = 768):
+        super().__init__()
+        self.hubert = HubertModel.from_pretrained(hubert_name)
+        for p in self.hubert.parameters():
+            p.requires_grad = False
+        self.hubert.eval()
+        self.layer_idx = layer_idx
+        self.project = nn.Linear(self.hubert.config.hidden_size, d_content)
+
+    @torch.no_grad()
+    def _extract(self, wav: torch.Tensor) -&gt; torch.Tensor:
+        # wav: (B, T_samples) at 16 kHz
+        out = self.hubert(wav, output_hidden_states=True)
+        return out.hidden_states[self.layer_idx]    # (B, T_c, H)
+
+    def forward(self, wav: torch.Tensor) -&gt; torch.Tensor:
+        h = self._extract(wav)
+        return self.project(h)                       # (B, T_c, d_content)</code></pre>
+          <p>The projection is trainable. It lets the downstream cross-attention work in a slightly leaner content space than HuBERT's 768.</p>
+
+          <h3>Block 2: Speaker Encoder (EnCodec coarse RVQ)</h3>
+          <p>RobVC does not learn a separate speaker network. The speaker signal comes from <strong>EnCodec's coarse Residual VQ tokens</strong> extracted from the reference utterance at 24 kHz. EnCodec's coarse codebooks carry global acoustic identity (timbre, recording channel); the fine codebooks carry phonetic detail and are discarded. The encoder is frozen at all times.</p>
+<pre><code class="language-python">from encodec import EncodecModel
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+class SpeakerEncoder(nn.Module):
+    """
+    Extract coarse RVQ tokens from a reference waveform and use them as the
+    speaker representation. EnCodec is frozen; no trainable parameters here.
+    """
+    def __init__(self,
+                 n_coarse: int = 2,        # q_c: number of coarse codebooks kept
+                 bandwidth: float = 6.0):
+        super().__init__()
+        self.codec = EncodecModel.encodec_model_24khz()
+        self.codec.set_target_bandwidth(bandwidth)
+        for p in self.codec.parameters():
+            p.requires_grad = False
+        self.codec.eval()
+        self.n_coarse = n_coarse
+
+    @torch.no_grad()
+    def forward(self, wav_24k: torch.Tensor) -&gt; torch.Tensor:
+        # wav_24k: (B, 1, T_samples) at 24 kHz
+        codes = self.codec.encode(wav_24k)[0][0]    # (B, Q, F_p)  ints in [0, 1023]
+        return codes[:, :self.n_coarse, :]          # (B, q_c, F_p)</code></pre>
+          <p>The output is a small grid of integer codes per frame: shape <code>(B, q_c, F_p)</code> where <code>q_c</code> is typically 2 and <code>F_p</code> is the reference's EnCodec frame count. These integers feed directly into the acoustic block as discrete tokens that get embedded inside its Coarse Transformer.</p>
+
+          <h3>Block 3: Acoustic Generator (the novelty)</h3>
+          <p>This is the cross-attention generator that makes RobVC interesting. Content queries on one side, speaker keys / values on the other; the residual stream is content-only, so timbre flows in <em>exclusively</em> through the attention layers. That is the implicit-disentanglement trick: the network never has to pick content and timbre apart from a single mixed input. The output of the transformer stack is fed into a Tacotron2-style LSTM decoder that emits the mel-spectrogram autoregressively, concatenated with the source mel at each step.</p>
+<pre><code class="language-python">class CrossAttnBlock(nn.Module):
+    def __init__(self, d_model: int, n_heads: int, d_ff: int, dropout: float = 0.1):
+        super().__init__()
+        self.ln_q  = nn.LayerNorm(d_model)
+        self.ln_kv = nn.LayerNorm(d_model)
+        self.attn  = nn.MultiheadAttention(d_model, n_heads,
+                                           dropout=dropout, batch_first=True)
+        self.ln_ff = nn.LayerNorm(d_model)
+        self.ff    = nn.Sequential(
+            nn.Linear(d_model, d_ff), nn.GELU(), nn.Dropout(dropout),
+            nn.Linear(d_ff, d_model), nn.Dropout(dropout))
+
+    def forward(self, q: torch.Tensor, kv: torch.Tensor) -&gt; torch.Tensor:
+        h, _ = self.attn(self.ln_q(q), self.ln_kv(kv), self.ln_kv(kv))
+        q = q + h
+        return q + self.ff(self.ln_ff(q))
+
+
+class AcousticGenerator(nn.Module):
+    """
+    Inputs:
+      - content : (B, F_s, d_content)   from HuBERT
+      - spk_tok : (B, q_c, F_p)         coarse EnCodec tokens (ints in [0, 1023])
+      - mel_src : (B, F_s, n_mels)      source mel, for teacher forcing in decoder
+    Output:
+      - mel_hat : (B, F_s, n_mels)      predicted mel
+    """
+    def __init__(self,
+                 d_content: int = 768,
+                 d_model:   int = 512,
+                 n_mels:    int = 128,
+                 q_c:       int = 2,
+                 codebook_size: int = 1024,
+                 n_coarse_layers: int = 6,
+                 n_cross_layers:  int = 4,
+                 n_heads:   int = 8):
+        super().__init__()
+        # 1. content side: three 1D convs over HuBERT -&gt; queries Q_s
+        self.content_conv = nn.Sequential(
+            nn.Conv1d(d_content, d_model, kernel_size=5, padding=2), nn.GELU(),
+            nn.Conv1d(d_model,  d_model, kernel_size=5, padding=2), nn.GELU(),
+            nn.Conv1d(d_model,  d_model, kernel_size=5, padding=2), nn.GELU(),
+        )
+
+        # 2. speaker side: embed each (codebook, token) -&gt; continuous,
+        #    then a small self-attention "Coarse Transformer"
+        self.tok_emb = nn.Embedding(q_c * codebook_size, d_model)
+        self.q_c = q_c
+        self.code_size = codebook_size
+        enc_layer = nn.TransformerEncoderLayer(
+            d_model=d_model, nhead=n_heads, dim_feedforward=4 * d_model,
+            dropout=0.1, batch_first=True, norm_first=True)
+        self.coarse = nn.TransformerEncoder(enc_layer, num_layers=n_coarse_layers)
+
+        # 3. cross-attention stack: content Q over speaker K/V
+        self.blocks = nn.ModuleList([
+            CrossAttnBlock(d_model, n_heads, d_ff=4 * d_model)
+            for _ in range(n_cross_layers)
+        ])
+        self.norm = nn.LayerNorm(d_model)
+
+        # 4. Tacotron2-style LSTM decoder: emits mel frame by frame,
+        #    conditioned on (cross-attn output, previous mel frame)
+        self.dec_pre   = nn.Sequential(
+            nn.Linear(n_mels, 256), nn.ReLU(), nn.Linear(256, 256))
+        self.dec_lstm  = nn.LSTM(d_model + 256, 1024, num_layers=2, batch_first=True)
+        self.dec_mel   = nn.Linear(1024, n_mels)
+
+    def _embed_speaker(self, spk_tok: torch.Tensor) -&gt; torch.Tensor:
+        # spk_tok: (B, q_c, F_p) -&gt; (B, F_p * q_c, d_model)
+        B, qc, Fp = spk_tok.shape
+        offsets = (torch.arange(qc, device=spk_tok.device) * self.code_size)
+        ids = spk_tok + offsets.view(1, qc, 1)               # (B, q_c, F_p)
+        ids = ids.permute(0, 2, 1).reshape(B, Fp * qc)        # (B, F_p * q_c)
+        return self.tok_emb(ids)                              # (B, F_p * q_c, d)
+
+    def forward(self,
+                content: torch.Tensor,    # (B, F_s, d_content)
+                spk_tok: torch.Tensor,    # (B, q_c, F_p)
+                mel_src: torch.Tensor     # (B, F_s, n_mels)  source mel, shifted right
+                ) -&gt; torch.Tensor:
+        # content -&gt; queries
+        q = self.content_conv(content.transpose(1, 2)).transpose(1, 2)  # (B, F_s, d)
+
+        # speaker tokens -&gt; coarse transformer -&gt; K/V
+        kv = self.coarse(self._embed_speaker(spk_tok))                  # (B, F_p*q_c, d)
+
+        # cross-attention stack
+        for blk in self.blocks:
+            q = blk(q, kv)
+        ctx = self.norm(q)                                              # (B, F_s, d)
+
+        # Tacotron-style decoder: concat with prev mel frames
+        prev = self.dec_pre(mel_src)                                    # (B, F_s, 256)
+        dec_in = torch.cat([ctx, prev], dim=-1)                          # (B, F_s, d+256)
+        h, _ = self.dec_lstm(dec_in)
+        return self.dec_mel(h)                                          # (B, F_s, n_mels)</code></pre>
+          <p>Three components stacked, each with a clear role: a 1D-conv content front end builds the queries; an embedding plus self-attention Coarse Transformer turns the discrete speaker tokens into continuous keys / values; a 4-block cross-attention stack mixes them; a Tacotron2-style LSTM decoder reads the mixed representation and the previous mel frame to emit the next mel frame. The shape that comes out of the network is exactly the shape that comes in as ground truth.</p>
+
+          <h3>Block 4: Vocoder (HiFi-GAN, fine-tuned afterwards)</h3>
+          <p>RobVC produces a mel-spectrogram. To get a waveform, a HiFi-GAN-class vocoder is used on top. The vocoder is trained in a second stage, after the acoustic model is done; it is not in the acoustic-model loss path, and it has no gradient back into the cross-attention stack. Alternative vocoders (BigVGAN, WaveGlow, MelGAN, Griffin-Lim) drop in without changing the rest of the pipeline.</p>
+<pre><code class="language-python">class Vocoder(nn.Module):
+    """
+    Mel -&gt; waveform. HiFi-GAN-style architecture; fine-tuned on RobVC outputs
+    after the acoustic model is frozen. Not part of the L1 mel loss.
+    """
+    def __init__(self, hifigan_ckpt: str):
+        super().__init__()
+        self.hifigan = load_hifigan(hifigan_ckpt)   # external HiFi-GAN
+
+    def forward(self, mel: torch.Tensor) -&gt; torch.Tensor:
+        # mel: (B, F_s, n_mels) -&gt; waveform (B, 1, T_samples)
+        return self.hifigan(mel.transpose(1, 2))</code></pre>
+
+          <h3>End-to-end model: only the acoustic block trains</h3>
+          <p>Frozen: HuBERT (content), EnCodec encoder (speaker tokens), HiFi-GAN (vocoder). Trainable: the acoustic generator, end to end, on the L1 mel objective.</p>
+<pre><code class="language-python">class RobVC(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.content  = ContextEncoder()    # HuBERT, frozen
+        self.speaker  = SpeakerEncoder()    # EnCodec coarse RVQ, frozen
+        self.acoustic = AcousticGenerator() # the only trainable block
+        self.vocoder  = Vocoder("hifigan.ckpt")  # frozen during stage 1
+
+    def forward(self, source_wav_16k, reference_wav_24k, mel_src_shifted):
+        c = self.content(source_wav_16k)            # (B, F_s, d_content)
+        s = self.speaker(reference_wav_24k)         # (B, q_c, F_p)
+        mel_hat = self.acoustic(c, s, mel_src_shifted)   # (B, F_s, n_mels)
+        return mel_hat                              # vocoder is called only at inference</code></pre>
+          <p>At training time, <code>forward</code> stops at <code>mel_hat</code>. The vocoder is fine-tuned in a separate, later stage on RobVC outputs.</p>
+
+          <h3>The loss: L1 on mel</h3>
+<pre><code class="language-python">def vc_loss(mel_hat: torch.Tensor, mel_target: torch.Tensor) -&gt; torch.Tensor:
+    # both: (B, F_s, n_mels)
+    return F.l1_loss(mel_hat, mel_target)</code></pre>
+          <p>Mean absolute error per (frame, mel-channel), then averaged. L1 was chosen over L2 because mel-spectrograms have heavy-tailed errors at sharp onsets and silences; L2 punishes those outliers disproportionately and smears voiced harmonics. Reported training: 400k steps, batch 4, on 4x NVIDIA RTX A6000, AdamW, lr 4e-4 with 0.999 decay; 128 mel channels at 16 kHz; HuBERT embeddings and EnCodec tokens pre-extracted to disk before training to keep the GPU fed.</p>
+
+          <h3>The dataloader, end to end</h3>
+          <p>One utterance produces four tensors in lockstep: a 16 kHz source waveform (for HuBERT), a 24 kHz reference waveform from the same speaker (for EnCodec coarse tokens), the source mel shifted right one frame (decoder input), and the target mel (loss target). HuBERT features and EnCodec tokens are pre-extracted to <code>.pt</code> files so the dataloader only does fast file IO.</p>
+<pre><code class="language-python">class VCDataset(torch.utils.data.Dataset):
+    """
+    Per item:
+      source_wav_16k   : (T_16k,)                used for HuBERT
+      reference_wav_24k: (1, T_24k)              used for EnCodec coarse RVQ
+      mel_src_shifted  : (F_s, n_mels)           decoder input (teacher forcing)
+      mel_target       : (F_s, n_mels)           L1 loss target
+    """
+    def __init__(self, manifest, sr_c=16_000, sr_a=24_000, n_mels=128):
+        self.items = manifest                  # list of (wav_path, speaker_id)
+        self.by_spk = {}
+        for p, spk in self.items:
+            self.by_spk.setdefault(spk, []).append(p)
+        self.mel = torchaudio.transforms.MelSpectrogram(
+            sample_rate=sr_c, n_fft=1024, hop_length=256, n_mels=n_mels)
+        self.sr_c, self.sr_a = sr_c, sr_a
+
+    def __getitem__(self, idx):
+        path, spk = self.items[idx]
+        src_16k = load_resample(path, self.sr_c)                     # (T_16k,)
+        mel = torch.log1p(self.mel(src_16k))                          # (n_mels, F_s)
+        mel = mel.transpose(0, 1)                                     # (F_s, n_mels)
+        # decoder input is the target shifted right one frame (teacher forcing)
+        mel_shift = torch.cat([torch.zeros(1, mel.size(-1)), mel[:-1]], 0)
+
+        # reference: another utterance from the same speaker, at 24 kHz for EnCodec
+        ref_path = random.choice([p for p in self.by_spk[spk] if p != path])
+        ref_24k = load_resample(ref_path, self.sr_a).unsqueeze(0)     # (1, T_24k)
+
+        return dict(
+            source_wav_16k    = src_16k,
+            reference_wav_24k = ref_24k,
+            mel_src_shifted   = mel_shift,
+            mel_target        = mel,
+        )</code></pre>
+          <p>Two important details:</p>
+          <ul>
+            <li><strong>Reference is a different utterance from the same speaker.</strong> Forces the speaker tokens to encode identity, not the specific sample. Without this, the model collapses on reconstruction.</li>
+            <li><strong>Pre-extract HuBERT and EnCodec to disk.</strong> Both are frozen and expensive; running them at every step is wasted GPU time. The CV bullet about a 70% complexity reduction includes this caching choice plus the two-stage training schedule.</li>
+          </ul>
+
+          <h3>What I would change today (RobDiffVC)</h3>
+          <p>The biggest weakness of the design above is the autoregressive LSTM decoder: it ties inference latency to mel length, and any frame error propagates forward. The successor replaces the LSTM head with a diffusion transformer over mel patches, keeping the same disentanglement trick:</p>
+          <ul>
+            <li><strong>No autoregression at inference.</strong> The diffusion sampler denoises the full mel-spectrogram in a small number of steps, so generation is latency-bound by NFE, not by sequence length.</li>
+            <li><strong>Smaller acoustic block.</strong> The LSTM decoder is removed; the model is a DiT conditioned on the same content + speaker pair. Total parameter count drops while quality holds.</li>
+            <li><strong>Same disentanglement trick.</strong> Content sits in the residual stream, speaker enters through cross-attention. The implicit-disentanglement idea carries over; only the decoder shape changes.</li>
+            <li><strong>Public components only.</strong> HuBERT, EnCodec coarse codes (or an ECAPA alternative), mel, and a HiFi-GAN-class vocoder, all from public checkpoints.</li>
+          </ul>
+          <p>See the <a href="robdiffvc.html">RobDiffVC page</a> for the demo and the system diagram of that successor.</p>
         </section>
       </aside>
     </main>

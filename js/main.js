@@ -58,15 +58,25 @@ function loadFeaturedProjects() {
     return;
   }
 
-  // 2-column rail: alternate items so each column gets the same count.
-  // Cards stack vertically and each column flows independently.
+  // 2-column rail with independent column heights (masonry-style flow).
+  // Cards are alternated between the two columns and each card carries a
+  // flex `order` equal to its date index. This means:
+  //   - at normal zoom the cards inside each column flow in date order
+  //     (DOM order matches `order` within a column) so reading left-to-right
+  //     across rows is row-wise by date.
+  //   - at collapse the masonry-col wrappers become `display: contents` and
+  //     the cards become direct flex children of `.projects-grid`
+  //     (flex-direction: column). The flex container then re-sorts them by
+  //     `order`, stacking the cards in pure date order.
   container.innerHTML = '<div class="masonry-col"></div><div class="masonry-col"></div>';
   const colA = container.children[0];
   const colB = container.children[1];
   featured.forEach((project, i) => {
     const tmp = document.createElement('div');
     tmp.innerHTML = cardHTML(project).trim();
-    (i % 2 === 0 ? colA : colB).appendChild(tmp.firstChild);
+    const card = tmp.firstChild;
+    card.style.order = i;
+    (i % 2 === 0 ? colA : colB).appendChild(card);
   });
 }
 

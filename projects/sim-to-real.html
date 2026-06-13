@@ -11,7 +11,11 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
-  <link rel="stylesheet" href="../css/styles.css?v=21" />
+  <link rel="stylesheet" href="../css/styles.css?v=39" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/atom-one-dark.min.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/highlight.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/languages/python.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () { if (window.hljs) { hljs.highlightAll(); } });</script>
   <style>
     .img-small {
       max-width: 280px;
@@ -66,7 +70,7 @@
         </div>
 
         <div class="sidebar-about">
-          <p>ML/AI software engineer with 5+ years of experience in Agentic AI, LLMs/RAG, Computer Vision, and Speech Processing. I have built inference pipelines, cloud-deployed ML services, and safety-critical diagnostic systems used in industry.</p>
+          <p>ML/AI software engineer with 4+ years of experience in Agentic AI, LLMs/RAG, Computer Vision, and Speech Processing. I have built inference pipelines, cloud-deployed ML services, and safety-critical diagnostic systems used in industry.</p>
           <p>M.Sc. Computer Engineering, Politecnico di Torino, with a thesis on voice conversion at TU Darmstadt.</p>
         </div>
 
@@ -108,7 +112,7 @@
       <div class="content-column">
         <article class="project-detail">
         <header class="project-header">
-          <h1>Sim-to-Real Transfer of RL Policies in Robotics</h1>
+          <h1>Sim-to-Real Transfer of Reinforcement Learning Policies in Robotics</h1>
           <div class="project-meta">
             <p class="project-date">June 2023</p>
             <p class="project-tags">
@@ -471,10 +475,10 @@
 
           <h2>Links</h2>
           <p>
-            <a href="https://github.com/amadrezafrh/Sim-to-Real-transfer-in-Reinforcement-Learning" target="_blank">GitHub Repository</a>
+            <a href="https://github.com/amadrezafrh/Sim-to-Real-transfer-in-Reinforcement-Learning" target="_blank" class="github-pill"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg><span>GitHub Repository</span></a>
           </p>
           <p>
-            <a href="../index.html#projects">Back to Projects</a>
+            <a href="../index.html#projects" class="back-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg><span>Back to Projects</span></a>
           </p>
 
         </section>
@@ -482,14 +486,151 @@
 
       </div>
       <aside class="right-rail">
-        <section class="section">
-          <h2>Notes</h2>
-          <p class="placeholder">Technical notes, design choices, and disclaimers for this project will appear here.</p>
+        <section class="section notes">
+          <header class="notes-header">
+            <p class="notes-eyebrow">Behind the Build</p>
+            <h2 class="notes-title">Engineering Notes</h2>
+            <p class="notes-lede">A walk through what is mine versus what comes from the RL libraries, the algorithmic choices behind the PPO and UDR setup, and an honest re-evaluation of the codebase structure with a proposed product-grade layout.</p>
+          </header>
+
+          <div class="notes-context">
+            <p><strong>Context.</strong> Course project at Politecnico di Torino, March to June 2023. Treat the repo as a working prototype rather than production code; the algorithm and the result matter more than the file tree.</p>
+          </div>
+
+          <h3>Architecture</h3>
+          <p>One JSON config drives one training run. The grid driver expands lists into a Cartesian product of hyperparameters; the Optuna driver lets the sampler pick. The same env + wrapper stack feeds both an MLP path on raw states and a CNN path on rendered frames.</p>
+<pre><code>configue.json
+  -&gt; create_params : list -&gt; cartesian product (grid) or Optuna sampler
+  -&gt; create_env    : CustomHopper + PixelObservation + Gray + Resize + Stack
+  -&gt; create_model  : PPO ( MlpPolicy | CnnPolicy + custom CNN extractor )
+  -&gt; model.learn   -&gt; checkpoints/{run}/{steps}.zip + TensorBoard
+  -&gt; test.py       : evaluate_policy on source AND target env
+  -&gt; analyze.py    : rank UDR distributions by held-out reward</code></pre>
+
+          <h3>Disclaimers and attribution</h3>
+          <ul>
+            <li><strong>Mine, end to end.</strong> Envs, wrappers, all six CNN feature extractors, the PPO training and Optuna drivers, the evaluation loop and the analysis script are written from scratch for the project. No upstream policy fork; no copy-pasted training loop.</li>
+            <li><strong>Library code, used as is.</strong> PPO and the actor-critic scaffolding come from <a href="https://github.com/DLR-RM/stable-baselines3" target="_blank" rel="noopener">stable-baselines3</a>; the env API and <code>ObservationWrapper</code> base from <a href="https://github.com/openai/gym" target="_blank" rel="noopener">Gym 0.21</a>; physics from <a href="https://github.com/openai/mujoco-py" target="_blank" rel="noopener">mujoco-py</a>; HPO sampler from <a href="https://github.com/optuna/optuna" target="_blank" rel="noopener">Optuna</a>. None of these were modified.</li>
+          </ul>
+
+          <h3>The custom Hopper and UDR</h3>
+          <p>The source environment shifts the torso mass by a fixed offset to simulate the sim-to-real gap. UDR resamples each link mass at every <code>reset()</code> from a truncated normal centred on the original value. The distribution width is the sweep parameter.</p>
+<pre><code class="language-python">class CustomHopper(MujocoEnv, utils.EzPickle):
+    def __init__(self, domain=None, show=False):
+        ...
+        self.original_masses = np.copy(self.sim.model.body_mass[1:])
+        if domain == 'source':
+            self.sim.model.body_mass[1] -= 1.0  # torso mass shift
+
+    def set_distributions(self, distributions):
+        self.randomization = True
+        self.distributions = distributions
+
+    def sample_parameters(self):
+        # truncated normal around each original mass
+        masses = []
+        for orig, (low, high) in zip(self.original_masses, self.distributions):
+            masses.append(truncnorm.rvs(low, high) * orig)
+        return np.array(masses)
+
+    def reset(self):
+        if self.randomization:
+            self.set_parameters(self.sample_parameters())
+        return super().reset()</code></pre>
+
+          <h3>Six CNN extractors, one common interface</h3>
+          <p>Vision-based RL on Hopper renders the scene to RGB, gray-scales it, resizes (64 / 128 / 256 / 352 px), stacks <em>n</em> frames, and feeds the result to a CNN feature extractor before the actor-critic heads. Each extractor implements the <code>BaseFeaturesExtractor</code> interface from sb3 so the policy plugs in without touching PPO internals.</p>
+<pre><code class="language-python">class CNNSimple(BaseFeaturesExtractor):
+    def __init__(self, observation_space, features_dim=128):
+        super().__init__(observation_space, features_dim)
+        n_in = observation_space.shape[0]
+        self.cnn = nn.Sequential(
+            nn.Conv2d(n_in, 32, kernel_size=6, stride=3), nn.ReLU(),
+            nn.Conv2d(32, 64, kernel_size=3, stride=1), nn.ReLU(),
+            nn.Flatten(),
+        )
+        with th.no_grad():
+            n_flat = self.cnn(th.as_tensor(
+                observation_space.sample()[None]).float()).shape[1]
+        self.linear = nn.Sequential(nn.Linear(n_flat, features_dim), nn.ReLU())
+
+    def forward(self, x):
+        return self.linear(self.cnn(x))</code></pre>
+          <p>The six variants (<code>Base</code>, <code>Simple</code>, <code>MobileNet</code>, <code>LSTM</code>, larger filters, narrower filters) span a useful capacity range and a recurrent option for partial observability without changing the wrapper stack.</p>
+
+          <h3>What I would change about the codebase</h3>
+          <p>The algorithm is fine; the file tree is not. Honest re-evaluation, with what a product version would look like:</p>
+          <ul>
+            <li><strong>Everything sits at the repo root.</strong> <code>train.py</code>, <code>tuning.py</code>, <code>test.py</code>, <code>analyze.py</code>, <code>models.py</code>, <code>wrappers.py</code>, <code>utils.py</code> are all siblings of <code>requirements.txt</code>. Nothing is importable as a package, so reusing the env or a wrapper from a notebook requires a path hack.</li>
+            <li><strong>Typos baked into paths.</strong> <code>configues/</code> (configs), <code>gird</code> (grid) referenced inside <code>train.py</code>, <code>CNNInreasedFilters</code> (Increased). They work because the names are consistent, but they leak across imports and configs and embarrass code review.</li>
+            <li><strong>No modular boundaries.</strong> <code>utils.py</code> is 276 lines doing config IO, env creation, model creation, hyperparameter expansion, and logging. The six CNNs share most of the constructor but each rewrites the with-no-grad shape-probe block by hand. A small <code>AbstractCNNExtractor</code> base would remove that duplication.</li>
+            <li><strong>Hard-coded experiment state.</strong> <code>test.py</code> embeds a model directory and a hyperparameter-encoded filename as Python literals; switching policies means editing source. Should be CLI flags or, better, the same config object as training.</li>
+            <li><strong>No tests, no CI.</strong> Acceptable for a prototype; not acceptable for a production training stack. Once the pipeline gets reused, the absence of a fixture for env construction and a smoke test for one PPO step is what costs you a week.</li>
+            <li><strong>Mixed responsibilities in scripts.</strong> The drivers do config loading, env setup, model construction, training, and saving in one <code>main()</code>. Splitting these into a small library (callable from a notebook) plus thin CLI entry points pays off the second time you want to run an ablation.</li>
+          </ul>
+
+          <h3>A product-grade layout</h3>
+          <p>Same code, restructured so it can be installed, imported, tested, and shipped. Nothing here changes the algorithm; everything makes the algorithm reusable.</p>
+<pre><code>sim2real/
+|- pyproject.toml          # package metadata, deps, console_scripts
+|- README.md
+|- .github/workflows/      # lint + test on push
+|- configs/                # rename from `configues`
+|  |- grid/
+|  |- optuna/
+|- src/sim2real/
+|  |- __init__.py
+|  |- envs/                # custom_hopper.py, mujoco_env.py, registry
+|  |- wrappers/            # pixel.py, gray.py, resize.py, stack.py, callbacks.py
+|  |- models/
+|  |  |- base.py           # AbstractCNNExtractor (shared shape-probe)
+|  |  |- simple.py
+|  |  |- mobilenet.py
+|  |  |- lstm.py
+|  |  |- filters_wide.py
+|  |  |- filters_narrow.py
+|  |- training/
+|  |  |- grid.py           # GridRunner class
+|  |  |- optuna.py         # OptunaRunner class
+|  |- evaluation/
+|  |  |- evaluate.py       # source / target reward + CSV writer
+|  |  |- analyze.py        # plot reward vs. distribution width
+|  |- utils/
+|  |  |- io.py, paths.py, config.py
+|- scripts/                # thin CLI: argparse + call library
+|  |- train.py             # `sim2real-train --config configs/grid/...`
+|  |- tune.py
+|  |- eval.py
+|- tests/
+|  |- conftest.py          # tiny CustomHopper fixture
+|  |- test_envs.py         # set_distributions actually changes masses
+|  |- test_wrappers.py     # gray + resize shape contract
+|  |- test_models.py       # forward pass returns features_dim
+|  |- test_train_smoke.py  # 1 step of PPO end-to-end</code></pre>
+
+          <h3>A 2026 take</h3>
+          <p>Sim-to-Real for cartoon physics like Hopper has moved fast. Today the same project would look like this:</p>
+          <ul>
+            <li><strong>Sim.</strong> Replace mujoco-py (deprecated) with the official <code>mujoco</code> Python bindings or with <code>dm_control</code>. The Gym 0.21 wrapper is the legacy path; <code>gymnasium</code> is the supported one.</li>
+            <li><strong>Backbone.</strong> Drop the per-CNN bespoke architectures in favour of a frozen visual foundation model (DINOv2, CLIP, SAM 2 image encoder) used as a feature extractor. A linear head on top is enough for Hopper-class control tasks and removes the LR sweep.</li>
+            <li><strong>Algorithm.</strong> PPO is still solid. For sim-to-real on locomotion, modern work pairs PPO with privileged information distillation (teacher with full state, student with pixels). One more layer of abstraction in <code>training/</code>, same library.</li>
+            <li><strong>Randomization.</strong> Move from UDR to ADR (Automatic Domain Randomization): grow the range every time the policy plateaus on the current range, shrink when it fails. Removes the manual sweep over <code>(low, high)</code>.</li>
+            <li><strong>Tuning.</strong> Replace Optuna with a multi-armed-bandit scheduler like Population-Based Training; spend the same compute on fewer-but-longer trials.</li>
+          </ul>
+
+          <h3>What I would keep, and what I would add</h3>
+          <ul>
+            <li><strong>Keep.</strong> The two parallel paths (state-based MLP, vision-based CNN) and the four-mode config matrix (mlp/cnn x grid/optuna). The matrix lets you ablate the contribution of pixels vs. tuning without changing the trainer.</li>
+            <li><strong>Add: proper logging.</strong> CSV per run, plus one consolidated <code>runs.parquet</code> indexed by run hash. Today <code>analyze.py</code> reads a single CSV produced by <code>test.py</code>; that breaks the moment you compare across configs.</li>
+            <li><strong>Add: deterministic eval.</strong> Fixed seeds on the eval env so target reward numbers are comparable across days.</li>
+            <li><strong>Add: a small replay viewer.</strong> Render the best policy on source and on target into MP4 next to the checkpoint. The number is the headline; the video is what convinces a stakeholder.</li>
+            <li><strong>Add: the test suite and CI sketched above.</strong> Three unit tests plus one one-step training smoke run catches 90% of regressions.</li>
+          </ul>
         </section>
       </aside>
     </main>
   </div>
-  <script src="../js/config.js?v=21"></script>
+  <script src="../js/config.js?v=39"></script>
   <script>
     if (typeof siteConfig !== 'undefined') {
       if (!siteConfig.hide_blog) {

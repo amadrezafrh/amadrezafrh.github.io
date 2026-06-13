@@ -8,11 +8,15 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../css/styles.css?v=21" />
+  <link rel="stylesheet" href="../css/styles.css?v=39" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/atom-one-dark.min.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/highlight.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/languages/python.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () { if (window.hljs) { hljs.highlightAll(); } });</script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
-  <link rel="stylesheet" href="../css/styles.css?v=21" />
+  <link rel="stylesheet" href="../css/styles.css?v=39" />
   <style>
     .figure-small img {
       max-width: 600px;
@@ -32,7 +36,7 @@
         </div>
 
         <div class="sidebar-about">
-          <p>ML/AI software engineer with 5+ years of experience in Agentic AI, LLMs/RAG, Computer Vision, and Speech Processing. I have built inference pipelines, cloud-deployed ML services, and safety-critical diagnostic systems used in industry.</p>
+          <p>ML/AI software engineer with 4+ years of experience in Agentic AI, LLMs/RAG, Computer Vision, and Speech Processing. I have built inference pipelines, cloud-deployed ML services, and safety-critical diagnostic systems used in industry.</p>
           <p>M.Sc. Computer Engineering, Politecnico di Torino, with a thesis on voice conversion at TU Darmstadt.</p>
         </div>
 
@@ -203,24 +207,131 @@
 
           <h2 id="links">4. Links</h2>
           <p class="project-links">
-            <a href="https://github.com/amadrezafrh/Traffic-Flow-Measurement-Deep-Learning" target="_blank">GitHub Repository</a>
+            <a href="https://github.com/amadrezafrh/Traffic-Flow-Measurement-Deep-Learning" target="_blank" class="github-pill"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg><span>GitHub Repository</span></a>
           </p>
         </section>
 
-        <a href="../index.html#projects" class="back-link">Back to Projects</a>
+        <a href="../index.html#projects" class="back-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg><span>Back to Projects</span></a>
         </article>
 
       </div>
       <aside class="right-rail">
-        <section class="section">
-          <h2>Notes</h2>
-          <p class="placeholder">Technical notes, design choices, and disclaimers for this project will appear here.</p>
+        <section class="section notes">
+          <header class="notes-header">
+            <p class="notes-eyebrow">Behind the Build</p>
+            <h2 class="notes-title">Engineering Notes</h2>
+            <p class="notes-lede">Architecture, attribution for forked components, the algorithmic novelty in the clustering stage, and a 2026 take on what would be different if I rebuilt it today.</p>
+          </header>
+
+          <div class="notes-context">
+            <p><strong>Context.</strong> B.Sc. thesis, IUST x Megamouj Co. Production deployment for national traffic monitoring in Tehran. Code last touched 2020-2021; treating this page as a retrospective rather than a live project.</p>
+          </div>
+
+          <h3>Architecture</h3>
+          <p>Four-stage pipeline. Stages 1 to 3 are one-off training; stage 4 is the real-time loop.</p>
+<pre><code>video
+  -&gt; YOLOv4 (custom-trained, TF SavedModel)
+  -&gt; DeepSORT tracker (Kalman + appearance metric)
+  -&gt; data.pkl  {frame_id: {track_id: {x, y}}}
+       |
+       v
+  feature build  (x, y, heading)  over ~1000 frames
+  -&gt; Spectral Clustering            (lane discovery)
+  -&gt; SVM RBF on cluster labels      (smooth boundary)
+  -&gt; classifier.pkl + scaler_loc.pkl
+       |
+       v
+  main.py real-time loop:
+    YOLO -&gt; DeepSORT -&gt; SVM lane id
+    -&gt; per-lane count, mean speed, immovable cars
+    -&gt; OpenCV overlay</code></pre>
+
+          <h3>Disclaimers and attribution</h3>
+          <p>The repository mixes third-party code with my work.</p>
+          <ul>
+            <li><strong>Forked, unchanged.</strong> <code>deep_sort/</code> is verbatim <a href="https://github.com/nwojke/deep_sort" target="_blank" rel="noopener">nwojke/deep_sort</a> (Wojke, Bewley, Paulus, 2017). Kalman filter, appearance metric, track lifecycle, all upstream.</li>
+            <li><strong>Forked, reused as scaffolding.</strong> <code>core/</code>, <code>tools/</code>, <code>save_model.py</code>, <code>convert_tflite.py</code>, <code>convert_trt.py</code>, and <code>object_tracker.py</code> come from <a href="https://github.com/hunglc007/tensorflow-yolov4-tflite" target="_blank" rel="noopener">hunglc007/tensorflow-yolov4-tflite</a>. I kept the TF2 YOLOv4 inference path and the YOLO-plus-DeepSORT wiring as is.</li>
+            <li><strong>Mine.</strong> Custom YOLOv4 weights trained on aerial vehicle imagery; the lane discovery / SVM stage (<code>line_detection.py</code>, <code>line_classification.py</code>); the real-time analyzer (<code>main.py</code>) and all OpenCV overlay logic for per-lane reporting.</li>
+          </ul>
+
+          <h3>The novelty: lane discovery without labels</h3>
+          <p>Labeling lane geometry on aerial footage is expensive. Instead, I let the data label itself by clustering tracked vehicle motion over a long window. Per car per frame I compute heading from the delta of two positions separated by <code>dist</code> frames, then build a standardised <code>(x, y, angle)</code> feature table.</p>
+<pre><code class="language-python">for i in range(0, 900):
+    for n in car_dic[i + 1]:
+        x.append(car_dic[i + 1][n]['x'])
+        y.append(car_dic[i + 1][n]['y'])
+        if i &gt; dist:
+            for k in car_dic[i - dist]:
+                if k == n:
+                    dx = car_dic[i + 1][k]['x'] - car_dic[i - dist][k]['x']
+                    dy = car_dic[i + 1][k]['y'] - car_dic[i - dist][k]['y']
+                    if dx != 0 and dy != 0:
+                        a = np.arctan2(dy, dx) * 180 / np.pi
+                        if a &lt; 0:
+                            a += 360
+                        angle.append(a)
+                        x_prime.append(car_dic[i + 1][k]['x'])
+                        y_prime.append(car_dic[i + 1][k]['y'])
+
+df = pd.DataFrame({'angle': angle, 'x': x_prime, 'y': y_prime})
+df = pd.DataFrame(StandardScaler().fit_transform(df),
+                  columns=['angle', 'x', 'y'])</code></pre>
+          <p>I benchmark five algorithms on this table and pick by silhouette score. Spectral wins on the lane geometry because the manifold is non-convex (curved roads, merging lanes).</p>
+
+          <table class="notes-table">
+            <thead><tr><th>Algorithm</th><th>Silhouette</th></tr></thead>
+            <tbody>
+              <tr><td>KMeans</td><td>0.411</td></tr>
+              <tr><td>Agglomerative</td><td>0.408</td></tr>
+              <tr><td>Birch</td><td>0.409</td></tr>
+              <tr><td>MiniBatchKMeans</td><td>0.369</td></tr>
+              <tr class="winner"><td>Spectral</td><td><strong>0.432</strong></td></tr>
+            </tbody>
+          </table>
+
+          <p>The spectral labels then become pseudo-ground-truth for an SVM with an RBF kernel, so inference is a single forward pass per detection instead of a re-cluster:</p>
+<pre><code class="language-python">df = pd.read_csv('4_Spectral_Clusters_Cars.csv')
+X = np.array(df[['x', 'y']])
+Y = np.array(df['Spectral_labels'])
+
+clf = SVC(kernel='rbf').fit(X, Y)
+
+with open('classifier.pkl', 'wb') as f:
+    pickle.dump(clf, f)</code></pre>
+
+          <h3>Real-time loop, key idea</h3>
+          <p>In <code>main.py</code> the per-frame work after detection plus tracking is two scaler-transforms and a <code>clf.predict</code>, plus a small dictionary of running stats per lane.</p>
+<pre><code class="language-python">X = scaler.transform(df_unscaled[['x', 'y']])
+df_unscaled['class'] = clf.predict(X)
+
+for lane_id, group in df_unscaled.groupby('class'):
+    avg_speed   = int(group['speed'].mean())
+    immovable   = (group['speed'] &lt;= 6).sum()
+    count       = len(group)
+    overlay(frame, lane_id, count, avg_speed, immovable)</code></pre>
+
+          <h3>A 2026 take: this is mostly obsolete</h3>
+          <p>The architecture made sense in 2020. Today the same pipeline can be a fraction of the code:</p>
+          <ul>
+            <li><strong>Detection.</strong> Replace the custom YOLOv4 weights with an open-vocabulary detector (Grounding DINO, YOLOv10-World) or prompt SAM 2 / SAM 3 with a natural-language target like "car from above". No bespoke training set needed.</li>
+            <li><strong>Tracking.</strong> DeepSORT is still solid but BoT-SORT and ByteTrack are stricter on ID switches in dense traffic. Either drops in as a near-replacement for the <code>deep_sort</code> module.</li>
+            <li><strong>Lane assignment.</strong> The whole Spectral-then-SVM stage exists because there was no foundation model that could read an intersection layout. Today a VLM (GPT-4o, Gemini, Qwen2-VL) prompted on a single frame can return a JSON list of lane polygons, removing the unsupervised stage entirely.</li>
+            <li><strong>End-to-end.</strong> With a polygon list and a tracker, the rest of the pipeline collapses to point-in-polygon checks and running averages. No SVM, no scaler, no <code>data.pkl</code> training pass.</li>
+          </ul>
+
+          <h3>What I would still keep, and what I would add</h3>
+          <ul>
+            <li><strong>Keep.</strong> The four-stage decomposition reads well as documentation; even with modern detectors I would still separate <em>detection</em>, <em>tracking</em>, <em>lane structure</em>, and <em>aggregation</em> so each is testable.</li>
+            <li><strong>Add: proper evaluation.</strong> The original repo has silhouette and qualitative GIFs; for a redeployment I would add a small annotated test set with MOTA / IDF1 for tracking and lane-assignment accuracy.</li>
+            <li><strong>Add: stream-friendly I/O.</strong> Replace OpenCV file-IO with an RTSP source and a small FastAPI service that publishes per-lane stats as JSON; the OpenCV overlay becomes a debug view.</li>
+            <li><strong>Add: drift detection.</strong> Watch silhouette on the lane assignment over a rolling window; trigger re-clustering when the camera moves or the road layout changes, which the original pipeline could not detect.</li>
+          </ul>
         </section>
       </aside>
     </main>
   </div>
 
-  <script src="../js/config.js?v=21"></script>
+  <script src="../js/config.js?v=39"></script>
   <script>
     if (typeof siteConfig !== 'undefined') {
       if (!siteConfig.hide_blog) {

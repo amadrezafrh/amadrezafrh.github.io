@@ -11,7 +11,11 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
-  <link rel="stylesheet" href="../css/styles.css?v=21" />
+  <link rel="stylesheet" href="../css/styles.css?v=39" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/atom-one-dark.min.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/highlight.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/languages/python.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () { if (window.hljs) { hljs.highlightAll(); } });</script>
 </head>
 <body class="three-col-page">
   <div class="layout">
@@ -26,7 +30,7 @@
         </div>
 
         <div class="sidebar-about">
-          <p>ML/AI software engineer with 5+ years of experience in Agentic AI, LLMs/RAG, Computer Vision, and Speech Processing. I have built inference pipelines, cloud-deployed ML services, and safety-critical diagnostic systems used in industry.</p>
+          <p>ML/AI software engineer with 4+ years of experience in Agentic AI, LLMs/RAG, Computer Vision, and Speech Processing. I have built inference pipelines, cloud-deployed ML services, and safety-critical diagnostic systems used in industry.</p>
           <p>M.Sc. Computer Engineering, Politecnico di Torino, with a thesis on voice conversion at TU Darmstadt.</p>
         </div>
 
@@ -302,24 +306,172 @@
 
           <h2>Links</h2>
           <p class="project-links">
-            <a href="https://github.com/amadrezafrh/Quixo-Computational-Intelligence-2023-2024" target="_blank">GitHub Repository</a>
+            <a href="https://github.com/amadrezafrh/Quixo-Computational-Intelligence-2023-2024" target="_blank" class="github-pill"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg><span>GitHub Repository</span></a>
           </p>
         </section>
 
-        <a href="../index.html#projects" class="back-link">Back to Projects</a>
+        <a href="../index.html#projects" class="back-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg><span>Back to Projects</span></a>
         </article>
 
       </div>
       <aside class="right-rail">
-        <section class="section">
-          <h2>Notes</h2>
-          <p class="placeholder">Technical notes, design choices, and disclaimers for this project will appear here.</p>
+        <section class="section notes">
+          <header class="notes-header">
+            <p class="notes-eyebrow">Behind the Build</p>
+            <h2 class="notes-title">Engineering Notes</h2>
+            <p class="notes-lede">How the Quixo board became a Gym environment, why the reward had to be shaped, what each of the three RL agents and the two baselines actually does, and an honest re-evaluation of the code with a product-grade layout.</p>
+          </header>
+
+          <div class="notes-context">
+            <p><strong>Context.</strong> Computational Intelligence course project at Politecnico di Torino, January 2024. Prototype-grade code; the algorithm work is the point.</p>
+          </div>
+
+          <h3>Architecture</h3>
+          <p>One Gym env, one training entry point, one evaluation entry point. Every agent shares the same env so swapping PPO for DQN or A2C is a one-line change.</p>
+<pre><code>QuixoEnv (gym.Env)
+  observation : 44 action-legality features + 25 board cells
+  action      : Discrete(44)   (16 border picks x up to 3 slides)
+  reward      : shaped (line extension + block + win bonus + illegal pick penalty)
+       |
+       v
+train.py
+  PPOWrapper -&gt; sb3 PPO   on QuixoEnv -&gt; models/PPO/*.zip
+  DQNWrapper -&gt; sb3 DQN   on QuixoEnv -&gt; models/DQN/*.zip
+  A2CWrapper -&gt; sb3 A2C   on QuixoEnv -&gt; models/A2C/*.zip
+       |
+       v
+evaluate.py
+  PPOPlayer / DQNPlayer / A2CPlayer
+    vs.  RandomPlayer
+    vs.  DeterministicPlayer    (heuristic baseline)
+  + ValuePlayer (Monte-Carlo value-iteration)  as a no-RL reference</code></pre>
+
+          <h3>Disclaimers and attribution</h3>
+          <ul>
+            <li><strong>Mine, end to end.</strong> The Gym env (state encoding, action masking, reward shaping), the three RL wrappers, the value-iteration baseline, the deterministic heuristic player, the GUI, and the evaluation loop. No upstream fork.</li>
+            <li><strong>Library code, used as is.</strong> PPO, DQN, A2C and the callback infrastructure come from <a href="https://github.com/DLR-RM/stable-baselines3" target="_blank" rel="noopener">stable-baselines3</a>. <code>Env</code>, <code>Discrete</code>, <code>Box</code> from <a href="https://github.com/openai/gym" target="_blank" rel="noopener">Gym 0.21</a>. The Quixo rules in <code>game.py</code> follow the boardgame as published by Gigamic.</li>
+          </ul>
+
+          <h3>The hard part: action and reward shaping</h3>
+          <p>Quixo has a clean rule book but a messy action space. Only the 16 border cells can be picked up, and each one allows 1 to 3 slide directions depending on which border it sits on. <code>Discrete(44)</code> covers the union; at step time the env masks moves the current player cannot legally make.</p>
+<pre><code class="language-python">class QuixoEnv(Env):
+    def __init__(self, player: int):
+        self.actions = get_available_actions()           # 44 entries
+        self.action_space = Discrete(len(self.actions))
+        self.observation_space = Box(
+            low=-30, high=30,
+            shape=(len(self.actions) + 5 * 5,),
+            dtype=np.int32,
+        )
+        self.board = -np.ones((5, 5), dtype=np.int8)
+        ...
+    def step(self, action):
+        pos, mov = self.actions[action]
+        # cell owned by the opponent -&gt; illegal pick
+        if self.board[(pos[1], pos[0])] == self.opposite:
+            return self.observation, -3, False, {}
+        self.board[(pos[1], pos[0])] = self.player
+        self.slide(pos, mov)
+        ...</code></pre>
+          <p>Without reward shaping, sparse "win = 1, loss = -1" makes the agents flatline for ~1M steps. The shaping signal nudges them with small per-step incentives:</p>
+          <ul>
+            <li>illegal pick (square owned by the opponent): <code>-3</code>;</li>
+            <li>extends an own line by one: <code>+1</code> per added piece;</li>
+            <li>blocks an opponent line of length 3 or 4: <code>+2</code>;</li>
+            <li>winning move: <code>+10</code>;</li>
+            <li>otherwise: <code>0</code>.</li>
+          </ul>
+          <p>With this, PPO learns to beat <code>RandomPlayer</code> consistently within 200k steps and starts to challenge <code>DeterministicPlayer</code> by 500k.</p>
+
+          <h3>Three agents, one interface</h3>
+          <p>Each RL wrapper exposes <code>train(ts, callbacks, verbose)</code> and <code>experiment(steps)</code>, so the only difference between training PPO, DQN, and A2C is the class name.</p>
+<pre><code class="language-python">class PPOWrapper:
+    def train(self, ts=5e5, callbacks=50_000, verbose=1):
+        env = QuixoEnv(player=0)
+        self.model = PPO("MlpPolicy", env, verbose=verbose)
+        cb = CheckpointCallback(save_freq=int(callbacks),
+                                save_path="./models/PPO")
+        self.model.learn(total_timesteps=int(ts), callback=cb)
+
+    def experiment(self, steps=450_000):
+        self.model = PPO.load(f"./models/PPO/rl_model_{steps}_steps")
+        ...
+</code></pre>
+          <p>At inference time, <code>PPOPlayer.make_move(game)</code> rebuilds the observation from the live board, asks the policy for an action, and falls back to a legal action if the policy picks one that has become illegal after the opponent's move.</p>
+
+          <h3>Two baselines for honest scoring</h3>
+          <ul>
+            <li><strong><code>DeterministicPlayer</code>.</strong> Heuristic: extend the longest own line if possible, otherwise block the opponent's longest line, otherwise place on the most central legal border cell. No learning. This is the bar to beat.</li>
+            <li><strong><code>ValuePlayer</code> with <code>ValueClass</code>.</strong> Tabular Monte-Carlo value iteration on hashed board states. Saved as a JSON dict of state-value pairs. Slow to converge, useful as a sanity check that the env is correctly rewarding wins.</li>
+          </ul>
+
+          <h3>What I would change about the codebase</h3>
+          <p>Same theme as sim-to-real: the algorithm is fine, the layout is prototype-grade. Honest re-evaluation:</p>
+          <ul>
+            <li><strong>Flat root.</strong> <code>game.py</code>, <code>envs.py</code>, <code>models.py</code>, <code>players.py</code>, <code>utils.py</code>, <code>train.py</code>, <code>evaluate.py</code> are all top-level siblings. Nothing is importable as a package.</li>
+            <li><strong>Two envs in one file.</strong> <code>QuixoEnvV1</code> and <code>QuixoEnv</code> share most code but live as separate classes in <code>envs.py</code>. An <code>AbstractQuixoEnv</code> with two reward-shaping subclasses would remove ~200 lines of duplication.</li>
+            <li><strong>Three wrappers, same shape, no shared base.</strong> <code>PPOWrapper</code>, <code>DQNWrapper</code>, <code>A2CWrapper</code> have near-identical <code>train</code> and <code>experiment</code> methods. A small <code>SB3Wrapper(algo_cls)</code> base would fold them into ~40 lines.</li>
+            <li><strong>Hard-coded experiment settings.</strong> <code>train.py</code> embeds <code>ts=5e5</code>, <code>callbacks=50000</code>, <code>steps=450000</code> as Python literals. A YAML or JSON config keyed by algorithm would let you sweep without editing source.</li>
+            <li><strong>No tests, no CI.</strong> Expected for a course project; not OK for a production training stack. At minimum: a board-hash round-trip test, a legal-move generator test, and a one-step training smoke test per algorithm.</li>
+            <li><strong>Evaluation is print-only.</strong> <code>evaluate.py</code> prints win rates to stdout. A CSV writer keyed by <code>(agent, opponent, n_games, seed)</code> would make the results comparable across runs.</li>
+          </ul>
+
+          <h3>A product-grade layout</h3>
+<pre><code>quixo-rl/
+|- pyproject.toml
+|- README.md
+|- .github/workflows/      # lint + tests
+|- configs/
+|  |- ppo.yaml
+|  |- dqn.yaml
+|  |- a2c.yaml
+|- src/quixo_rl/
+|  |- __init__.py
+|  |- game/                # Quixo rules, board hashing
+|  |- envs/
+|  |  |- base.py           # AbstractQuixoEnv
+|  |  |- v1.py             # sparse reward
+|  |  |- shaped.py         # current QuixoEnv
+|  |- agents/
+|  |  |- base.py           # SB3Wrapper(algo_cls)
+|  |  |- ppo.py            # PPOWrapper, PPOPlayer
+|  |  |- dqn.py
+|  |  |- a2c.py
+|  |  |- value.py          # Monte-Carlo value iteration
+|  |  |- heuristic.py      # DeterministicPlayer
+|  |  |- random.py
+|  |- gui/                 # pygame app
+|  |- utils/
+|- scripts/
+|  |- train.py             # `quixo-train --config configs/ppo.yaml`
+|  |- eval.py              # CSV writer keyed by (agent, opponent)
+|- tests/
+|  |- test_game.py
+|  |- test_envs.py         # legal-move masking, win detection
+|  |- test_train_smoke.py  # 1 step PPO/DQN/A2C end-to-end</code></pre>
+
+          <h3>A 2026 take</h3>
+          <ul>
+            <li><strong>Env.</strong> Migrate <code>gym</code> to <code>gymnasium</code>; SB3 v2 already targets that. Quixo is a perfect candidate for <code>PettingZoo</code> too, which handles the two-player turn-based semantics natively instead of folding the opponent into the env.</li>
+            <li><strong>Algorithm.</strong> For a perfect-information turn-based board game, MCTS plus a small neural value head (AlphaZero-lite) outperforms model-free PPO/DQN on every metric that matters here. The shaped reward would mostly disappear because MCTS rollouts give a dense signal for free.</li>
+            <li><strong>Opponent curriculum.</strong> Train against a frozen copy of the previous best, not against <code>RandomPlayer</code>. Standard self-play move; removes the ceiling that <code>RandomPlayer</code> imposes.</li>
+            <li><strong>Bigger feature set.</strong> Today the observation is 44 + 25 ints. A small CNN on the 5x5 board, with the action mask concatenated as a feature plane, gives the policy more useful inductive bias than an MLP.</li>
+          </ul>
+
+          <h3>What I would keep, and what I would add</h3>
+          <ul>
+            <li><strong>Keep.</strong> The three-algorithm sweep against the same env and the same two baselines. A clean ablation matrix is rare in course projects and pays off when you compare wall-clock-equivalent runs.</li>
+            <li><strong>Add: self-play.</strong> Replace <code>RandomPlayer</code> at training time with a frozen previous-best of the same agent. Removes the trivial-opponent ceiling without changing the rest of the pipeline.</li>
+            <li><strong>Add: deterministic eval.</strong> Fix the RNG on <code>RandomPlayer</code> and on the env reset so the win-rate numbers are comparable run to run.</li>
+            <li><strong>Add: replay buffer export.</strong> Dump (state, action, reward, next_state) transitions to disk so the value-iteration baseline can warm-start from RL games, not just self-play.</li>
+            <li><strong>Add: a simple ELO ladder.</strong> Once self-play is in, ranking checkpoints by ELO against each other is more informative than win-rate vs. <code>RandomPlayer</code>.</li>
+          </ul>
         </section>
       </aside>
     </main>
   </div>
 
-  <script src="../js/config.js?v=21"></script>
+  <script src="../js/config.js?v=39"></script>
   <script>
     if (typeof siteConfig !== 'undefined') {
       if (!siteConfig.hide_blog) {

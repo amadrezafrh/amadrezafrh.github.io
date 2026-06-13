@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>RobDiffVC: Diffusion-Based Voice Conversion - Amadreza Farahani</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Lab-external diffusion transformer voice conversion model, an extension of RobVC with smaller parameter count and faster inference." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css?v=39" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/atom-one-dark.min.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/highlight.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/languages/python.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/languages/yaml.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () { if (window.hljs) { hljs.highlightAll(); } });</script>
+  <script src="../js/config.js?v=39"></script>
+  <style>
+    .project-content {
+      max-width: 100%;
+    }
+    .project-image {
+      text-align: center;
+    }
+    .project-image img {
+      display: inline-block;
+      max-width: 100%;
+    }
+    .demo-video {
+      display: block;
+      width: 100%;
+      max-width: 760px;
+      margin: 0 auto;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+      background: #000;
+    }
+  </style>
+</head>
+<body class="three-col-page">
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-content">
+        <div class="sidebar-photo">
+          <img src="../me.JPG" alt="Amadreza Farahani" />
+        </div>
+        <div class="sidebar-identity">
+          <h1>Amadreza Farahani</h1>
+          <p class="tagline">ML/AI Software Engineer</p>
+        </div>
+
+        <div class="sidebar-about">
+          <p>ML/AI software engineer with 4+ years of experience in Agentic AI, LLMs/RAG, Computer Vision, and Speech Processing. I have built inference pipelines, cloud-deployed ML services, and safety-critical diagnostic systems used in industry.</p>
+          <p>M.Sc. Computer Engineering, Politecnico di Torino, with a thesis on voice conversion at TU Darmstadt.</p>
+        </div>
+
+        <nav class="sidebar-nav">
+          <a href="../index.html">Home</a>
+          <a href="../index.html#experience">Experience</a>
+          <a href="../index.html#skills">Skills</a>
+          <a href="../index.html#education">Education</a>
+          <a href="../index.html#projects">Projects</a>
+          <a href="../blog.html" id="nav-blog">Blog</a>
+        </nav>
+        <div class="sidebar-spacer"></div>
+        <div class="sidebar-socials">
+          <a href="mailto:amadreza.farahani@outlook.com" class="social-btn" aria-label="Email" title="Email">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2.5"/><path d="m22 7-10 5L2 7"/></svg><span>Email</span>
+          </a>
+          <a href="https://linkedin.com/in/amadrezafrh" target="_blank" rel="noopener" class="social-btn" aria-label="LinkedIn" title="LinkedIn">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4V8h4v2"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg><span>LinkedIn</span>
+          </a>
+          <a href="https://github.com/amadrezafrh" target="_blank" rel="noopener" class="social-btn" aria-label="GitHub" title="GitHub">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg><span>GitHub</span>
+          </a>
+          <a href="../resume/Amadreza.pdf" target="_blank" rel="noopener" class="social-btn" aria-label="CV" title="CV">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><span>CV</span>
+          </a>
+          <a href="../resume/Amadreza.pdf" target="_blank" rel="noopener" class="social-btn" aria-label="Resume" title="Resume" id="resume-link">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span>Resume</span>
+          </a>
+        </div>
+        <div class="sidebar-footer">
+          <span class="sidebar-location"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 7-8 13-8 13s-8-6-8-13a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> Turin, Italy</span>
+          <span class="sidebar-dot">&middot;</span>
+          <span class="sidebar-name">&copy; 2026 Amadreza Farahani</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content three-col">
+      <div class="content-column">
+        <article class="project-detail">
+          <header class="project-header">
+            <h1>RobDiffVC: Diffusion-Based Voice Conversion</h1>
+            <div class="project-meta">
+              <p class="project-date">August 2025</p>
+              <p class="project-tags">
+                <span>Python</span>
+                <span>PyTorch</span>
+                <span>Diffusion</span>
+                <span>Voice Conversion</span>
+                <span>DiT</span>
+                <span>HuBERT</span>
+                <span>EnCodec</span>
+              </p>
+            </div>
+          </header>
+
+          <section class="project-content">
+            <nav class="toc">
+              <p class="toc-title">Contents</p>
+              <ul class="toc-list">
+                <li><a href="#overview">1. Overview</a></li>
+                <li><a href="#problem">2. Problem Statement</a></li>
+                <li><a href="#novelty">3. Novel Approach</a>
+                  <ul class="toc-list toc-sub">
+                    <li><a href="#flow-matching">3.1. From Autoregressive Mel to Flow-Matching Diffusion</a></li>
+                    <li><a href="#multimodal-cfg">3.2. Multi-Modal Conditioning with Classifier-Free Guidance</a></li>
+                  </ul>
+                </li>
+                <li><a href="#architecture">4. Architecture</a>
+                  <ul class="toc-list toc-sub">
+                    <li><a href="#feature-pipeline">4.1. Feature Pipeline</a></li>
+                    <li><a href="#input-embedding">4.2. Input Embedding Block</a></li>
+                    <li><a href="#timestep-embedding">4.3. Timestep Embedding</a></li>
+                    <li><a href="#dit-block">4.4. Diffusion Transformer Block</a></li>
+                    <li><a href="#output-head">4.5. Output Head</a></li>
+                    <li><a href="#vocoder">4.6. Vocoder</a></li>
+                  </ul>
+                </li>
+                <li><a href="#training">5. Training</a>
+                  <ul class="toc-list toc-sub">
+                    <li><a href="#dataset">5.1. Dataset and Preprocessing</a></li>
+                    <li><a href="#masking">5.2. F5-TTS Style Masking</a></li>
+                    <li><a href="#flow-loss">5.3. Flow-Matching Objective</a></li>
+                    <li><a href="#cfg-dropout">5.4. Multi-Modal CFG Dropout</a></li>
+                  </ul>
+                </li>
+                <li><a href="#inference">6. Inference</a>
+                  <ul class="toc-list toc-sub">
+                    <li><a href="#ode-sampling">6.1. ODE Sampling</a></li>
+                    <li><a href="#multipath-cfg">6.2. Generalized Multi-Path CFG</a></li>
+                  </ul>
+                </li>
+                <li><a href="#rl">7. RL Fine-Tuning the CFG Schedule</a></li>
+                <li><a href="#results">8. Results</a></li>
+                <li><a href="#links">9. Links</a></li>
+              </ul>
+            </nav>
+
+            <h2 id="overview">1. Overview</h2>
+            <p>
+              <strong>RobDiffVC</strong> is a lab-external reimplementation of my master thesis project <a href="robvc.html">RobVC</a>. The voice conversion problem is the same: given a short prompt audio from a target speaker and a source utterance from anyone else, output the source utterance spoken in the target voice while preserving content and prosody. The acoustic model is rebuilt from scratch as a <strong>diffusion transformer (DiT)</strong> trained with <strong>flow matching</strong>, conditioned on three modalities (semantic units, speaker timbre, masked mel context) with independent classifier-free guidance dropout per modality.
+            </p>
+            <div class="project-image">
+              <img src="robdiffvc/Design.png" alt="RobDiffVC system architecture" />
+              <p class="image-caption">Top-level pipeline. HuBERT layer-9 produces frame-level semantic units (k-means quantised); ECAPA produces frame-level timbre embeddings; a masked log-mel spectrogram supplies the in-painting context. The DiT denoises the masked mel region in latent flow time, and a frozen HiFi-GAN vocoder turns the predicted mel back into a waveform.</p>
+            </div>
+            <p>
+              The full model is a 16-layer DiT with <code>d_model = 768</code>, 16 attention heads, rotary positional embeddings, and QK normalisation. Conditioning enters in two places: a concatenation-based <em>input embedding</em> that fuses the noisy mel state with the aligned conditioning streams, and an <em>AdaLayerNorm</em> path driven by the diffusion timestep. Inference solves a probability-flow ODE between $t=0$ (Gaussian noise) and $t=1$ (clean mel) with a configurable solver and an optional learned schedule for per-step classifier-free guidance strengths.
+            </p>
+            <div class="project-image">
+              <video class="demo-video" controls preload="metadata" playsinline>
+                <source src="robdiffvc/demo.mp4" type="video/mp4" />
+                Your browser does not support embedded video.
+              </video>
+              <p class="image-caption">End-to-end inference. Top: prompt (target speaker) and source (anyone) waveforms. Bottom: converted waveform produced by the DiT plus HiFi-GAN.</p>
+            </div>
+            <p>
+              The remainder of this page walks through the design block by block: why diffusion replaces RobVC's autoregressive cross-attention decoder (Section 3), how the input embedding and DiT block actually mix the modalities (Section 4), how the flow-matching loss and F5-TTS style random masking shape training (Section 5), how the ODE sampler and generalized multi-path classifier-free guidance work at inference (Section 6), and finally the optional reinforcement-learning fine-tuning stage that learns per-step guidance strengths against a speaker-similarity reward (Section 7).
+            </p>
+
+            <h2 id="problem">2. Problem Statement</h2>
+            <p>RobVC solved the any-to-any voice conversion problem with an autoregressive mel decoder driven by a cross-attention block over HuBERT content and EnCodec speaker tokens. It worked well on speaker similarity, but four constraints kept growing as the project matured:</p>
+            <ul>
+              <li><strong>Autoregressive inference latency.</strong> The RobVC decoder predicts mel frames one at a time with LSTM teacher forcing, conditioned on the previous frame. A ten-second utterance at a 50&nbsp;Hz frame rate is 500 sequential forward passes through the decoder, which dominates wall-clock latency even on a modern GPU. Voice conversion has no causal reason to be autoregressive on the output side; the whole source utterance is already available at inference time.</li>
+              <li><strong>Parameter cost of the cross-attention block.</strong> The acoustic generator carried separate context and speaker transformers ($N = 6$ blocks for the coarse RVQ embedder, $M = 4$ blocks for the cross-attention fuser) plus the LSTM decoder stack. The block was sized for the autoregressive teacher-forcing regime and could not be shrunk without losing speaker similarity.</li>
+              <li><strong>Training instability of the autoregressive teacher.</strong> Teacher-forced mel prediction with an L1 objective is sensitive to exposure bias: the decoder trains on ground-truth previous frames but rolls out its own predictions at inference. This shows up as drift on long utterances and forced us into careful curriculum schedules during training.</li>
+              <li><strong>Closed dependency stack.</strong> RobVC was built inside the TU Darmstadt CROSSING lab and uses internal pretrained components and dataset preparation that cannot be released publicly. The acoustic model also depends on Meta's EnCodec for speaker conditioning, whose coarse residual vector quantiser is large and whose licence is not as permissive as we would like for downstream open release.</li>
+            </ul>
+            <p>RobDiffVC reframes the same any-to-any voice conversion problem against these four constraints: a non-autoregressive acoustic model that converts a whole utterance in a fixed number of parallel ODE steps, a single transformer stack instead of two, no teacher forcing, and only public, openly licensed components in the dependency graph (HuBERT, ECAPA-TDNN, HiFi-GAN, LibriTTS).</p>
+
+            <h2 id="novelty">3. Novel Approach</h2>
+
+            <h3 id="flow-matching">3.1. From Autoregressive Mel to Flow-Matching Diffusion</h3>
+            <p>The acoustic model is reframed as a continuous-time generative model that transports a Gaussian sample into a clean mel-spectrogram along a straight path. Concretely, let $x_1 \in \mathbb{R}^{T \times M}$ be the ground-truth mel for a training utterance ($T$ frames, $M = 100$ mel channels) and let $x_0 \sim \mathcal{N}(0, I)$ be an independent Gaussian sample of the same shape. For a flow time $t \in [0, 1]$ drawn uniformly we define the linear interpolant</p>
+            <p>$$x_t = (1 - t)\,x_0 + t\,x_1,$$</p>
+            <p>so $x_0$ at $t=0$ is pure noise, $x_1$ at $t=1$ is the data, and in between $x_t$ slides along a straight line between the two. Differentiating with respect to flow time gives the <em>conditional vector field</em> that pushes $x_t$ along that line:</p>
+            <p>$$u_t = \frac{d x_t}{d t} = x_1 - x_0.$$</p>
+            <p>The network $v_\theta(x_t, t, c)$ is trained to predict $u_t$ given the noisy state $x_t$, the flow time $t$, and the conditioning bundle $c$ (semantic units, masked mel context, ECAPA timbre). This is the <strong>conditional flow matching</strong> / <strong>rectified flow</strong> objective: it treats generation as learning the velocity field of an ODE rather than predicting the next mel frame. The training-time construction lives in <code>prepare_flow_matching_inputs</code> in <code>acoustic/data.py</code>; the regression loss is covered in Section 5.3, the ODE solver that integrates $v_\theta$ at inference time is covered in Section 6.1.</p>
+            <p>Three properties of this objective drove the choice over both RobVC's autoregressive L1 decoder and a standard DDPM noise-prediction formulation:</p>
+            <ul>
+              <li><strong>Parallel over frames.</strong> A single forward pass of $v_\theta$ predicts the velocity for every mel frame at once, so a ten-second utterance is converted in 16&ndash;64 transformer evaluations regardless of length, not 500 sequential LSTM steps. This is the main inference-latency win over RobVC.</li>
+              <li><strong>No teacher forcing, no exposure bias.</strong> The training input $x_t$ is built from noise plus the clean target with a uniformly sampled $t$, not from the model's own previous predictions. The mismatch between training and inference rollouts that destabilises autoregressive mel decoders is structurally absent here.</li>
+              <li><strong>Straight paths, simpler schedule.</strong> Compared to DDPM-style noise prediction $\epsilon_\theta(x_t, t)$ with a variance-preserving cosine schedule, the rectified-flow interpolant has linear marginal paths and a constant-norm target $\|u_t\| = \|x_1 - x_0\|$. There is no signal-to-noise schedule to design or anneal, the ODE is non-stiff, and large-step solvers (Euler, midpoint, RK4) all converge in tens of steps rather than the hundreds typically used for DDPM sampling.</li>
+            </ul>
+            <p>The conditioning bundle $c$ is where voice conversion is actually decided: the semantic units constrain <em>what</em> is being said and the ECAPA embedding plus masked mel context constrain <em>who</em> is saying it. Section 3.2 explains how the three conditioning streams are mixed and how classifier-free guidance is generalised to operate on each of them independently.</p>
+
+            <h3 id="multimodal-cfg">3.2. Multi-Modal Conditioning with Classifier-Free Guidance</h3>
+            <p>The conditioning bundle $c$ from Section 3.1 is not a single tensor. It is the disjoint union of three streams that each carry a different aspect of the target voice conversion:</p>
+            <ul>
+              <li><strong>Semantic units $z^u$.</strong> Discrete tokens from a k-means (100 clusters) quantisation of HuBERT layer 9. They encode <em>what</em> is being said: phonetic content and prosodic timing, with most speaker identity removed by HuBERT's self-supervised objective and by the k-means bottleneck.</li>
+              <li><strong>Timbre embedding $z^s$.</strong> Frame-level 128-channel features captured from the <code>asp.tdnn</code> layer of a pretrained ECAPA-TDNN speaker encoder (more in Section 4.1). They encode <em>who</em> is speaking: the speaker's spectral envelope and voice quality.</li>
+              <li><strong>Masked mel context $z^m$.</strong> The clean mel of the target utterance with a contiguous span masked out. This is the F5-TTS in-painting signal: the unmasked region acts both as a high-quality timbre reference and as a continuity constraint at the seam. Training masks a uniformly chosen $40$&ndash;$70\%$ window; the model only has to predict the masked frames.</li>
+            </ul>
+            <p>Treating these three streams as one conditioning vector would force a single classifier-free guidance strength to scale all of them together, which conflates content fidelity with speaker similarity. RobDiffVC instead drops each stream independently during training, so the network learns four separate score directions: one fully conditional and one with each modality individually replaced by a learned null token.</p>
+            <p>For each training utterance the drop indicators are sampled as</p>
+            <p>$$d^m \sim \text{Bernoulli}(0.20), \quad d^u \sim \text{Bernoulli}(0.15), \quad d^s \sim \text{Bernoulli}(0.20),$$</p>
+            <p>independently, with an additional all-null event $d^\varnothing \sim \text{Bernoulli}(0.15)$ that overrides everything and feeds the model a fully unconditional sample. When $d^k = 1$ the corresponding stream is replaced by a per-modality learned null token $\varnothing^k$ and a binary <em>presence flag</em> is flipped from $1$ to $0$ for that frame range. The presence flags are concatenated into the input embedding (Section 4.2) so every transformer layer can tell which modalities are live for the current sample.</p>
+            <p>Two consequences follow from this factorisation. First, at inference we can compute one conditional velocity $v_c$ and a set of unconditional velocities $\{v_u^{(k)}\}$, one per modality we want to push on, and combine them as separately weighted extrapolations from the unconditional baseline &mdash; this is the generalized multi-path classifier-free guidance formula derived in Section 6.2. Second, because the dropout is Bernoulli and not curriculum, the same checkpoint supports every guidance configuration; the only thing that changes between runs is the strength vector $\alpha_t^{(k)}$, which is also what the optional reinforcement-learning stage in Section 7 learns to schedule per ODE step.</p>
+
+            <h2 id="architecture">4. Architecture</h2>
+
+            <h3 id="feature-pipeline">4.1. Feature Pipeline</h3>
+            <p>Three frozen feature extractors run once per training utterance and their outputs are cached to disk, so the DiT trains directly on precomputed tensors. Each extractor was chosen for a specific signal:</p>
+            <ul>
+              <li><strong>HuBERT layer-9 + k-means (semantic units, <code>semantic/extractor.py</code>).</strong> The fairseq HuBERT-base checkpoint is run at $16$&nbsp;kHz; the 768-dimensional output of <em>layer 9</em> is then quantised to $K = 100$ centroids by an offline k-means trained on a held-out LibriTTS subset. Each frame becomes an integer token $z^u_t \in \{0, \dots, 99\}$ at HuBERT's native $50$&nbsp;Hz rate. Layer 9 is well known to be the most phonetic of the HuBERT stack &mdash; later layers leak speaker identity and earlier ones still carry acoustic detail. The k-means bottleneck collapses any residual speaker variation, leaving a clean content code.</li>
+              <li><strong>ECAPA-TDNN frame embeddings (timbre, <code>timbre/extractor.py</code>).</strong> A pretrained <code>speechbrain/spkrec-ecapa-voxceleb</code> classifier is loaded but only one of its internal tensors is kept: a forward hook on <code>mods.embedding_model.asp.tdnn</code> captures the $128$-channel <em>pre-pooling</em> feature map. The standard ECAPA recipe pools this map into one global speaker vector, which is then used by speaker verification. Pooling is exactly the operation that throws away the time-resolved style we want to keep, so RobDiffVC takes the unpooled map and treats it as a frame-level timbre stream $z^s_t \in \mathbb{R}^{128}$ at the ECAPA frame rate ($16$&nbsp;kHz input, $\sim 100$&nbsp;Hz output).</li>
+              <li><strong>Vocos-style log-mel target (<code>mel/extractor.py</code>).</strong> The diffusion target $x_1$ is a log-mel spectrogram at $24$&nbsp;kHz with $n_\text{fft} = 1024$, hop $256$, $n_\text{mels} = 100$, slaney normalisation, and a $\log(\cdot + 10^{-5})$ amplitude transform. This is the same configuration used by Vocos / vocos-style HiFi-GAN family vocoders, which is what we use in Section 4.6. Picking the vocoder's preferred input as the diffusion target keeps the generative model and the waveform synthesiser in the same feature space &mdash; no separate alignment or post-processing step is required.</li>
+            </ul>
+            <p>The three streams arrive at the DiT on three different time grids: HuBERT at $50$&nbsp;Hz on $16$&nbsp;kHz audio, ECAPA at $\sim 100$&nbsp;Hz on $16$&nbsp;kHz audio, mel at $93.75$&nbsp;Hz on $24$&nbsp;kHz audio. Aligning them to the mel time axis is the job of the input embedding (Section 4.2), which up-samples HuBERT units with a learned convolutional resampler and down-samples ECAPA with a strided block. All three extractors stay frozen for the entire project; only the DiT itself updates.</p>
+
+            <h3 id="input-embedding">4.2. Input Embedding Block</h3>
+            <p>Before the DiT can run, every conditioning stream has to be brought onto the mel time grid and turned into a single tensor of width $d_\text{model} = 768$. The input embedding block does three things in sequence: alignment, concatenation with presence flags, and convolutional position encoding.</p>
+            <p><strong>Modality alignment.</strong> The semantic units $z^u$ are first embedded into a continuous representation: an <code>nn.Embedding</code> of size $(K + 1, D_u)$ with $D_u = 256$ turns each integer token into a 256-dim vector (the extra index is reserved for a padding token). They are then resampled from HuBERT's $50$&nbsp;Hz rate to the mel rate by the <code>AdaptiveUnitsUpsampler</code>: a linear projection to the upsampler's working width, three depthwise <code>Conv1d</code>&ndash;GELU stages, and a final $1\times 1$ conv, with an inner <code>F.interpolate(..., mode='linear')</code> that maps to the target frame count. ECAPA frames are handled by <code>SimpleTimeDownsampler</code>, which projects $128 \to D_s = 128$ and uses a nearest-neighbour <code>F.interpolate</code> to land on the mel grid. After this step every stream has the same length $T$.</p>
+            <p><strong>Concatenation and projection.</strong> Let $x_t \in \mathbb{R}^{T \times M}$ be the noisy mel state, $\tilde x \in \mathbb{R}^{T \times M}$ the masked clean mel context, $z^u_\text{aligned} \in \mathbb{R}^{T \times D_u}$ the upsampled units, $z^s_\text{aligned} \in \mathbb{R}^{T \times D_s}$ the downsampled ECAPA, and let $p^m, p^u, p^s \in \{0, 1\}^T$ be the three presence flags from Section 3.2 (a flag is $0$ wherever its modality has been replaced by a learned null token). The block concatenates everything along the feature axis and projects:</p>
+            <p>$$h_0 = W_\text{in} \,\bigl[\, x_t \;\Vert\; \tilde x \;\Vert\; z^u_\text{aligned} \;\Vert\; z^s_\text{aligned} \;\Vert\; p^m \;\Vert\; p^u \;\Vert\; p^s \,\bigr] + b_\text{in},$$</p>
+            <p>where $\Vert$ denotes feature-axis concatenation and $W_\text{in} \in \mathbb{R}^{d_\text{model} \times d_\text{in}}$ with $d_\text{in} = 2M + D_u + D_s + 3 = 587$. The presence flags are concatenated as constant-per-frame channels &mdash; this gives the network a cheap, explicit way to distinguish "this modality is unconditional for this whole sample" from "this modality happens to be quiet here" without overloading the data tensor itself.</p>
+            <p><strong>Convolutional position embedding.</strong> Standard learned positional embeddings need a fixed maximum length; voice conversion uses arbitrary-length utterances. RobDiffVC adds a small position bias via a depthwise stack of $1$D convolutions instead:</p>
+            <p>$$h_0' = h_0 + \text{Conv}_k(\text{Mish}(\text{Conv}_k(h_0))),$$</p>
+            <p>with kernel size $k = 31$, $16$ groups, and Mish activations (<code>ConvPositionEmbedding</code> in <code>acoustic/modules/embeddings.py</code>). Because everything is depthwise and length-agnostic, the position bias generalises to any utterance length. Absolute positional information for the attention itself is then injected later via rotary embeddings inside each DiT block (Section 4.4). The output $h_0' \in \mathbb{R}^{T \times d_\text{model}}$ is what the first DiT block sees.</p>
+
+            <h3 id="timestep-embedding">4.3. Timestep Embedding</h3>
+            <p>The flow time $t \in [0, 1]$ is a single scalar per training sample, but every DiT block needs to know how far along the ODE path the current state $x_t$ sits in order to modulate its computation. The timestep embedding turns $t$ into a wide conditioning vector that is broadcast to every block.</p>
+            <p>First a sinusoidal feature is built with a scaled-up frequency basis (<code>SinusPositionEmbedding</code>, scale $= 1000$):</p>
+            <p>$$\phi(t)_i = \begin{cases} \sin\bigl(1000 \cdot t \cdot \omega_i\bigr) & i < d_\text{freq}/2 \\ \cos\bigl(1000 \cdot t \cdot \omega_{i - d_\text{freq}/2}\bigr) & i \ge d_\text{freq}/2 \end{cases},$$</p>
+            <p>with $\omega_i = \exp\!\bigl(-\frac{\log 10000}{d_\text{freq}/2 - 1} \cdot i\bigr)$ and $d_\text{freq} = 256$. The $1000\times$ pre-multiplier expands the dynamic range so that $t$ values close together along $[0, 1]$ map to noticeably different sinusoidal phases &mdash; this is the same trick used by F5-TTS and recent DiT-based audio models and noticeably stabilises training at the high-$t$ end of the schedule.</p>
+            <p>The sinusoidal features are then run through a small MLP that lifts them to model width:</p>
+            <p>$$\tau = W_2 \,\sigma_\text{SiLU}\bigl(W_1 \,\phi(t) + b_1\bigr) + b_2, \qquad \tau \in \mathbb{R}^{d_\text{model}},$$</p>
+            <p>with $W_1 \in \mathbb{R}^{d_\text{model} \times d_\text{freq}}$ and $W_2 \in \mathbb{R}^{d_\text{model} \times d_\text{model}}$. The single conditioning vector $\tau$ is shared by every layer of the DiT, where it drives the adaptive layer-norm modulation derived in Section 4.4. Crucially, $\tau$ is the <em>only</em> place the diffusion time enters the network; all other conditioning is concatenated frame-wise into $h_0$ at the input. This separation keeps the data path purely about sequence content and the time path purely about scaling and biasing the residual stream.</p>
+
+            <h3 id="dit-block">4.4. Diffusion Transformer Block</h3>
+            <p>The DiT stack has $L = 16$ identical blocks, each operating on a residual stream of width $d_\text{model} = 768$ with $H = 16$ attention heads (per-head dim $d_h = 48$) and an FFN inner width of $d_\text{ff} = 3072$. A single block fuses time conditioning, self-attention, and a feed-forward network in a way that the diffusion-transformer literature has settled on after several rounds of ablation; here is the exact computation.</p>
+            <p><strong>Adaptive LayerNorm modulation.</strong> Each block consumes the timestep vector $\tau$ from Section 4.3 and produces six per-channel modulation tensors via a single linear projection (<code>AdaLayerNorm</code> in <code>acoustic/modules/norms.py</code>):</p>
+            <p>$$\bigl[\,\beta^\text{msa},\, \gamma^\text{msa},\, g^\text{msa},\, \beta^\text{mlp},\, \gamma^\text{mlp},\, g^\text{mlp}\,\bigr] = W_\text{ada}\,\sigma_\text{SiLU}(\tau) + b_\text{ada},$$</p>
+            <p>with $W_\text{ada} \in \mathbb{R}^{6 d_\text{model} \times d_\text{model}}$. The $\beta, \gamma$ pairs are <em>shift</em> and <em>scale</em> for the two LayerNorms in the block, and the $g$ values are <em>gates</em> on the two residual paths. The linear layer and the output projection of the block are zero-initialised, so at step 0 of training the block is the identity &mdash; the network starts as a deep stack of identities and only gradually learns to route information through the attention and FFN paths.</p>
+            <p><strong>Modulated self-attention.</strong> The first half of the block normalises the residual stream, modulates it with $(\beta^\text{msa}, \gamma^\text{msa})$, runs multi-head attention, and writes the result back through the gate $g^\text{msa}$:</p>
+            <p>$$\hat h = (1 + \gamma^\text{msa}) \,\text{LN}(h) + \beta^\text{msa}, \qquad h \leftarrow h + g^\text{msa}\cdot \text{MHA}(\hat h).$$</p>
+            <p>Inside <code>MultiHeadAttentionBlock</code> the projected queries and keys are normalised before the dot product (<em>QK-RMSNorm</em>),</p>
+            <p>$$\tilde Q = \text{RMSNorm}(Q), \quad \tilde K = \text{RMSNorm}(K),$$</p>
+            <p>which is the single change to the standard attention recipe that mattered most for stability at long sequences. Without it, the unbounded growth of $Q^\top K$ at fp16/bf16 caused intermittent divergences early in training. Rotary positional embeddings are then applied head-wise to $\tilde Q$ and $\tilde K$:</p>
+            <p>$$\text{RoPE}_\theta(q)_{2i} = q_{2i}\cos(\theta_i) - q_{2i+1}\sin(\theta_i), \quad \text{RoPE}_\theta(q)_{2i+1} = q_{2i}\sin(\theta_i) + q_{2i+1}\cos(\theta_i),$$</p>
+            <p>with angle $\theta_i$ depending on absolute frame index. RoPE encodes <em>relative</em> position through the dot product $\langle \text{RoPE}_{\theta_m}(q), \text{RoPE}_{\theta_n}(k)\rangle$, which depends only on $m - n$ &mdash; the same property is what lets the model extrapolate to longer sequences at inference than it was trained on. The dot-product attention is then computed with <code>F.scaled_dot_product_attention</code>, which dispatches to FlashAttention on CUDA.</p>
+            <p><strong>Modulated feed-forward.</strong> The second half of the block is the standard transformer FFN, modulated and gated symmetrically with the attention path:</p>
+            <p>$$\hat h = (1 + \gamma^\text{mlp})\,\text{LN}(h) + \beta^\text{mlp}, \qquad h \leftarrow h + g^\text{mlp}\cdot W_2\,\sigma_\text{GELU}(W_1\,\hat h),$$</p>
+            <p>with $W_1 \in \mathbb{R}^{d_\text{ff} \times d_\text{model}}$ and $W_2 \in \mathbb{R}^{d_\text{model} \times d_\text{ff}}$. The two residual gates $g^\text{msa}, g^\text{mlp}$ are independent of each other; they let the network decide, conditional on $t$, whether the current ODE step needs more attention-driven mixing or more feature-wise transformation. Empirically the gates open up gradually during training, with attention saturating first and FFN catching up later.</p>
+            <p>Stacking 16 such blocks gives the DiT enough depth to mix all $T$ mel frames against the long ECAPA timbre context while staying within a single 24&nbsp;GB consumer GPU's memory budget at the 8&nbsp;k-frame sequences used for LibriTTS training.</p>
+
+            <h3 id="output-head">4.5. Output Head</h3>
+            <p>After the 16-block stack, the residual stream $h_L \in \mathbb{R}^{T \times d_\text{model}}$ has to be turned back into a velocity prediction $v_\theta \in \mathbb{R}^{T \times M}$ that lives in mel space. The head is intentionally minimal: one final adaptive LayerNorm and one linear projection.</p>
+            <p>The final modulation uses a stripped-down variant of the adaptive LayerNorm in Section 4.4 (<code>AdaLayerNorm_Final</code> in <code>acoustic/modules/norms.py</code>) that produces only a scale and shift, with no residual gate &mdash; there is no residual path here, so no gate is needed:</p>
+            <p>$$\bigl[\beta^\text{out},\, \gamma^\text{out}\bigr] = W_\text{out,ada}\,\sigma_\text{SiLU}(\tau) + b_\text{out,ada},$$</p>
+            <p>$$h_L' = (1 + \gamma^\text{out})\,\text{LN}(h_L) + \beta^\text{out}.$$</p>
+            <p>The velocity is then produced by a single linear projection $W_\text{out} \in \mathbb{R}^{M \times d_\text{model}}$,</p>
+            <p>$$v_\theta(x_t, t, c) = W_\text{out}\,h_L',$$</p>
+            <p>with $W_\text{out}$ and $b_\text{out}$ zero-initialised. Combined with the zero-initialised AdaLN linears in every block, this means that at training step 0 the network outputs $v_\theta \equiv 0$ everywhere, so the loss is exactly the variance of the target velocity $\mathbb{E}\|u_t\|^2$. Training therefore starts from a known, well-conditioned point regardless of the conditioning seen on the first batch, which removes one common source of early-training instability in deep DiTs.</p>
+            <p>The predicted velocity field $v_\theta(\cdot)$ is what gets supervised by the flow-matching loss in Section 5.3 during training and integrated by the ODE sampler in Section 6.1 at inference. Nothing else &mdash; no auxiliary mel reconstruction loss, no adversarial term, no perceptual loss &mdash; sits on top of the head.</p>
+
+            <h3 id="vocoder">4.6. Vocoder</h3>
+            <p>The DiT outputs a mel-spectrogram, not a waveform. Turning that mel back into a signal at $24$&nbsp;kHz is delegated to a frozen, off-the-shelf HiFi-GAN-class vocoder loaded through the registry-based <code>vocoder/factory.py</code> &mdash; the factory pattern lets the same checkpoint be used with any of the HiFi-GAN, BigVGAN, or Vocos backends without touching the rest of the pipeline.</p>
+            <p>Two design choices justify keeping the vocoder out of the diffusion model. First, the mel target was chosen in Section 4.1 to match the vocoder's training distribution (Vocos-style $24$&nbsp;kHz, $n_\text{mels} = 100$, hop $256$), so there is no feature-space gap to close at inference; the vocoder's pretrained weights are directly usable on the predicted mel. Second, the vocoder's only failure mode in practice is over-smoothing on out-of-distribution mels, but the diffusion model already produces sharp, well-distributed samples, so a stronger vocoder is not the bottleneck. The same modular boundary also means that improvements to the open-source vocoder ecosystem &mdash; for example a higher-quality BigVGAN drop-in &mdash; are picked up by a config change rather than a retrain.</p>
+            <p>Vocoder inference cost is negligible compared to the DiT: a single forward pass of HiFi-GAN over the full utterance is dominated by GPU memory bandwidth, not arithmetic, and finishes in tens of milliseconds. End-to-end latency is therefore set almost entirely by the number of ODE steps inside Section 6.1.</p>
+
+            <h2 id="training">5. Training</h2>
+
+            <h3 id="dataset">5.1. Dataset and Preprocessing</h3>
+            <p>Training uses the publicly available <strong>LibriTTS</strong> corpus (train-clean-100 and train-clean-360), with dev-clean held out for validation. The choice is deliberate: every component of the dependency stack (HuBERT, ECAPA-TDNN, HiFi-GAN, LibriTTS itself) is freely redistributable, which is the open-data path that Section 2 required.</p>
+            <p>Preprocessing is offline and one-shot. For each utterance the pipeline writes three independent numpy arrays under <code>dataset/libritts-split/{mels,discrete100,ecapa}/{train,dev}/&lt;speaker&gt;/&lt;file&gt;.npy</code>:</p>
+            <ul>
+              <li><strong>Mel target</strong>: float32 array of shape $(M, T)$ with $M = 100$, written by the extractor in Section 4.1 at $24$&nbsp;kHz.</li>
+              <li><strong>Semantic units</strong>: int64 array of shape $(T_u,)$ with values in $\{0,\dots,99\}$, written by the k-means quantised HuBERT extractor at the $50$&nbsp;Hz HuBERT frame rate.</li>
+              <li><strong>ECAPA frame embedding</strong>: float32 array of shape $(T_s, 128)$ from the <code>asp.tdnn</code> hook described in Section 4.1.</li>
+            </ul>
+            <p>The training-time dataset (<code>SingleAudioDataset</code> in <code>acoustic/data.py</code>) simply memory-maps these files, loads one utterance per sample, and returns the three tensors with their respective lengths. Because every feature is precomputed, the data loader does no GPU work and saturates eight CPU workers without contention from HuBERT or ECAPA at training time.</p>
+            <p>Long utterances dominate memory cost in a transformer, so RobDiffVC uses a <strong>dynamic batch sampler</strong> (<code>DynamicBatchSampler</code>) that packs samples by total mel-frame count up to a configurable <code>frames_threshold</code> rather than a fixed sample count. Within each bucket the loader pads to the longest sample with a special padding token for the units (value $K = 100$) and zeros for the mel and ECAPA tensors; a per-frame validity mask is recovered later from the stored mel lengths. The padding never enters the loss because the masked velocity loss in Section 5.3 only averages over the union of (random training mask) $\cap$ (valid frames).</p>
+
+            <h3 id="masking">5.2. F5-TTS Style Masking</h3>
+            <p>RobDiffVC borrows F5-TTS's masking-as-conditioning trick: a single training utterance plays both the role of the speaker prompt <em>and</em> the role of the target to denoise, with a randomly chosen sub-span masked out. The unmasked frames give the model a clean reference of the target voice; the masked frames are what the velocity prediction has to reconstruct. This collapses the usual paired (prompt, target) supervision into a self-contained reconstruction objective, which avoids the need for parallel data and works on any single-speaker corpus.</p>
+            <p>Concretely, for each utterance of length $T$ (the valid frame count after padding is stripped) the training loop in <code>prepare_flow_matching_inputs</code> draws a mask fraction</p>
+            <p>$$f \sim \mathcal{U}(0.4, 0.7),$$</p>
+            <p>computes a span length $\ell = \lfloor f \cdot T \rfloor$, draws a uniformly random start position $s \in \{0, \dots, T - \ell\}$, and sets the boolean loss mask</p>
+            <p>$$\mathcal{M} \;=\; \mathbf{1}_{[s,\, s + \ell)}, \qquad \text{so } \mathcal{M}_t = 1 \text{ on the target span and } 0 \text{ elsewhere}.$$</p>
+            <p>The masked mel context that enters the input embedding is then</p>
+            <p>$$\tilde x_t = \begin{cases} 0 & \mathcal{M}_t = 1 \quad \text{(target span: zeroed out)} \\ x_{1,t} & \mathcal{M}_t = 0 \quad \text{(prompt span: clean mel kept)} \end{cases},$$</p>
+            <p>and the same zero mask is applied frame-wise to the ECAPA stream so that the model cannot cheat by reading the target-span timbre directly. Crucially, the noisy state $x_t$ is built on the <em>entire</em> utterance, target span included, so the DiT still has a noisy version of the target frames to denoise against; only the clean context is hidden.</p>
+            <p>The loss in Section 5.3 is then averaged over $\mathcal{M}$ only. Because the chosen span is large (40&ndash;70&nbsp;\% of the utterance) and randomly placed, the network sees a wide range of prompt-to-target ratios during training and learns to in-paint long contiguous regions rather than just local frame transitions. This is the property that lets the same checkpoint do both <strong>voice conversion</strong> (long target span, short prompt span) and <strong>reconstruction</strong> (short target span, long prompt span) at inference without any task-specific switch.</p>
+
+            <h3 id="flow-loss">5.3. Flow-Matching Objective</h3>
+            <p>Combining the flow-matching construction from Section 3.1 with the random mask from Section 5.2, each training step computes the following targets per batch element. Let $x_1$ be the clean mel, $x_0 \sim \mathcal{N}(0, I)$ an independent noise sample, $t \sim \mathcal{U}(0, 1)$ a flow time, and $\mathcal{M} \in \{0, 1\}^T$ the random F5-TTS mask. Then</p>
+            <p>$$x_t = (1 - t)\,x_0 + t\,x_1, \qquad u_t = x_1 - x_0.$$</p>
+            <p>The network produces $v_\theta(x_t, t, c)$ where the conditioning bundle $c$ consists of the modality-dropped semantic units, masked mel context, and ECAPA stream from Section 3.2. The regression objective is a masked mean-squared error against $u_t$, computed only on the frames that are both inside the target span and inside the valid (non-padding) region. Letting $\mathcal{M}$ denote the joint indicator that is $1$ on (target span) $\cap$ (valid frames) and $0$ elsewhere, the loss is</p>
+            <p>$$\mathcal{L}(\theta) \;=\; \frac{\bigl\|\,\mathcal{M} \odot \bigl(v_\theta(x_t, t, c) - u_t\bigr)\,\bigr\|_2^2}{M \cdot \|\mathcal{M}\|_1},$$</p>
+            <p>where $\odot$ broadcasts the per-frame mask across mel channels and the denominator counts the number of supervised mel cells.</p>
+            <p>Three details about this loss are worth highlighting because they are different from what a textbook diffusion model would do:</p>
+            <ul>
+              <li><strong>Velocity, not noise.</strong> The target is the conditional vector field $u_t = x_1 - x_0$ of the rectified-flow interpolant, not the noise sample $x_0$ as in DDPM or the score $\nabla \log p_t(x_t)$ as in score matching. The three are mathematically equivalent up to known reparameterisations, but the velocity formulation is the one whose loss surface is best conditioned for the linear path, and it is also the form that the ODE sampler in Section 6.1 consumes directly.</li>
+              <li><strong>No noise-level weighting.</strong> Standard DDPM losses scale by a function of $t$ to compensate for the signal-to-noise ratio at each step. Because $\|u_t\| = \|x_1 - x_0\|$ is constant in $t$, the rectified-flow loss is naturally well-balanced and needs no per-$t$ weighting; a flat MSE is the right objective.</li>
+              <li><strong>Mask-weighted average, not sum.</strong> Dividing by $\sum \mathcal{M}$ rather than $\sum 1$ keeps the gradient scale independent of the mask fraction, so the learning rate does not depend on the chosen $f$ range. The denominator is computed per-batch with the same mask, which means gradient magnitudes also stay flat across the dynamic batch sampler buckets.</li>
+            </ul>
+            <p>Optimisation uses AdamW with $\text{lr} = 4.5 \cdot 10^{-5}$, $(\beta_1, \beta_2) = (0.9, 0.999)$, weight decay $0.01$, gradient accumulation $8\times$, and gradient clipping at $\|\cdot\|_2 = 1.0$. An exponential moving average of the parameters with decay $0.999$ is maintained on the CPU; the EMA weights are what every inference path actually loads. Training runs for $10$ epochs of LibriTTS-clean at batch size $2$ (per-step) on a single $24$&nbsp;GB consumer GPU. A linear warm-up plus linear decay schedule covers the entire run, with no separate cosine or restart phase.</p>
+
+            <h3 id="cfg-dropout">5.4. Multi-Modal CFG Dropout</h3>
+            <p>Section 3.2 introduced the principle of independent Bernoulli dropouts per modality; this section pins down the exact sampling procedure used at every training step and explains why each rate has the value it has.</p>
+            <p>Before computing the loss, the trainer calls <code>AcousticModel.sample_cfg_dropout()</code> to draw the three drop indicators and the all-null override:</p>
+            <p>$$d^\varnothing \sim \text{Bernoulli}(0.15), \quad d^m \sim \text{Bernoulli}(0.20), \quad d^u \sim \text{Bernoulli}(0.15), \quad d^s \sim \text{Bernoulli}(0.20).$$</p>
+            <p>If the all-null event $d^\varnothing$ fires, all three per-modality drops are forced to $1$; otherwise the three Bernoullis are kept independent. The dropped modalities are then replaced by their learned null tokens $\varnothing^m, \varnothing^u, \varnothing^s$ inside the input embedding (Section 4.2), and their presence flags are flipped to $0$.</p>
+            <p>The asymmetry between the rates is deliberate. The masked-mel and ECAPA streams are the two timbre-carrying inputs; dropping them at $0.20$ each gives the network the most exposure to the "no speaker info" regime, which is what classifier-free guidance later exploits to push speaker similarity at inference. The semantic units are dropped at the lower rate of $0.15$ because they are the only signal that pins down <em>content</em> &mdash; pushing too hard on the unconditional-units path at inference produces phoneme drift, so we want the network to be relatively confident in its content-conditional prediction. The $0.15$ all-null event guarantees a non-trivial fraction of fully unconditional samples regardless of how the three independents fall, which is what gives the model a clean baseline velocity $v_u^{(\varnothing)}$ to extrapolate from in the most aggressive guidance configurations.</p>
+            <p>In expectation, $\sim 60\%$ of training samples have all three modalities live, $\sim 15\%$ are fully unconditional via the all-null override, and the remaining $\sim 25\%$ have exactly one or two modalities dropped &mdash; the part of the joint that matters for per-modality classifier-free guidance. No curriculum or warm-up is applied to the dropout schedule; the rates are constant from step 1 to the end of training. The exact same checkpoint is then reusable across every guidance configuration in Section 6.2 and across the RL fine-tuning stage in Section 7 without any task-specific re-training.</p>
+
+            <h2 id="inference">6. Inference</h2>
+
+            <h3 id="ode-sampling">6.1. ODE Sampling</h3>
+            <p>At inference the trained velocity network $v_\theta$ defines an ordinary differential equation whose solution at $t = 1$ is a sample from the learned data distribution. Concretely, sampling starts from a Gaussian draw $x(0) \sim \mathcal{N}(0, I)$ at flow time $0$ and integrates</p>
+            <p>$$\frac{dx}{dt} = v_\theta(x, t, c)$$</p>
+            <p>up to $t = 1$, where $x(1)$ is the predicted clean mel. For voice conversion the conditioning bundle $c$ is built once: the prompt audio supplies the unmasked context (its clean mel, its ECAPA frames, its semantic units), the source audio supplies the rest of the semantic units and the spans that need to be filled in, and the loss mask is set to "in-paint everything after the prompt". The sampler then injects the prompt mel back into $x(t)$ at every step so that the converted output preserves the prompt span verbatim and only generates the source span.</p>
+            <p>Three knobs on top of this basic loop are what bring conversion down close to real time on a single consumer GPU.</p>
+            <p><strong>Time grid.</strong> The default grid is the uniform $t_i = i / N$, $N \in \{16, 32, 64\}$. A learned alternative shipped with the sampler is the <em>EPSS</em> (efficient parameterised step schedule) table from F5-TTS / Matcha-TTS: hand-tuned step indices that concentrate samples near $t = 0$ where the velocity field is steepest, so a smaller $N$ matches the quality of a larger uniform grid. An optional <em>sway sampling</em> reshape $t \leftarrow t + \lambda\,(\cos(\pi t / 2) - 1 + t)$ further bends the grid towards either end depending on the sign of $\lambda$.</p>
+            <p><strong>Solver.</strong> Three explicit integrators are supported, each invoked through the same <code>_ode_step(f, x, t_0, t_1, \text{method})</code> dispatcher:</p>
+            <p>$$x \leftarrow x + h\,v_\theta(x, t),$$</p>
+            <p>which is plain <em>Euler</em>;</p>
+            <p>$$k_1 = v_\theta(x, t),\quad k_2 = v_\theta\!\bigl(x + \tfrac h2 k_1,\,t + \tfrac h2\bigr),\quad x \leftarrow x + h\,k_2,$$</p>
+            <p>which is the <em>midpoint</em> rule; and the full classical <em>RK4</em> with four velocity evaluations per step. For straight-path rectified flow trained with the loss in Section 5.3, midpoint at $N = 32$ matches RK4 at $N = 16$ in terms of speaker similarity, and Euler at $N = 32$ is within $2\%$ in our internal evaluation, which is why Euler is the default in the public configs.</p>
+            <p><strong>Mixed precision and prompt injection.</strong> The whole sampler runs inside <code>torch.autocast(fp16)</code> on CUDA, with the initial noise drawn in fp16 to match. After the final step the prompt mel rows are copied back from the conditioning tensor into $x(1)$ so that the seamless concatenation of prompt + converted source can be vocoded with the HiFi-GAN block in Section 4.6 without any boundary artefact.</p>
+            <p>End-to-end latency at $N = 32$ Euler steps on an RTX 4090 is roughly <em>2&times; real time</em> for a 5-second utterance, dominated by the 32 DiT forward passes; the HiFi-GAN vocoder and the feature extractors together contribute less than $5\%$ of the wall clock.</p>
+
+            <h3 id="multipath-cfg">6.2. Generalized Multi-Path CFG</h3>
+            <p>Standard classifier-free guidance assumes a single conditioning bundle: one conditional pass $v_c$ and one unconditional pass $v_u$, combined as $\tilde v = (1 + w) v_c - w v_u$. RobDiffVC needs more than that because each of the three modalities can be guided independently. Section 3.2 set up the training so that the network learns several distinct score directions; this section turns those into one sampling-time velocity.</p>
+            <p>At each ODE step the sampler computes one <em>conditional</em> forward pass on the full bundle $c$,</p>
+            <p>$$v_c = v_\theta(x_t, t, c),$$</p>
+            <p>and $K$ <em>unconditional</em> forward passes, where the $k$-th pass replaces a chosen subset of the modalities by their learned null tokens to form a partial bundle $c^{(k)}$,</p>
+            <p>$$v_u^{(k)} = v_\theta\!\bigl(x_t, t, c^{(k)}\bigr), \qquad k = 1, \dots, K.$$</p>
+            <p>Common choices are a "drop audio + ECAPA" path (which isolates the content-only score), a "drop units" path (which isolates the timbre-only score), and a fully unconditional path (everything dropped). The $K$ unconditional configurations are declared up front as a list of dictionaries in the sampler config and the model is asked for all $K + 1$ velocities in a single batched forward pass.</p>
+            <p>The combined velocity for the ODE step is then the linear extrapolation</p>
+            <p>$$\tilde v_t \;=\; \Bigl(1 + \sum_{k=1}^K \alpha_t^{(k)}\Bigr) v_c \;-\; \sum_{k=1}^K \alpha_t^{(k)} v_u^{(k)},$$</p>
+            <p>where $\alpha_t^{(k)} \ge 0$ is the per-step, per-path guidance strength. This is the multi-modality generalisation of standard CFG: the $K = 1$ case with the fully unconditional path collapses back to $\tilde v = (1 + \alpha) v_c - \alpha v_u$.</p>
+            <p>Three properties of this formula make it useful for voice conversion:</p>
+            <ul>
+              <li><strong>Linearity in $\alpha$.</strong> Pushing on path $k$ moves $\tilde v_t$ along the fixed direction $v_c - v_u^{(k)}$ without touching the other paths' contributions. So the dial for "speaker similarity" (drop-timbre path) is mechanically independent of the dial for "intelligibility" (drop-units path), which is the disentangled control that motivated factoring the dropout in Section 3.2.</li>
+              <li><strong>Per-step schedule.</strong> The strengths $\alpha_t^{(k)}$ are not constants. The sampler accepts a $\bigl[N \times K\bigr]$ schedule table and looks up row $i$ at ODE step $i$; an empty table falls back to a constant default. This is what makes the RL fine-tuning stage in Section 7 possible: the policy's action at each step is exactly the row of $\alpha$ values to use.</li>
+              <li><strong>Total-strength cap.</strong> A configurable cap on $\sum_k \alpha_t^{(k)}$ rescales the strength vector uniformly when the cap is exceeded. Without a cap, the linear extrapolation can amplify high-frequency noise on the velocity at extreme guidance settings, which manifests as raspy artefacts in the decoded waveform. The cap is the cheap, hand-tunable defence against that failure mode.</li>
+            </ul>
+            <p>In our default config $K = 2$ (drop-audio path with $\alpha^{(1)} = 1.5$ and drop-units path with $\alpha^{(2)} = 0.8$) with a per-step cap of $\sum_k \alpha_t^{(k)} \le 3.0$. The RL policy in the next section explores schedules that vary these values across the ODE trajectory rather than holding them flat.</p>
+
+            <h2 id="rl">7. RL Fine-Tuning the CFG Schedule</h2>
+            <p>Holding the multi-path guidance strengths $\alpha^{(k)}$ flat across the ODE trajectory leaves quality on the table. Early ODE steps (small $t$) operate on near-Gaussian states where small velocity perturbations propagate strongly into the final mel, while late steps (large $t$) operate close to the data manifold where strong guidance mostly adds high-frequency artefacts. The right $\alpha_t^{(k)}$ schedule is therefore expected to be heteroscedastic in $t$, and the right schedule is not obvious from first principles. RobDiffVC formulates choosing it as a reinforcement-learning problem with the trained DiT held frozen.</p>
+            <p><strong>MDP.</strong> One episode is one ODE rollout that produces one converted utterance. The horizon equals the number of sampling steps $T_\text{rl} = N \in \{16, \dots, 64\}$. The Markov state at step $i$ is a low-dimensional summary of the current velocity prediction: the normalised time $i / N$, the mean and $\ell_2$-norm of the conditional velocity $v_c$, and the per-path means and $\ell_2$-norms of each unconditional velocity $v_u^{(k)}$. This gives an observation vector in $\mathbb{R}^{1 + 2 + 2K}$ that summarises "how aggressive the conditional path is right now" relative to the unconditional baselines without paying the cost of feeding the full $T \times M$ mel state into the policy network.</p>
+            <p><strong>Action space.</strong> The action at each step is the per-path strength row $\alpha_i^{(k)}$ for $k = 1, \dots, K$. To keep the policy small and trainable in a few hours, the action is discretised: each $\alpha_i^{(k)}$ is chosen from a fixed list of bins (for example $\{0.0, 0.5, 1.0, 1.5, 2.0, 2.5\}$), and the joint action is therefore a <code>MultiDiscrete</code> of shape $(K,)$. The total-strength cap from Section 6.2 is applied as a soft projection inside the environment after the action is decoded, which means the policy can output illegal high-strength combinations and the environment quietly rescales them rather than failing the rollout.</p>
+            <p><strong>Reward.</strong> Per-step reward is zero. The terminal reward at $t = 1$ is a weighted combination of three perceptual metrics computed on the decoded waveform (<code>policy/metrics.py</code>):</p>
+            <p>$$R \;=\; w_p \,\text{SpkSim}(y_\text{out}, y_\text{prompt}) \;-\; w_s \,\text{SpkSim}(y_\text{out}, y_\text{source}) \;-\; w_\text{wer} \,\text{WER}(y_\text{out}, y_\text{source}) \;-\; w_f \,\text{F0Err}(y_\text{out}, y_\text{source}),$$</p>
+            <p>where the first term rewards similarity to the target speaker, the second penalises leakage from the source speaker, the third penalises content errors against the source via word error rate from a pretrained ASR, and the fourth penalises prosody distortion via a frame-level F0 error. The reward is clamped to a configurable $[r_\text{min}, r_\text{max}]$ range to keep the gradient signal well-conditioned across episodes with very different absolute quality.</p>
+            <p><strong>Algorithm.</strong> The policy and value networks are small MLPs (a few hundred thousand parameters total) trained with PPO on top of the frozen DiT. Each episode requires $N$ DiT forward passes, all already paid for by the ODE rollout itself, plus one HiFi-GAN decode and one metric computation at the end. Episode counts in the low thousands are enough to find schedules that beat the hand-tuned flat baseline on prompt speaker similarity by several points while staying within the cap on source-speaker leakage. The full MDP and reward derivation, including ablations on the three weight terms, live in <code>policy/RL_Formulation.md</code> in the repository.</p>
+            <p>The trained policy is shipped as a frozen $\bigl[N \times K\bigr]$ schedule table that is loaded by the inference sampler in Section 6.1. End users never run RL; they pick "flat" or "rl-tuned" via a config flag and the rest of the pipeline is identical.</p>
+
+            <h2 id="results">8. Results</h2>
+            <p>Quantitative evaluation against the RobVC baseline and recent open voice-conversion systems is in progress. The metrics tracked are the same family used in the RobVC thesis &mdash; speaker similarity (ECAPA cosine), content similarity (WER from a pretrained ASR), and F0 ground-pitch error &mdash; plus an end-to-end latency measurement on a single consumer GPU. The numbers will be added to this section once the ablation matrix (Euler vs midpoint, flat vs RL-tuned CFG schedule, with vs without the ECAPA stream) is complete.</p>
+
+            <h2 id="links">9. Links</h2>
+            <p class="project-links">
+              <a href="https://github.com/amadrezafrh" target="_blank">GitHub Profile</a>
+              <a href="robvc.html">Read the predecessor: RobVC</a>
+            </p>
+          </section>
+
+          <a href="../index.html#projects" class="back-link">Back to Projects</a>
+        </article>
+      </div>
+      <aside class="right-rail">
+        <section class="section notes">
+          <header class="notes-header">
+            <p class="notes-eyebrow">Behind the Build</p>
+            <h2 class="notes-title">Engineering Notes</h2>
+            <p class="notes-lede">The middle column is the math and architecture of RobDiffVC. This rail is the engineering layer underneath: the PyTorch choices, the optimisation tricks, the data plumbing, and the bits of code that exist purely to keep training stable or inference fast.</p>
+          </header>
+
+          <div class="notes-context">
+            <p><strong>Status.</strong> Active development, August 2025. The codebase trains end-to-end on a single 24&nbsp;GB consumer GPU; the demo above is from the live checkpoint. The numbers under Section 8 are the in-flight ablation matrix.</p>
+          </div>
+
+          <h3>One config drives the whole run</h3>
+          <p>The pipeline is config-first. A single YAML picks the feature extractors, the DiT shape, the optimiser, and the CFG dropout rates. Swapping a HuBERT variant or rescaling the DiT is a config edit, not a code change.</p>
+<pre><code class="language-yaml">model_params:
+  unified_dim: 256
+  content_embedding_type: disc
+  n_clusters: 100
+  use_ecapa: true
+  ecapa_dim: 128
+
+  # CFG dropout (Section 3.2 / 5.4 on the left)
+  audio_drop_prob: 0.20
+  units_drop_prob: 0.15
+  ecapa_drop_prob: 0.20
+
+  diffusion_transformer:
+    mel_dim: 100
+    d_input: 584      # 2*mel + units + ecapa
+    d_model: 768
+    d_ff:    3072
+    layers:  16
+    heads:   16
+    qk_norm: true
+
+train_params:
+  n_epochs: 10
+  learning_rate: 4.5e-5
+  batch_size: 2
+  grad_accum_steps: 8
+  ema_decay: 0.999
+  frac_lengths_mask: [0.4, 0.7]   # F5-TTS style masking</code></pre>
+
+          <h3>The DiT block, in code</h3>
+          <p>The model is mostly a stack of one block, repeated 16 times. Everything in Section 4.4 of the left column &mdash; AdaLN modulation, gated residuals, RoPE+QK-norm attention, the modulated FFN &mdash; fits in 20 lines:</p>
+<pre><code class="language-python">class DiTBlock(nn.Module):
+    def __init__(self, d_model, d_ff, n_heads, dropout=0.1, qk_norm=True):
+        super().__init__()
+        self.attn_norm = AdaLayerNorm(d_model)
+        self.attn = MultiHeadAttentionBlock(
+            d_model, n_heads, dropout=dropout,
+            use_rope=True, qk_norm=qk_norm,
+        )
+        self.ff_norm = nn.LayerNorm(d_model, elementwise_affine=False, eps=1e-6)
+        self.ffn = FeedForward(d_model, d_ff, dropout)
+
+    def forward(self, x, t_embed, mask=None):
+        norm, gate_msa, shift_mlp, scale_mlp, gate_mlp = self.attn_norm(x, emb=t_embed)
+        x = x + gate_msa.unsqueeze(1) * self.attn(norm, norm, norm, mask=mask)
+        norm = self.ff_norm(x) * (1 + scale_mlp[:, None]) + shift_mlp[:, None]
+        x = x + gate_mlp.unsqueeze(1) * self.ffn(norm)
+        return x</code></pre>
+
+          <h3>Multi-modal CFG in 12 lines</h3>
+          <p>The novel part of training is that each modality is dropped independently rather than all together. The trainer calls this every step; the model swaps dropped streams for learned null tokens inside <code>InputEmbedding</code>:</p>
+<pre><code class="language-python">def sample_cfg_dropout(self, training=True):
+    if not training:
+        return False, False, False
+    drop_audio = random.random() &lt; self.audio_drop_prob   # 0.20
+    drop_units = random.random() &lt; self.units_drop_prob   # 0.15
+    drop_ecapa = random.random() &lt; self.ecapa_drop_prob   # 0.20
+    # Occasionally force the fully-unconditional path
+    if random.random() &lt; self.all_null_prob:              # 0.15
+        drop_audio = drop_units = drop_ecapa = True
+    return drop_audio, drop_units, drop_ecapa</code></pre>
+          <p>At inference the same toggles select which paths the multi-path CFG mix in Section 6.2 averages over.</p>
+        </section>
+      </aside>
+    </main>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      if (typeof siteConfig !== 'undefined') {
+        if (!siteConfig.hide_blog) {
+          var blogLink = document.getElementById('nav-blog');
+          if (blogLink) blogLink.style.display = '';
+        }
+        if (!siteConfig.hide_resume) {
+          var resumeLink = document.getElementById('resume-link');
+          if (resumeLink) resumeLink.style.display = '';
+        }
+      }
+      var mainContent = document.querySelector('.main-content');
+      if (mainContent) mainContent.classList.add('loaded');
+    });
+  </script>
+</body>
+</html>
