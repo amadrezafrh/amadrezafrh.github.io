@@ -91,7 +91,7 @@ const projectsData = [
     tags: ["Python", "PyTorch", "Diffusion", "Voice Conversion", "DiT"],
     github: "https://github.com/amadrezafrh/RobDiffVC-A-Robust-Multi-Modal-Diffusion-Transformer-for-Voice-Conversion",
     report: null,
-    demo: "projects/robdiffvc.html",
+    demo: null,
     page: "projects/robdiffvc.html",
     featured: true,
     preview: "projects/robdiffvc/Design.png"

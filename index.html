@@ -2,23 +2,23 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Amadreza Farahani - ML/AI Software Engineer</title>
+  <title>Ahmadreza Farahani - ML/AI Software Engineer</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Portfolio of Amadreza Farahani, ML/AI Software Engineer specializing in Agentic AI, LLM Systems, and Computer Vision" />
+  <meta name="description" content="Portfolio of Ahmadreza Farahani, ML/AI Software Engineer specializing in Agentic AI, LLM Systems, and Computer Vision" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=51" />
+  <link rel="stylesheet" href="css/styles.css?v=54" />
 </head>
 <body>
   <div class="layout">
     <aside class="sidebar">
       <div class="sidebar-content">
         <div class="sidebar-photo">
-          <img src="me.JPG" alt="Amadreza Farahani" />
+          <img src="me.JPG" alt="Ahmadreza Farahani" />
         </div>
         <div class="sidebar-identity">
-          <h1>Amadreza Farahani</h1>
+          <h1>Ahmadreza Farahani</h1>
           <p class="tagline">ML/AI Software Engineer</p>
         </div>
 
@@ -56,7 +56,7 @@
         <div class="sidebar-footer">
           <span class="sidebar-location"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 7-8 13-8 13s-8-6-8-13a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> Turin, Italy</span>
           <span class="sidebar-dot">&middot;</span>
-          <span class="sidebar-name">&copy; 2026 Amadreza Farahani</span>
+          <span class="sidebar-name">&copy; 2026 Ahmadreza Farahani</span>
         </div>
       </div>
     </aside>
@@ -71,19 +71,18 @@
             <div class="experience-badge">Z</div>
             <div class="experience-title-block">
               <h3>AI/ML Software Engineer</h3>
-              <p class="experience-meta">Zirak<span class="dot">·</span>Turin</p>
+              <p class="experience-meta">Zirak<span class="dot">·</span>Turin, Italy</p>
             </div>
-            <span class="experience-date">Nov 2024 Present</span>
+            <span class="experience-date">Nov 2024 - Present</span>
           </div>
           <ul>
-            <li>Delivered a multi-hop QA agent on <strong>AWS Bedrock</strong> with <strong>GraphRAG</strong> and <strong>Amazon Neptune</strong> to query over 1,000 linked documents.</li>
-            <li>Launched an ISO document change-analysis product detecting 96% of revision changes; engineered a hybrid <strong>BM25</strong> and dense retrieval pipeline into <strong>pgvector</strong> and implemented model routing to cut LLM costs by 65% while maintaining recall.</li>
-            <li>Automated 81% of inbound email volume fully on-premise by developing an email observer agent using fine-tuned <strong>Llama 3.2 3B</strong> (<strong>QLoRA</strong>) and <strong>LangChain</strong> that achieved a 94% F1 score on structured extraction and routed low-confidence cases to human review.</li>
-            <li>Reduced query SQL authoring time for non-technical analysts at <strong>Poste Italiane</strong>'s logistics division with a production NL-to-SQL agent: <strong>LangGraph</strong> routing <strong>MCP</strong> tools across <strong>PostgreSQL</strong> and <strong>MySQL</strong>, served on-prem via <strong>FastAPI</strong> and <strong>Ollama</strong>.</li>
-            <li>Created an on-device meeting assistant agent with real-time transcription, diarization, and speaker verification with a <strong>LangGraph</strong> agentic RAG (hybrid retrieval + reranking) plus <strong>LangSmith</strong> regression evals that cut unsupported claims in summaries by 25%.</li>
-            <li>Deployed a document-review agent (<strong>HuggingFace</strong> models served on <strong>vLLM</strong> with <strong>Guardrails</strong>), saving 50 hours/month internally and later licensed to external clients including <strong>Techyon</strong>.</li>
-            <li>Developed a custom <strong>U-Net</strong> architecture to detect invasive algae from multispectral satellite imagery, achieving a +10% F1 improvement over internal <strong>XGBoost</strong> baseline and cutting manual review by 80% via <strong>Airflow</strong> on <strong>AWS SageMaker</strong>.</li>
-            <li>Built a rail-safety detection and segmentation pipeline for <strong>Blue Engineering</strong> using <strong>YOLOv8</strong> and <strong>PyTorch</strong>, deploying the system on <strong>AWS ECS</strong> with <strong>Prometheus</strong> and <strong>Grafana</strong> for real-time monitoring.</li>
+            <li>Led development of a real-time meeting assistant agent with a <strong>LangGraph</strong> human-in-the-loop moderator and episodic memory (<strong>RAG</strong>), hitting sub-2s latency and an 83% cut in repeated output verified via <strong>LangSmith</strong> evals (golden eval set).</li>
+            <li>Automated 81% of inbound emails fully on-premise by developing an email observer agent for Traco using fine-tuned Llama 3.2 3B (<strong>QLoRA</strong>) and <strong>LangChain</strong> that achieved a 94% F1 on structured extraction and routed low-confidence cases to human review.</li>
+            <li>Owned and delivered a multi-hop QA agent on <strong>AWS Bedrock</strong>, choosing <strong>GraphRAG</strong> over flat RAG to query over 1,000 linked documents that achieved 93% tool-call accuracy.</li>
+            <li>Drove the architecture of an ISO document change-analysis product detecting 96% of revision changes, with a hybrid <strong>BM25</strong> and a dense retrieval pipeline into <strong>pgvector</strong> alongside model routing that cut LLM costs by 65% without losing recall.</li>
+            <li>Reduced query SQL authoring time by 70% for non-technical analysts at <strong>Poste Italiane</strong>'s logistics division with a production NL-to-SQL agent: LangGraph routing <strong>MCP</strong> tools across PostgreSQL and MySQL, served on-prem via FastAPI and <strong>Ollama</strong>.</li>
+            <li>Spearheaded a document-review agent (HuggingFace models served on <strong>vLLM</strong> with Guardrails and local <strong>ChromaDB</strong> vector storage), saving 50 hours/month internally and later licensed as SaaS to external clients like Techyon.</li>
+            <li>Designed a rail-safety detection and segmentation pipeline for Blue Engineering, selecting YOLOv8 over the existing YOLOv5x system that improved mAP by 3.3%, deployed on <strong>AWS ECS</strong> with Prometheus and Grafana for real-time monitoring.</li>
           </ul>
         </article>
 
@@ -91,14 +90,14 @@
           <div class="experience-header">
             <div class="experience-badge">TU</div>
             <div class="experience-title-block">
-              <h3>Visiting Researcher Master Thesis</h3>
-              <p class="experience-meta">TU Darmstadt &middot; CROSSING<span class="dot">·</span>Darmstadt</p>
+              <h3>Visiting Researcher - Master Thesis</h3>
+              <p class="experience-meta">TU Darmstadt &middot; CROSSING<span class="dot">·</span>Darmstadt, Germany</p>
             </div>
-            <span class="experience-date">Sep 2023 Nov 2024</span>
+            <span class="experience-date">Sep 2023 - Nov 2024</span>
           </div>
           <ul>
-            <li>Architected a Diffusion <strong>Transformer</strong> for voice conversion (Python, <strong>PyTorch</strong>) on HPC GPUs, improving speaker similarity by 9% over open-source baselines with fewer sampling steps, enabling real-time conversion.</li>
-            <li>Ran a prototype low-latency inference on <strong>AWS ECS</strong>, tracking experiments in <strong>MLflow</strong> and monitoring latency with <strong>CloudWatch</strong>.</li>
+            <li>Architected a Diffusion <strong>Transformer</strong> for voice conversion (Python, PyTorch) on HPC GPUs, improving speaker similarity by 9% over open-source baselines with fewer sampling steps, enabling real-time conversion.</li>
+            <li>Ran a prototype low-latency inference on AWS ECS, tracking experiments in <strong>MLflow</strong> and monitoring latency with CloudWatch.</li>
           </ul>
         </article>
 
@@ -107,16 +106,14 @@
             <div class="experience-badge">P</div>
             <div class="experience-title-block">
               <h3>ML Software Engineer</h3>
-              <p class="experience-meta">PartAI Research Center<span class="dot">·</span>Tehran</p>
+              <p class="experience-meta">PartAI Research Center<span class="dot">·</span>Tehran, Iran</p>
             </div>
-            <span class="experience-date">Feb 2020 Mar 2022</span>
+            <span class="experience-date">Feb 2020 - Mar 2022</span>
           </div>
           <ul>
-            <li>Trained an on-device keyword-spotting Android app in <strong>Java</strong>, using hard negative samples to reduce false positives by 30%.</li>
-            <li>Optimized a speaker verification system on <strong>TensorFlow</strong>, fine-tuned on new domains that reduced the Equal Error Rate (EER) by 2%.</li>
-            <li>Established Test-Driven Development (<strong>TDD</strong>) for Persian <strong>ASR</strong> and <strong>NLP</strong> services; wrote unit/integration tests reaching 100% coverage and set up <strong>Jenkins</strong> CI/CD pipelines.</li>
-            <li>Mentored new team members on clean, production-ready <strong>Python</strong> (testing, logging, design patterns), improving quality and safety.</li>
-            <li>Implemented deep neural networks (from research papers) for speaker identification and speaker verification, packaged with <strong>Docker</strong>.</li>
+            <li>Optimized an on-device deep neural network keyword-spotting, with hard negative samples to reduce false positives by 30%.</li>
+            <li>Fine-tuned internal speaker verification system on new domains in <strong>TensorFlow</strong> that reduced the Equal Error Rate (EER) by 2%.</li>
+            <li>Established Test-Driven Development (TDD) for Persian ASR and <strong>NLP</strong> services, wrote unit/integration tests reaching 100% coverage and set up <strong>Jenkins CI/CD</strong> pipelines.</li>
           </ul>
         </article>
 
@@ -125,12 +122,13 @@
             <div class="experience-badge">A</div>
             <div class="experience-title-block">
               <h3>Associate Generative AI Software Engineer</h3>
-              <p class="experience-meta">AROL S.p.A<span class="dot">·</span>Canelli</p>
+              <p class="experience-meta">AROL S.p.A<span class="dot">·</span>Canelli, Italy</p>
             </div>
-            <span class="experience-date">Sep 2022 Apr 2023</span>
+            <span class="experience-date">Sep 2022 - Apr 2023</span>
           </div>
           <ul>
-            <li>Designed a synthetic machinery data generator (<strong>GAN</strong>, <strong>TensorFlow</strong>, trained on <strong>AWS SageMaker</strong>) packaged with <strong>MongoDB</strong> and Docker Compose plus REST API docs, so customers run it locally without exposing proprietary data.</li>
+            <li>Developed a synthetic machinery data generator (<strong>GAN</strong>, TensorFlow, trained on <strong>AWS SageMaker</strong>) packaged with MongoDB and <strong>Docker</strong> Compose plus REST API docs, so customers run it locally without exposing proprietary data.</li>
+            <li>Defined KPIs and <strong>Python</strong> tests validating synthetic vs. real machinery signals and API responses, wired into the team's CI pipeline to replace manual QA before customer demos.</li>
           </ul>
         </article>
 
@@ -138,14 +136,14 @@
           <div class="experience-header">
             <div class="experience-badge">M</div>
             <div class="experience-title-block">
-              <h3>Computer Vision Research Intern Bachelor Thesis</h3>
-              <p class="experience-meta">Megamouj Co. &middot; Iran University of Science and Technology<span class="dot">·</span>Tehran</p>
+              <h3>Computer Vision Research Intern - Bachelor Thesis</h3>
+              <p class="experience-meta">Megamouj Co. &middot; Iran University of Science and Technology<span class="dot">·</span>Tehran, Iran</p>
             </div>
-            <span class="experience-date">Sep 2019 Feb 2020</span>
+            <span class="experience-date">Sep 2019 - Feb 2020</span>
           </div>
           <ul>
-            <li>Automated a traffic-flow monitoring system (<strong>C++</strong>, Python, <strong>OpenCV</strong>, <strong>YOLOv3</strong>) for vehicle detection, tracking, and flow estimation, reducing manual video review in a national-scale project.</li>
-            <li>Engineered data pipelines with <strong>NumPy</strong> and Pandas to structure annotation datasets and computed evaluation metrics in <strong>scikit-learn</strong> to validate system reliability.</li>
+            <li>Automated a traffic-flow monitoring system (C++, Python, <strong>OpenCV</strong>, YOLOv3) for vehicle detection, tracking, and flow estimation, reducing manual video review in a national-scale project.</li>
+            <li>Engineered a traffic-flow dataset (<strong>NumPy</strong>, Pandas, <strong>scikit-learn</strong>) to fine-tune the existing object detection model, changing the precision from 45.2% to 72%.</li>
           </ul>
         </article>
       </div>
@@ -196,10 +194,10 @@
       <div class="education-grid">
         <article class="education-item">
           <div class="education-header">
-            <span class="education-date">2022 2025</span>
+            <span class="education-date">2022 - 2025</span>
             <h3>M.Sc. Computer Engineering</h3>
           </div>
-          <p class="education-school">Politecnico di Torino &middot; Turin</p>
+          <p class="education-school">Politecnico di Torino &middot; Turin, Italy</p>
           <p class="education-detail"><strong>Focus:</strong> Artificial Intelligence &amp; Data Analytics</p>
           <p class="education-detail"><strong>Courses:</strong> Advanced Machine Learning, System and Device Programming, Software Engineering, Web Applications</p>
           <p class="education-detail"><strong>Thesis:</strong> RobVC: A Robust Zero-Shot End-to-End Self-Supervised Voice Conversion (Funded by CROSSING Co. in Darmstadt)</p>
@@ -208,10 +206,10 @@
 
         <article class="education-item">
           <div class="education-header">
-            <span class="education-date">2016 2021</span>
+            <span class="education-date">2016 - 2021</span>
             <h3>B.Sc. Electrical and Computer Engineering</h3>
           </div>
-          <p class="education-school">Iran University of Science and Technology &middot; Tehran</p>
+          <p class="education-school">Iran University of Science and Technology &middot; Tehran, Iran</p>
           <p class="education-detail"><strong>Focus:</strong> Telecommunications</p>
           <p class="education-detail"><strong>Courses:</strong> Programming, Digital Signal Processing, Linear Algebra, Linear Control Systems, Communications</p>
           <p class="education-detail"><strong>Thesis:</strong> Deep Learning-Based Vehicle Detection and Traffic Flow Analysis (Funded by Megamouj Co.)</p>
@@ -241,10 +239,10 @@
     </main>
   </div>
 
-  <script src="js/config.js?v=51"></script>
-  <script src="js/projects.js?v=51"></script>
-  <script src="js/blog.js?v=51"></script>
-  <script src="js/main.js?v=51"></script>
+  <script src="js/config.js?v=54"></script>
+  <script src="js/projects.js?v=54"></script>
+  <script src="js/blog.js?v=54"></script>
+  <script src="js/main.js?v=54"></script>
   <script>
     if (typeof siteConfig !== 'undefined') {
       if (!siteConfig.hide_blog) {
